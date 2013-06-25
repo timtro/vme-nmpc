@@ -1,0 +1,182 @@
+\hypertarget{input_8cpp}{\section{src/input.cpp File Reference}
+\label{input_8cpp}\index{src/input.\-cpp@{src/input.\-cpp}}
+}
+{\ttfamily \#include $<$stdio.\-h$>$}\\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\\*
+{\ttfamily \#include $<$unistd.\-h$>$}\\*
+{\ttfamily \#include $<$ctype.\-h$>$}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+{\ttfamily \#include $<$vector$>$}\\*
+{\ttfamily \#include \char`\"{}errinclude.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}robot.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}nmpc.\-h\char`\"{}}\\*
+Include dependency graph for input.\-cpp\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{input_8cpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{input_8cpp_ad19a84e6b6de562e42e80c4ba3a6be88}{parse\-\_\-command\-\_\-line} (int argc, char $\ast$$\ast$argv, \hyperlink{classrobot}{robot} $\ast$vme)
+\item 
+void \hyperlink{input_8cpp_ac3a302ba089e2df4c2cfb6706c01199b}{get\-\_\-token} (F\-I\-L\-E $\ast$fd, char $\ast$buffer, char $\ast$lastdelim, int $\ast$lineno)
+\item 
+void \hyperlink{input_8cpp_afc5703718754700cdc592ee59818ea16}{check\-\_\-delim} (char lastdelim, char expected\-\_\-delim, int lineno)
+\item 
+void \hyperlink{input_8cpp_ad53113827b4fe0ab385a3b0f0b665eaf}{parse\-\_\-input\-\_\-file} (\hyperlink{nmpc_8h_a071459b3a1fa3748660f7de5d6ab38d0}{nmpc} \&controller, const char $\ast$infile)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{input_8cpp_afc5703718754700cdc592ee59818ea16}{\index{input.\-cpp@{input.\-cpp}!check\-\_\-delim@{check\-\_\-delim}}
+\index{check\-\_\-delim@{check\-\_\-delim}!input.cpp@{input.\-cpp}}
+\subsubsection[{check\-\_\-delim}]{\setlength{\rightskip}{0pt plus 5cm}void check\-\_\-delim (
+\begin{DoxyParamCaption}
+\item[{char}]{lastdelim, }
+\item[{char}]{expected\-\_\-delim, }
+\item[{int}]{lineno}
+\end{DoxyParamCaption}
+)}}\label{input_8cpp_afc5703718754700cdc592ee59818ea16}
+
+
+Definition at line 197 of file input.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=254pt]{input_8cpp_afc5703718754700cdc592ee59818ea16_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{input_8cpp_afc5703718754700cdc592ee59818ea16_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{input_8cpp_ac3a302ba089e2df4c2cfb6706c01199b}{\index{input.\-cpp@{input.\-cpp}!get\-\_\-token@{get\-\_\-token}}
+\index{get\-\_\-token@{get\-\_\-token}!input.cpp@{input.\-cpp}}
+\subsubsection[{get\-\_\-token}]{\setlength{\rightskip}{0pt plus 5cm}void get\-\_\-token (
+\begin{DoxyParamCaption}
+\item[{F\-I\-L\-E $\ast$}]{fd, }
+\item[{char $\ast$}]{buffer, }
+\item[{char $\ast$}]{lastdelim, }
+\item[{int $\ast$}]{lineno}
+\end{DoxyParamCaption}
+)}}\label{input_8cpp_ac3a302ba089e2df4c2cfb6706c01199b}
+
+
+Definition at line 79 of file input.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=242pt]{input_8cpp_ac3a302ba089e2df4c2cfb6706c01199b_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{input_8cpp_ac3a302ba089e2df4c2cfb6706c01199b_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{input_8cpp_ad19a84e6b6de562e42e80c4ba3a6be88}{\index{input.\-cpp@{input.\-cpp}!parse\-\_\-command\-\_\-line@{parse\-\_\-command\-\_\-line}}
+\index{parse\-\_\-command\-\_\-line@{parse\-\_\-command\-\_\-line}!input.cpp@{input.\-cpp}}
+\subsubsection[{parse\-\_\-command\-\_\-line}]{\setlength{\rightskip}{0pt plus 5cm}void parse\-\_\-command\-\_\-line (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv, }
+\item[{{\bf robot} $\ast$}]{vme}
+\end{DoxyParamCaption}
+)}}\label{input_8cpp_ad19a84e6b6de562e42e80c4ba3a6be88}
+
+
+Definition at line 32 of file input.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=328pt]{input_8cpp_ad19a84e6b6de562e42e80c4ba3a6be88_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=264pt]{input_8cpp_ad19a84e6b6de562e42e80c4ba3a6be88_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{input_8cpp_ad53113827b4fe0ab385a3b0f0b665eaf}{\index{input.\-cpp@{input.\-cpp}!parse\-\_\-input\-\_\-file@{parse\-\_\-input\-\_\-file}}
+\index{parse\-\_\-input\-\_\-file@{parse\-\_\-input\-\_\-file}!input.cpp@{input.\-cpp}}
+\subsubsection[{parse\-\_\-input\-\_\-file}]{\setlength{\rightskip}{0pt plus 5cm}void parse\-\_\-input\-\_\-file (
+\begin{DoxyParamCaption}
+\item[{{\bf nmpc} \&}]{controller, }
+\item[{const char $\ast$}]{infile}
+\end{DoxyParamCaption}
+)}}\label{input_8cpp_ad53113827b4fe0ab385a3b0f0b665eaf}
+
+
+Definition at line 215 of file input.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{input_8cpp_ad53113827b4fe0ab385a3b0f0b665eaf_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=240pt]{input_8cpp_ad53113827b4fe0ab385a3b0f0b665eaf_icgraph}
+\end{center}
+\end{figure}
+
+

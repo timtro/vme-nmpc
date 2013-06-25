@@ -1,0 +1,201 @@
+\hypertarget{vme-nmpc_8h}{\section{src/vme-\/nmpc.h File Reference}
+\label{vme-nmpc_8h}\index{src/vme-\/nmpc.\-h@{src/vme-\/nmpc.\-h}}
+}
+{\ttfamily \#include $<$cmath$>$}\\*
+{\ttfamily \#include \char`\"{}robot.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}nmpc.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}qnu.\-h\char`\"{}}\\*
+Include dependency graph for vme-\/nmpc.h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=312pt]{vme-nmpc_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=178pt]{vme-nmpc_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{vme-nmpc_8h_ae023f8cf4938bafee258ec79c83f5e7d}{init\-\_\-vme\-\_\-sock} ()
+\item 
+int \hyperlink{vme-nmpc_8h_a383fbb6b26fb0e0638ab4816c0037c0e}{parse\-\_\-command\-\_\-line} (int, char $\ast$$\ast$, \hyperlink{classrobot}{robot} $\ast$)
+\item 
+void \hyperlink{vme-nmpc_8h_a08b905d7f390613ae37c835938f13207}{parse\-\_\-input\-\_\-file} (\hyperlink{nmpc_8h_a071459b3a1fa3748660f7de5d6ab38d0}{nmpc} \&, const char $\ast$)
+\item 
+float \hyperlink{vme-nmpc_8h_aa075c06c19ff3b551ff1f9ddff3d2181}{costfun} (const \hyperlink{qnu_8h_a3b05f1f30c55bb80f8a3d3b63ad822db}{qnu} $\ast$qu, const \hyperlink{qnu_8h_a0a3e54bd51fcd867a223ae23fd3c545f}{Lagr} $\ast$p, const \hyperlink{nmpc_8h_a071459b3a1fa3748660f7de5d6ab38d0}{nmpc} \&C)
+\item 
+void \hyperlink{vme-nmpc_8h_a293565f06dcf7e375ac1b53f3b9b0a0b}{predict\-\_\-horizon} (\hyperlink{qnu_8h_a3b05f1f30c55bb80f8a3d3b63ad822db}{qnu} $\ast$qu, \hyperlink{qnu_8h_a0a3e54bd51fcd867a223ae23fd3c545f}{Lagr} $\ast$p, const \hyperlink{nmpc_8h_a071459b3a1fa3748660f7de5d6ab38d0}{nmpc} \&C)
+\item 
+void \hyperlink{vme-nmpc_8h_a6db4a98664c521bc4d1f3e768672ddc8}{get\-\_\-gradient} (\hyperlink{qnu_8h_a3b05f1f30c55bb80f8a3d3b63ad822db}{qnu} $\ast$qu, \hyperlink{qnu_8h_a0a3e54bd51fcd867a223ae23fd3c545f}{Lagr} $\ast$p, \hyperlink{nmpc_8h_a071459b3a1fa3748660f7de5d6ab38d0}{nmpc} \&C, float $\ast$grad)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{vme-nmpc_8h_aa075c06c19ff3b551ff1f9ddff3d2181}{\index{vme-\/nmpc.\-h@{vme-\/nmpc.\-h}!costfun@{costfun}}
+\index{costfun@{costfun}!vme-nmpc.h@{vme-\/nmpc.\-h}}
+\subsubsection[{costfun}]{\setlength{\rightskip}{0pt plus 5cm}float costfun (
+\begin{DoxyParamCaption}
+\item[{const {\bf qnu} $\ast$}]{qu, }
+\item[{const {\bf Lagr} $\ast$}]{p, }
+\item[{const {\bf nmpc} \&}]{C}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{vme-nmpc_8h_aa075c06c19ff3b551ff1f9ddff3d2181}
+
+
+Definition at line 37 of file vme-\/nmpc.\-h.
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=204pt]{vme-nmpc_8h_aa075c06c19ff3b551ff1f9ddff3d2181_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vme-nmpc_8h_a6db4a98664c521bc4d1f3e768672ddc8}{\index{vme-\/nmpc.\-h@{vme-\/nmpc.\-h}!get\-\_\-gradient@{get\-\_\-gradient}}
+\index{get\-\_\-gradient@{get\-\_\-gradient}!vme-nmpc.h@{vme-\/nmpc.\-h}}
+\subsubsection[{get\-\_\-gradient}]{\setlength{\rightskip}{0pt plus 5cm}void get\-\_\-gradient (
+\begin{DoxyParamCaption}
+\item[{{\bf qnu} $\ast$}]{qu, }
+\item[{{\bf Lagr} $\ast$}]{p, }
+\item[{{\bf nmpc} \&}]{C, }
+\item[{float $\ast$}]{grad}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{vme-nmpc_8h_a6db4a98664c521bc4d1f3e768672ddc8}
+Calculate gradient from ∂\-J = ∑∂\-H/∂u ∂u, then step the control set. To get the gradient ∂\-H/∂u\-\_\-k, for each step, k in the horizon, loop through each k in N. This involves computing the obstacle potential and Lagrange multipliers. Then, the control plan is updated by stepping against the direction of the gradient.
+
+Compute the obstacle potential by looping through the list of obstacles\-:
+
+F\-I\-X\-M\-E\-: Probably best to remove the vectors from C and use arrays. Vectors could be used temporarily to expand the data from the input file to memory. Error checking for the number of coordinates can be done there.
+
+Definition at line 90 of file vme-\/nmpc.\-h.
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{vme-nmpc_8h_a6db4a98664c521bc4d1f3e768672ddc8_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vme-nmpc_8h_ae023f8cf4938bafee258ec79c83f5e7d}{\index{vme-\/nmpc.\-h@{vme-\/nmpc.\-h}!init\-\_\-vme\-\_\-sock@{init\-\_\-vme\-\_\-sock}}
+\index{init\-\_\-vme\-\_\-sock@{init\-\_\-vme\-\_\-sock}!vme-nmpc.h@{vme-\/nmpc.\-h}}
+\subsubsection[{init\-\_\-vme\-\_\-sock}]{\setlength{\rightskip}{0pt plus 5cm}int init\-\_\-vme\-\_\-sock (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{vme-nmpc_8h_ae023f8cf4938bafee258ec79c83f5e7d}
+\hypertarget{vme-nmpc_8h_a383fbb6b26fb0e0638ab4816c0037c0e}{\index{vme-\/nmpc.\-h@{vme-\/nmpc.\-h}!parse\-\_\-command\-\_\-line@{parse\-\_\-command\-\_\-line}}
+\index{parse\-\_\-command\-\_\-line@{parse\-\_\-command\-\_\-line}!vme-nmpc.h@{vme-\/nmpc.\-h}}
+\subsubsection[{parse\-\_\-command\-\_\-line}]{\setlength{\rightskip}{0pt plus 5cm}int parse\-\_\-command\-\_\-line (
+\begin{DoxyParamCaption}
+\item[{int}]{, }
+\item[{char $\ast$$\ast$}]{, }
+\item[{{\bf robot} $\ast$}]{}
+\end{DoxyParamCaption}
+)}}\label{vme-nmpc_8h_a383fbb6b26fb0e0638ab4816c0037c0e}
+
+
+Definition at line 32 of file input.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=328pt]{vme-nmpc_8h_a383fbb6b26fb0e0638ab4816c0037c0e_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=264pt]{vme-nmpc_8h_a383fbb6b26fb0e0638ab4816c0037c0e_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vme-nmpc_8h_a08b905d7f390613ae37c835938f13207}{\index{vme-\/nmpc.\-h@{vme-\/nmpc.\-h}!parse\-\_\-input\-\_\-file@{parse\-\_\-input\-\_\-file}}
+\index{parse\-\_\-input\-\_\-file@{parse\-\_\-input\-\_\-file}!vme-nmpc.h@{vme-\/nmpc.\-h}}
+\subsubsection[{parse\-\_\-input\-\_\-file}]{\setlength{\rightskip}{0pt plus 5cm}void parse\-\_\-input\-\_\-file (
+\begin{DoxyParamCaption}
+\item[{{\bf nmpc} \&}]{, }
+\item[{const char $\ast$}]{}
+\end{DoxyParamCaption}
+)}}\label{vme-nmpc_8h_a08b905d7f390613ae37c835938f13207}
+
+
+Definition at line 215 of file input.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vme-nmpc_8h_a08b905d7f390613ae37c835938f13207_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=240pt]{vme-nmpc_8h_a08b905d7f390613ae37c835938f13207_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vme-nmpc_8h_a293565f06dcf7e375ac1b53f3b9b0a0b}{\index{vme-\/nmpc.\-h@{vme-\/nmpc.\-h}!predict\-\_\-horizon@{predict\-\_\-horizon}}
+\index{predict\-\_\-horizon@{predict\-\_\-horizon}!vme-nmpc.h@{vme-\/nmpc.\-h}}
+\subsubsection[{predict\-\_\-horizon}]{\setlength{\rightskip}{0pt plus 5cm}void predict\-\_\-horizon (
+\begin{DoxyParamCaption}
+\item[{{\bf qnu} $\ast$}]{qu, }
+\item[{{\bf Lagr} $\ast$}]{p, }
+\item[{const {\bf nmpc} \&}]{C}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{vme-nmpc_8h_a293565f06dcf7e375ac1b53f3b9b0a0b}
+This function approximates the state trajectory of the system b ased on a set of control input. It is used to optimize the control input by giving an approximate path to build an approximation of the cost measure of possible movements. For all times in the horizon, provide an approximation of the state vector, based on a simple Euler integration scheme.
+
+Definition at line 61 of file vme-\/nmpc.\-h.
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=238pt]{vme-nmpc_8h_a293565f06dcf7e375ac1b53f3b9b0a0b_icgraph}
+\end{center}
+\end{figure}
+
+

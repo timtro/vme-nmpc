@@ -1,0 +1,14 @@
+# Cmake swawn
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+# Binaries
+vme-nmpc
+a.out
+
+#Emacs backups
+*~
+

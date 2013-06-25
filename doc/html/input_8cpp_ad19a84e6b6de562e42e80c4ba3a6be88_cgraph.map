@@ -1,0 +1,6 @@
+<map id="parse_command_line" name="parse_command_line">
+<area shape="rect" id="node3" href="$classrobot.html#a61dbfda8c9239191e1819e9e9c9a3307" title="robot::set_port" alt="" coords="215,5,321,35"/>
+<area shape="rect" id="node5" href="$classrobot.html#aeb00885111963664c3b4c0d64db1c42e" title="robot::set_host" alt="" coords="213,59,323,88"/>
+<area shape="rect" id="node7" href="$classrobot.html#a1c7b39f7b02e282220ec8978770eaeee" title="robot::set_configfile" alt="" coords="200,112,336,141"/>
+<area shape="rect" id="node9" href="$errhandler_8cpp.html#a404519733fecb82a4172f2fc29d511f7" title="report_error" alt="" coords="224,165,312,195"/>
+</map>

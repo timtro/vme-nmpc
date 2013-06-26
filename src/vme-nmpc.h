@@ -34,8 +34,26 @@ int init_vme_sock();
 int parse_command_line( int, char **, robot * );
 void parse_input_file( nmpc &, const char * );
 
-/*
- * This function approximates the state trajectory of the system b  ased
+inline float costfun( const qnu *qu, const Lagr *p, const nmpc &C )
+  {
+    float J; // The cost
+    J = C.Q0[0] * p[C.N - 1].ex * p[C.N - 1].ex
+            + C.Q0[1] * p[C.N - 1].ey * p[C.N - 1].ey;
+    for ( unsigned int k = 0; k < C.N-1; k++ )
+      {
+        J += 2 * p[C.N - 1].ex * p[C.N - 1].ex * C.Q0[0]
+                + 2 * p[C.N - 1].ey * p[C.N - 1].ey * C.Q0[1];
+        for ( unsigned int j = 0; j < C.obst->size() / 2; j++ )
+          J += 1
+                  / (((*C.tgt)[0] - qu[0].x) * ((*C.tgt)[0] - qu[0].x)
+                          + ((*C.tgt)[1] - qu[0].y) * ((*C.tgt)[1] - qu[0].y)
+                          + C.eps);
+      }
+    return -J;
+  }
+
+/*!
+ * This function approximates the state trajectory of the system based
  * on a set of control input. It is used to optimize the control input
  * by giving an approximate path to build an approximation of the cost
  * measure of possible movements.
@@ -52,7 +70,7 @@ inline void predict_horizon( qnu *qu, Lagr *p, const nmpc &C )
      * For all times in the horizon, provide an approximation of the state
      * vector, based on a simple Euler integration scheme.
      */
-    for ( unsigned int k = 1; k < C.N; ++k )
+    for ( unsigned int k = 1; k < C.N; k++ )
       {
         qu[k].th = qu[k - 1].th + qu[k - 1].Dth * C.T; // Steering angle.
         p[k].costk = cos(qu[k].th);
@@ -63,48 +81,45 @@ inline void predict_horizon( qnu *qu, Lagr *p, const nmpc &C )
         qu[k].Dy = C.cruising_speed * p[k].sintk;       // Y-speed.
         p[k].ex = qu[k].x - (qu[0].x + C.cruising_speed * dirx * k * C.T);
         p[k].ey = qu[k].y - (qu[0].y + C.cruising_speed * diry * k * C.T);
-
       }
   }
 
-/*
+/*!
  * Calculate gradient from ∂J = ∑∂H/∂u ∂u, then step the control set.
  */
-inline unsigned int gradient_step( qnu *qu, Lagr *p, nmpc &C )
+inline void get_gradient( qnu *qu, Lagr *p, nmpc &C, float *grad )
   {
     int k;
     unsigned int j;
     float PhiX, PhiY, denom, difx, dify, gDth;
-    float grad[19];
 
-    float grad_norm = 0.;
+    grad[C.N] = 0.;
 
-    //TODO: Check p[C.N] -- Out of range?
-    // NB: Canged to p[C.N-1] for now. Still check.
     p[C.N - 1].p1 = C.Q0[0] * p[C.N - 1].ex;
     p[C.N - 1].p3 = C.Q0[1] * p[C.N - 1].ey;
     qu[C.N - 2].Dth -= C.dg * C.R[0] * qu[C.N - 2].Dth;
-    /*
-     * To get the gradient ∂H/∂u_k, for each step, k in the horizon, loop
+    /*!
+     * Get the gradient ∂H/∂u_k, for each step, k in the horizon, loop
      * through each k in N. This involves computing the obstacle potential
      * and Lagrange multipliers. Then, the control plan is updated by
      * stepping against the direction of the gradient.
      */
-    printf(
-            "#k     p1          p2        p3        p4        p5        PhiX      PhiY\n");
-    printf("# 19  % 7.2f   % 7.2f   % 7.2f   % 7.2f   % 7.2f\n",
-            p[C.N - 1].p1, p[C.N - 1].p2, p[C.N - 1].p3, p[C.N - 1].p4,
-            p[C.N - 1].p5);
+    printf("#  k        p1        p2        p3        p4        p5");
+    printf("      PhiX      PhiY   grad[k]\n");
+    printf("# 19% 10.4f% 10.4f% 10.4f% 10.4f% 10.4f\n", p[C.N - 1].p1,
+            p[C.N - 1].p2, p[C.N - 1].p3, p[C.N - 1].p4, p[C.N - 1].p5);
     for ( k = C.N - 2; k >= 0; --k )
       {
         PhiX = 0.;
         PhiY = 0.;
-        /* Compute the obstacle potential by looping through the list of
+        /*
+         * Compute the obstacle potential by looping through the list of
          * obstacles:
          */
         for ( j = 0; j < C.obst->size() / 2; j++ )
           {
-            /* FIXME: Probably best to remove the vectors from C and use
+            /*
+             * FIXME: Probably best to remove the vectors from C and use
              * arrays. Vectors could be used temporarily to expand the
              * data from the input file to memory. Error checking for
              * the number of coordinates can be done there.
@@ -123,44 +138,12 @@ inline unsigned int gradient_step( qnu *qu, Lagr *p, nmpc &C )
         p[k].p4 = p[k + 1].p3 * C.T;
         p[k].p5 = p[k + 1].p5 + p[k + 1].p4 * qu[k].v * p[k].costk
                 - p[k + 1].p2 * qu[k].v * p[k].sintk;
-        printf("# %2d  % 7.2f   % 7.2f   % 7.2f   % 7.2f   % 7.2f   % 7.2f   % 7.2f\n", k,
-                p[k].p1, p[k].p2, p[k].p3, p[k].p4, p[k].p5, PhiX, PhiY);
+        grad[k] = C.R[0] * qu[k].Dth + p[k + 1].p5 * C.T;
+        grad[C.N] += grad[k] * grad[k];
+        printf("# %2d% 10.4f% 10.4f% 10.4f% 10.4f% 10.4f", k, p[k].p1, p[k].p2,
+                p[k].p3, p[k].p4, p[k].p5);
+        printf("% 10.4f% 10.4f% 10.4f\n", PhiX, PhiY, grad[k]);
       }
-    for ( k = 0; k < C.N - 1; ++k )
-      {
-        // Compute gradient for each control element:
-        gDth = C.R[0] * qu[k].Dth + p[k + 1].p5 * C.T;
-        printf("# %f\n", gDth);
-        /*
-         * Add the gradients to the accumulator to later asses if we have
-         * come close enough to the optimal solution:
-         */
-        grad_norm += gDth * gDth;
-        // Now, step the control elements:
-        qu[k].Dth = qu[k].Dth - C.dg * gDth;
-      }
-    /*
-     * Out of the loop, we have an updated control plan. Check to see
-     * if we are close enough to the ( or a) cost minimum by inspecting the
-     * norm of the gradient accumulator:
-
-     if (abs(atan2(gv, gDth) - C.grang) > M_PI_4/2)
-     {
-     C.dg /= 2;
-     }
-     else
-     {
-     C.dg *= 2;
-     }
-     C.grang = atan2(gv, gDth);
-     */
-    printf("# grad_norm: %f\n", sqrt(grad_norm));
-    if ( sqrt(grad_norm) < 0.01 )
-      {
-        return 0;
-      }
-    else
-      {
-        return 1;
-      }
+    grad[C.N] = sqrt(grad[C.N]);
   }
+

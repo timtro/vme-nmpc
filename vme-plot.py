@@ -1,10 +1,38 @@
-#! /usr/bin/python
+#!/usr/bin/env python
 
 from optparse import OptionParser
 from sys import stdin
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+def grab_setup(infile, tgt, obs):
+    line = infile.readline()
+    while line[0] != '#':
+        line = infile.readline()
+        if ("Desired target list" in line):
+            line = infile.readline()
+            while 1:
+                line = infile.readline()
+                if is_number(line.split()[0]):
+                    tgt.append([float(line.split()[0]), float(line.split()[1])]);
+                else:
+                    break
+        if ("obstacle list" in line):
+            line = infile.readline()
+            while 1:
+                line = infile.readline()
+                if is_number(line.split()[0]):
+                    obs.append([float(line.split()[0]), float(line.split()[1])]);
+                else:
+                    break
 
 def grab_data():
     infile = grab_data.infile
@@ -44,6 +72,12 @@ def init():
     lineB.set_data([], [])
     return lineA,lineB
 
+def Phi(x,y, obs):
+    phi = 0
+    for r in obs:
+        phi = phi + 1/ (  (r[0]-x)**2 + (r[1]-y)**2 + .08  )
+    return phi
+
 parser = OptionParser()
 parser.add_option("-f", "--file", dest="filename",
               help="Path to input file (output from vme-nmpc).", metavar="FILE")
@@ -55,16 +89,35 @@ parser.add_option("-s", "--stdin",
 (options, args) = parser.parse_args()
 
 if options.stdintrue :
+    instream = stdin
     grab_data.infile = stdin
 else:
-    grab_data.infile = open(options.filename, 'r')
+    instream = open(options.filename, 'r')
+    grab_data.infile = instream
+
+tgt = []
+obs = []
+grab_setup(instream, tgt, obs)
+print(tgt)
+print("\n")
+print(obs)
+
+xr = [-.5, 10]
+yr = [-2.5, 2.5]
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-lineA, = ax.plot([], [], 'o-', lw=2)
-lineB, = ax.plot([], [], 'o-', lw=2)
-ax.set_ylim(-2.5, 2.5)
-ax.set_xlim(-.5, 10)
+ax.set_ylim(yr[0], yr[1])
+ax.set_xlim(xr[0], xr[1])
+x = np.linspace(xr[0], xr[1], 120)
+y = np.linspace(yr[0], yr[1], int( 120*(yr[1]-yr[0])/(xr[1]-xr[0]) )).reshape(-1,1)
+
+ax.imshow(Phi(x, y, obs), cmap=plt.get_cmap('hot'), extent=[xr[0], xr[1], yr[0], yr[1]], origin='lower')
+lineA, = ax.plot([], [], 'ro-', lw=2)
+lineB, = ax.plot([], [], 'yo-', lw=2)
+ax.plot(*zip(*tgt), marker = 'o', ls = '', color='r', markersize=15)
+#ax.plot(*zip(*obs), marker = 'o', ls = '')
+
 ax.grid()
 anim = animation.FuncAnimation(fig, animate, init_func=init, interval=float(options.interval), blit=True)
 plt.show()

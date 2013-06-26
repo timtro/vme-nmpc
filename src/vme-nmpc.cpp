@@ -35,7 +35,9 @@
 int main( int argc, char **argv )
   {
     unsigned int sd_loop = 0, k = 0;
-    float tgtdist;
+    float tgtdist, grad_dot_grad, max_dg;
+    float *this_grad, *last_grad;
+    bool at_max_dg = false, is_unstable = false;
     robot vme(NULL, NULL);
     nmpc C;
 
@@ -43,20 +45,24 @@ int main( int argc, char **argv )
 //  TODO: Error checking to be sure C.N is defined!
     parse_input_file(C, vme.conffile());
 
-    qnu qu[C.N];
-    Lagr p[C.N];
+    qnu *qu = (qnu*) calloc(C.N, sizeof(qnu));
+    Lagr *p = (Lagr*) calloc(C.N, sizeof(Lagr));
+    float *grad = (float*) calloc(C.N + 1, sizeof(float));
 
     qu[0].x = +0.0;
-    qu[0].Dx = C.cruising_speed * cos(atan2((*C.tgt)[1], (*C.tgt)[0]));
+    qu[0].Dx = C.cruising_speed
+            * cos(atan2((double) (*C.tgt)[1], (double) (*C.tgt)[0]));
     qu[0].y = +0.0;
-    qu[0].Dy = C.cruising_speed * sin(atan2((*C.tgt)[1], (*C.tgt)[0]));
-    qu[0].th = atan2((*C.tgt)[1], (*C.tgt)[0]);
+    qu[0].Dy = C.cruising_speed
+            * sin(atan2((double) (*C.tgt)[1], (double) (*C.tgt)[0]));
+    qu[0].th = atan2((double) (*C.tgt)[1], (double) (*C.tgt)[0]);
     p[0].sintk = sin(qu[0].th);
     p[0].costk = cos(qu[0].th);
     p[C.N - 1].p2 = +0.0;
     p[C.N - 1].p4 = +0.0;
     p[C.N - 1].p5 = +0.0;
     C.grang = 20 * M_PI;
+    C.horizon_loop = 0;
     //C.dg *= 2;
     tgtdist = 100; // Some large(ish) number to get us into the loop.
     for ( k = 0; k < C.N; ++k )
@@ -102,24 +108,41 @@ int main( int argc, char **argv )
     for ( k = 0; k < C.obst->size() / 2; ++k )
       printf("    %f %f\n", (*C.obst)[2 * k], (*C.obst)[2 * k + 1]);
 
+    /*
+     * Enter the loop which will take us through all waypoints.
+     * TODO: Add hooks to insert waypoints.
+     */
     while (tgtdist > .1)
       {
-        do
+        C.horizon_loop += 1;
+        sd_loop = 0;
+        last_cost = 0;
+        while (1)
           {
+            at_max_dg = false;
             sd_loop += 1;
+            printf("# !HL : %d\n# !SL : %d\n", C.horizon_loop, sd_loop);
             predict_horizon(qu, p, C);
-            printf(
-                    "#k   x         y         Dx        Dy        th        v         Dth       ex        ey\n");
+            printf("#k         x         y        Dx        Dy        th");
+            printf("         v       Dth        ex        ey\n");
             for ( k = 0; k < C.N; ++k )
               {
-                printf(
-                        "%2d  % 4.3f    % 4.3f    % 4.3f    % 4.3f    % 4.3f    % 4.3f    % 4.3f    % 4.3f    % 4.3f\n",
-                        k, qu[k].x, qu[k].y, qu[k].Dx, qu[k].Dy, qu[k].th,
+                printf("%2d% 10.4f% 10.4f% 10.4f% 10.4f", k, qu[k].x, qu[k].y,
+                        qu[k].Dx, qu[k].Dy);
+                printf("% 10.4f% 10.4f% 10.4f% 10.4f% 10.4f\n", qu[k].th,
                         qu[k].v, qu[k].Dth, p[k].ex, p[k].ey);
               }
+            this_cost = costfun(qu, p, C);
+            printf("# this_cost : %f, last_cost : %f\n", this_cost, last_cost);
+            get_gradient(qu, p, C, grad);
+
+            for ( k = 0; k < C.N - 1; ++k )
+              qu[k].Dth -= C.dg * grad[k];
+
+            printf("# DG : %f, at_max_dg: %d\n", C.dg, at_max_dg);
+            last_cost = this_cost;
+            if ( grad[C.N] < .1 ) break;
           }
-        while (gradient_step(qu, p, C));
-        C.horizon_loop += 1;
         C.control_step += C.C;
         qu[0].x = qu[C.C].x;
         qu[0].Dx = qu[C.C].Dx;
@@ -131,17 +154,10 @@ int main( int argc, char **argv )
             qu[k].v = qu[k + C.C].v;
             qu[k].Dth = qu[k + C.C].Dth;
           }
+        printf("# !HLC : %d\n", sd_loop);
       }
-    printf("# Final SD loop counter: %d", sd_loop);
 //    vme.tcp_connect();
 //    vme.update_poshead();
 //    usleep(2*SEC_TO_USEC);
     return 0;
   }
-
-//for ( k = 0; k < C.N; ++k )
-//  {
-//    printf(
-//            "%2d- % 4.3f    % 4.3f    % 4.3f    % 4.3f    % 4.3f\n",
-//            k, p[k].p1, p[k].p2, p[k].p3, p[k].p4, p[k].p5);
-//  }

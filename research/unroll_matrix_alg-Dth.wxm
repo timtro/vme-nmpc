@@ -50,6 +50,18 @@ ddeltadq  :  matrix([1,0,0,0,0],[0,0,1,0,0])$
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: section start ]
+Cost Function
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: input   start ] */
+J : transpose(delta(N-1)) . Q0 . delta(N-1)
+   + sum( transpose(delta(N-1)) . Q0 . delta(N-1)
+        + transpose(delta(N-1)) . Q0 . delta(N-1)
+        + Phi[k]
++ transpose(pr(k+1)) . (a(k) - q(k+1)), k, 0, N-1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
 Lagrange Multipliers and Gradient
    [wxMaxima: section end   ] */
 

@@ -25,9 +25,9 @@
 #include <string.h>
 #include <vector>
 
-#include "errinclude.h"
-#include "robot.h"
-#include "nmpc.h"
+#include "inc_errhandler.h"
+#include "class_robot.h"
+#include "struct_nmpc.h"
 
 void parse_command_line( int argc, char **argv, robot *vme )
   {
@@ -39,11 +39,11 @@ void parse_command_line( int argc, char **argv, robot *vme )
 
     opterr = 0;
 
-    while ((c = getopt(argc, argv, "p:h:f:")) != -1)
+    while ( ( c = getopt(argc, argv, "p:h:f:") ) != -1)
       switch ( c )
         {
       case 'p' :
-        vme->set_port(strtol(optarg, (char **) NULL, 10));
+        vme->set_port(strtol(optarg, (char **)NULL, 10));
         break;
       case 'h' :
         vme->set_host(optarg);
@@ -84,13 +84,13 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
 
     // Read the file one character at a time while not at end of file...
     //
-    while ((ch = fgetc(fd)) != EOF)
+    while ( ( ch = fgetc(fd) ) != EOF )
       {
         // If we hit white space, gobble it, and keep track of new lines:
         //
-        if ( ch == ' ' || ch == '\t' || ch == '\n' )
+        if ( isspace(ch) )
           {
-            if ( ch == '\n' ) ++(*lineno);
+            if ( ch == '\n' ) ++ ( *lineno );
             continue;
           }
         //
@@ -101,7 +101,7 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
           {
             while (ch != '\n')
               ch = fgetc(fd);
-            ++(*lineno);
+            ++ ( *lineno );
           }
         //
         // If we see a delimeter, we shouldn't expect one!
@@ -114,18 +114,17 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
             return;
           }
         //
-        // Made it through ignormable (new word?) stuff, so start recording the
+        // Made it through ignorable (new word?) stuff, so start recording the
         // characters into the buffer:
         //
         else
           {
             *curb++ = ch;
             //
-            // Any of these characters ends the recording:
+            // Any of these ends the recording:
             //
-            while ((ch = fgetc(fd)) != EOF && ch != ' ' && ch != '\t'
-                    && ch != '=' && ch != ',' && ch != ':' && ch != '\r'
-                    && ch != ';' && ch != '\n')
+            while ( ( ch = fgetc(fd) ) != EOF && !isspace(ch) && ch != '='
+                    && ch != ',' && ch != ':' && ch != ';')
               *curb++ = ch;
             //
             // We should expect that the recording was ended by these characters,
@@ -134,9 +133,10 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
             if ( ch != ' ' && ch != ',' && ch != ';' && ch != '\t' && ch != '='
                     && ch != '\n' )
               {
-                // This error should really never happen unless we get \r.
+                // This error should really never happen unless we get \r or\v
+                // or something else exoctic.
                 sprintf(buffer,
-                        "Line %d: Found invalid character '\\r' ending a token.",
+                        "Line %d: Found invalid character '0x%x' ending a token.",
                         *lineno, ch);
                 report_error(INVALID_INPUT_FILE_SYNTAX, buffer);
               }
@@ -152,9 +152,9 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
                 // If there is white space between the end of the token and its
                 // delimeter, then gobble it.
                 //
-                while (ch == ' ' || ch == '\n' || ch == '\t' || ch == '\r')
+                while (isspace(ch))
                   {
-                    if ( ch == '\n' ) ++(*lineno);
+                    if ( ch == '\n' ) ++ ( *lineno );
                     ch = fgetc(fd);
                   }
                 //
@@ -182,7 +182,7 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
     // be holding the EOF character for the file. Record it to let the calling
     // routine know that we've hit the end of the file.
     //
-    if ( ch == EOF)
+    if ( ch == EOF )
       {
         *lastdelim = EOF;
         //
@@ -190,7 +190,7 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
         // newline character at the end of the file, which shouldn't count towards
         // the line count. Bump it down.
         //
-        --(*lineno);
+        -- ( *lineno );
       }
   }
 
@@ -231,12 +231,12 @@ void parse_input_file( nmpc &controller, const char *infile )
         // identifies which variable is being set. E.g. the 'T' in "T = 0.3;".
         //
         get_token(infd, buffer, &lastdelim, &lineno);
-        if ( lastdelim == EOF) break;
+        if ( lastdelim == EOF ) break;
         //
         // The delim of the first token should be '=', otherwise something has
         // gone wrong:
         //
-        if ( lastdelim != '=' && lastdelim != EOF)
+        if ( lastdelim != '=' && lastdelim != EOF )
           {
             sprintf(errmsg,
                     "Line %d: Invalid field delimeter '%c', expected '=' or ':'.",
@@ -366,21 +366,44 @@ void parse_input_file( nmpc &controller, const char *infile )
           }
         else if ( strcmp("tgt", buffer) == 0 )
           {
-            controller.tgt = new std::vector<float>(0);
+            k = 0;
+            controller.tgt = NULL;
             while (lastdelim != ';')
               {
+                ++k;
+                controller.tgt = (float*)realloc(controller.tgt,
+                        k * sizeof(float));
                 get_token(infd, buffer, &lastdelim, &lineno);
-                controller.tgt->push_back(atof(buffer));
+                controller.tgt[k - 1] = atof(buffer);
               }
+            if ( k % 2 != 0 )
+              {
+                sprintf(errmsg,
+                        "The odd number of entreis for tgt: cannot make pairs");
+                report_error(ODD_NUMBER_TGT_COORDINATES, errmsg);
+              };
+            controller.ntgt = k / 2;
           }
         else if ( strcmp("obst", buffer) == 0 )
           {
-            controller.obst = new std::vector<float>(0);
+            k = 0;
+            controller.obst = NULL;
             while (lastdelim != ';')
               {
+                ++k;
+                controller.obst = (float*)realloc(controller.obst,
+                        k * sizeof(float));
                 get_token(infd, buffer, &lastdelim, &lineno);
-                controller.obst->push_back(atof(buffer));
+                controller.obst[k - 1] = atof(buffer);
               }
+
+            if ( k % 2 != 0 )
+              {
+                sprintf(errmsg,
+                        "The odd number of entreis for obst: cannot make pairs");
+                report_error(ODD_NUMBER_OBST_COORDINATES, errmsg);
+              };
+            controller.nobst = k / 2;
           }
         else
           {

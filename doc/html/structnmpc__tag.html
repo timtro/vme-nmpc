@@ -111,7 +111,7 @@ $(document).ready(function(){initNavTree('structnmpc__tag.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="nmpc_8h_source.html">nmpc.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -140,10 +140,14 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a93dbd0a5fccb5439e666738854a501ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ae55c15ff70d8c2abcb8170927224fa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__tag.html#a1ae55c15ff70d8c2abcb8170927224fa">cruising_speed</a></td></tr>
 <tr class="separator:a1ae55c15ff70d8c2abcb8170927224fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5fb945f7afd12e3724c6ce91e46c4a5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__tag.html#aa5fb945f7afd12e3724c6ce91e46c4a5">tgt</a></td></tr>
-<tr class="separator:aa5fb945f7afd12e3724c6ce91e46c4a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6289f56c8d80a427a8afe333fb4db027"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__tag.html#a6289f56c8d80a427a8afe333fb4db027">obst</a></td></tr>
-<tr class="separator:a6289f56c8d80a427a8afe333fb4db027"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ac297f06b0bf36d24541bb5ca18429d"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__tag.html#a1ac297f06b0bf36d24541bb5ca18429d">ntgt</a></td></tr>
+<tr class="separator:a1ac297f06b0bf36d24541bb5ca18429d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71ff309c62b12966fddf00a0c51316fe"><td class="memItemLeft" align="right" valign="top">float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__tag.html#a71ff309c62b12966fddf00a0c51316fe">tgt</a></td></tr>
+<tr class="separator:a71ff309c62b12966fddf00a0c51316fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5a060e5ff8c516672b65136aa400491"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__tag.html#aa5a060e5ff8c516672b65136aa400491">nobst</a></td></tr>
+<tr class="separator:aa5a060e5ff8c516672b65136aa400491"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f5c9450364c78ac348560930a5aae9c"><td class="memItemLeft" align="right" valign="top">float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__tag.html#a1f5c9450364c78ac348560930a5aae9c">obst</a></td></tr>
+<tr class="separator:a1f5c9450364c78ac348560930a5aae9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ab0f5c3106cc5091a8a56d274aa7ccd"><td class="memItemLeft" align="right" valign="top">float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__tag.html#a1ab0f5c3106cc5091a8a56d274aa7ccd">Q0</a></td></tr>
 <tr class="separator:a1ab0f5c3106cc5091a8a56d274aa7ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17b9178baecdfa5d433aaa6b148753cf"><td class="memItemLeft" align="right" valign="top">float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__tag.html#a17b9178baecdfa5d433aaa6b148753cf">Q</a></td></tr>
@@ -159,7 +163,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00026">26</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00026">26</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="a48579bcab6b011067bdf223e51ed489b"></a>
 <div class="memitem">
@@ -173,7 +177,7 @@ Public Attributes</h2></td></tr>
 
 <p>The NMPC control horizon. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00032">32</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00032">32</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -189,7 +193,7 @@ Public Attributes</h2></td></tr>
 
 <p>Counter for control steps taken. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00038">38</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00038">38</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -204,7 +208,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The cruising speed is the desired safe speed for the robot to follow a line. It should be fast enough to get quickly through the rooms, but not so fast that the robot will topple if it must make quick course corrections. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00056">56</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00056">56</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -219,7 +223,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>dg is the gradient mixing factor which controls the rate of decent to the optimal control horizon. This factor affects the stability of convergence, so it must be set with caution. If heuristic convergence tracking is implimented, then this value will be adjusted automatically during run time, and the initialization value is just a safe starting value. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00049">49</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00049">49</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -234,7 +238,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>eps is the epsilon costant in the point obstacle potential. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00089">89</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00098">98</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -249,7 +253,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>grang is the direction of the gradient. This is tedted to determine the decent rate </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00094">94</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00103">103</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -265,7 +269,7 @@ Public Attributes</h2></td></tr>
 
 <p>Counter for Horizon loops completed. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00040">40</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00040">40</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -281,7 +285,7 @@ Public Attributes</h2></td></tr>
 
 <p>State space dimensionality. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00034">34</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00034">34</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -297,7 +301,7 @@ Public Attributes</h2></td></tr>
 
 <p>The NMPC prediction horizon length. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00030">30</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00030">30</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -313,22 +317,52 @@ Public Attributes</h2></td></tr>
 
 <p>Control space dimensionality. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00036">36</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00036">36</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a6289f56c8d80a427a8afe333fb4db027"></a>
+<a class="anchor" id="aa5a060e5ff8c516672b65136aa400491"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;float&gt;* nmpc_tag::obst</td>
+          <td class="memname">unsigned int nmpc_tag::nobst</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of obstacles in obstacle list </p>
+
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00069">69</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1ac297f06b0bf36d24541bb5ca18429d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int nmpc_tag::ntgt</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of targets in target list </p>
+
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00061">61</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1f5c9450364c78ac348560930a5aae9c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float* nmpc_tag::obst</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>obst is a matrix containing a concainated list of 2D column vectors of point obstacle coordinates. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00065">65</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00074">74</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -343,7 +377,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Q is the weighting matrix associated with the cost term for the tracking error </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00075">75</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00084">84</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -358,7 +392,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Q0 is the weighting matrix associated with the tracking error in the last state in the prediction horizon. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00070">70</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00079">79</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -373,7 +407,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>R is the weighting matrix associated with the cost term of the control input vector. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00085">85</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00094">94</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -388,7 +422,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>S is the weighting matrix associated with the cost term for the state vector. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00080">80</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00089">89</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
@@ -404,27 +438,27 @@ Public Attributes</h2></td></tr>
 
 <p>Sampling time step (s). </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00028">28</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00028">28</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aa5fb945f7afd12e3724c6ce91e46c4a5"></a>
+<a class="anchor" id="a71ff309c62b12966fddf00a0c51316fe"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;float&gt;* nmpc_tag::tgt</td>
+          <td class="memname">float* nmpc_tag::tgt</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>tgt is a 2D column vector to the desired target. </p>
 
-<p>Definition at line <a class="el" href="nmpc_8h_source.html#l00060">60</a> of file <a class="el" href="nmpc_8h_source.html">nmpc.h</a>.</p>
+<p>Definition at line <a class="el" href="struct__nmpc_8h_source.html#l00065">65</a> of file <a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>src/<a class="el" href="nmpc_8h_source.html">nmpc.h</a></li>
+<li>src/<a class="el" href="struct__nmpc_8h_source.html">struct_nmpc.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -432,7 +466,7 @@ Public Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="structnmpc__tag.html">nmpc_tag</a></li>
-    <li class="footer">Generated on Tue Jun 25 2013 17:04:07 for vme-nmpc by
+    <li class="footer">Generated on Thu Jun 27 2013 17:30:43 for vme-nmpc by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.3.1 </li>
   </ul>

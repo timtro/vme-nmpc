@@ -21,17 +21,19 @@
 #ifndef __ERROR_CODES_H__
 #define __ERROR_CODES_H__
 
-#define SOCK_CANNOT_CREATE_SOCK         0x11
-#define SOCK_CANNOT_CONNECT             0x12
-#define CL_NO_ARG                       0x13
-#define CL_INVALID_OPT                  0x14
-#define CL_UNKOWN_OPT_CHAR              0x15
-#define SOCK_READ_ERROR                 0x16
-#define SOCK_WRITE_ERROR                0x17
-#define CANNOT_OPEN_INFILE              0x18
-#define CANNOT_READ_INFILE              0x19
-#define INVALID_INPUT_FILE_SYNTAX       0x1A
-#define RECOVERABLE_INPUT_FILE_SYNTAX   0x1B
-#define FATAL_INPUT_FILE_SYNTAX         0x1C
+#define SOCK_CANNOT_CREATE_SOCK          0x11
+#define SOCK_CANNOT_CONNECT              0x12
+#define CL_NO_ARG                        0x13
+#define CL_INVALID_OPT                   0x14
+#define CL_UNKOWN_OPT_CHAR               0x15
+#define SOCK_READ_ERROR                  0x16
+#define SOCK_WRITE_ERROR                 0x17
+#define CANNOT_OPEN_INFILE               0x18
+#define CANNOT_READ_INFILE               0x19
+#define INVALID_INPUT_FILE_SYNTAX        0x1A
+#define RECOVERABLE_INPUT_FILE_SYNTAX    0x1B
+#define FATAL_INPUT_FILE_SYNTAX          0x1C
+#define ODD_NUMBER_TGT_COORDINATES       0x1D
+#define ODD_NUMBER_OBST_COORDINATES      0x1E
 
 #endif

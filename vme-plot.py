@@ -18,7 +18,6 @@ def grab_setup(infile, tgt, obs):
     while line[0] != '#':
         line = infile.readline()
         if ("Desired target list" in line):
-            line = infile.readline()
             while 1:
                 line = infile.readline()
                 if is_number(line.split()[0]):
@@ -26,7 +25,6 @@ def grab_setup(infile, tgt, obs):
                 else:
                     break
         if ("obstacle list" in line):
-            line = infile.readline()
             while 1:
                 line = infile.readline()
                 if is_number(line.split()[0]):
@@ -36,33 +34,33 @@ def grab_setup(infile, tgt, obs):
 
 def grab_data():
     infile = grab_data.infile
-    X,Y, Xr, Yr = [],[],[],[]
+    X, Y, Xr, Yr = [], [], [], []
     line = infile.readline()
     if len(line) == 0:
-        return [],[],[],[]
+        return [], [], [], []
     while line[0] != '#':
         line = infile.readline()
         if len(line) == 0:
-            return [],[],[],[]
+            return [], [], [], []
     while line[0] == '#':
         line = infile.readline()
         if len(line) == 0:
-            return [],[],[],[]
+            return [], [], [], []
     while line[0] != '#':
-            #k = int(line.split()[0])
+            # k = int(line.split()[0])
             X.append(float(line.split()[1]))
             Y.append(float(line.split()[2]))
-            Xr.append( X[len(X)-1]-float(line.split()[8]) )
-            Yr.append( Y[len(Y)-1]-float(line.split()[9]) )
+            Xr.append(X[len(X) - 1] - float(line.split()[8]))
+            Yr.append(Y[len(Y) - 1] - float(line.split()[9]))
             line = infile.readline()
             if len(line) == 0:
-                return [],[],[],[]
-    return X,Y,Xr,Yr
+                return [], [], [], []
+    return X, Y, Xr, Yr
 
 def animate(data):
     # update the data
-    xdata,ydata, xrdata, yrdata = grab_data()
-    #xmin, xmax = ax.get_xlim()
+    xdata, ydata, xrdata, yrdata = grab_data()
+    # xmin, xmax = ax.get_xlim()
     lineA.set_data(xdata, ydata)
     lineB.set_data(xrdata, yrdata)
     return lineA, lineB
@@ -70,12 +68,12 @@ def animate(data):
 def init():
     lineA.set_data([], [])
     lineB.set_data([], [])
-    return lineA,lineB
+    return lineA, lineB
 
-def Phi(x,y, obs):
+def Phi(x, y, obs):
     phi = 0
     for r in obs:
-        phi = phi + 1/ (  (r[0]-x)**2 + (r[1]-y)**2 + .08  )
+        phi = phi + 1 / ((r[0] - x) ** 2 + (r[1] - y) ** 2 + .08)
     return phi
 
 parser = OptionParser()
@@ -86,6 +84,9 @@ parser.add_option("-i", "--interval", dest="interval",
 parser.add_option("-s", "--stdin",
               action="store_true", dest="stdintrue", default=False,
               help="Take input from stdin. vme-nmpc [otps] | thisscript.py -s")
+parser.add_option("-p", "--plain",
+              action="store_true", dest="plaintrue", default=False,
+              help="Don't look for obstacle and target information in the stream")
 (options, args) = parser.parse_args()
 
 if options.stdintrue :
@@ -109,14 +110,16 @@ fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.set_ylim(yr[0], yr[1])
 ax.set_xlim(xr[0], xr[1])
-x = np.linspace(xr[0], xr[1], 120)
-y = np.linspace(yr[0], yr[1], int( 120*(yr[1]-yr[0])/(xr[1]-xr[0]) )).reshape(-1,1)
+if not options.plaintrue :
+    x = np.linspace(xr[0], xr[1], 120)
+    y = np.linspace(yr[0], yr[1], int(120 * (yr[1] - yr[0]) / (xr[1] - xr[0]))).reshape(-1, 1)
+    ax.imshow(Phi(x, y, obs), cmap=plt.get_cmap('hot'), extent=[xr[0], xr[1], yr[0], yr[1]], origin='lower')
+    ax.plot(*zip(*tgt), marker='o', ls='', color='r', markersize=15)
+    # ax.plot(*zip(*obs), marker = 'o', ls = '')
 
-ax.imshow(Phi(x, y, obs), cmap=plt.get_cmap('hot'), extent=[xr[0], xr[1], yr[0], yr[1]], origin='lower')
 lineA, = ax.plot([], [], 'ro-', lw=2)
 lineB, = ax.plot([], [], 'yo-', lw=2)
-ax.plot(*zip(*tgt), marker = 'o', ls = '', color='r', markersize=15)
-#ax.plot(*zip(*obs), marker = 'o', ls = '')
+
 
 ax.grid()
 anim = animation.FuncAnimation(fig, animate, init_func=init, interval=float(options.interval), blit=True)

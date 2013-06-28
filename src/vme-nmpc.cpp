@@ -45,37 +45,50 @@
 //      }
 //  }
 //
-//void print_pathnerr( qnu *qu, Lagr *p, nmpc &C )
-//  {
-//    printf("#k         x         y        Dx        Dy        th");
-//    printf("         v       Dth        ex        ey\n");
-//    for ( unsigned int k = 0; k < C.N; ++k )
-//      {
-//        printf("%2d% 10.4f% 10.4f% 10.4f% 10.4f", k, qu[k].x, qu[k].y, qu[k].Dx,
-//                qu[k].Dy);
-//        printf("% 10.4f% 10.4f% 10.4f% 10.4f% 10.4f\n", qu[k].th, qu[k].v,
-//                qu[k].Dth, p[k].ex, p[k].ey);
-//      }
-//  }
+void print_pathnerr( qnu *qu, Lagr *p, nmpc &C )
+  {
+    printf("#k         x         y        Dx        Dy        th");
+    printf("         v       Dth        ex        ey\n");
+    for ( unsigned int k = 0; k < C.N; ++k )
+      {
+        printf("%2d% 10.4f% 10.4f% 10.4f% 10.4f", k, qu[k].x, qu[k].y, qu[k].Dx,
+                qu[k].Dy);
+        printf("% 10.4f% 10.4f% 10.4f% 10.4f% 10.4f\n", qu[k].th, qu[k].v,
+                qu[k].Dth, p[k].ex, p[k].ey);
+      }
+  }
+
+void empty_output_hook( qnu *qu, Lagr *p, nmpc &C ){}
 
 int main( int argc, char **argv )
   {
-    unsigned int sd_loop = 0, k = 0;
-    float tgtdist = 100, grad_dot_grad = 0.;
-    bool at_max_dg = false, is_unstable = false;
-    robot vme(NULL, NULL);
-    nmpc C;
 
+    void (*output_path_hook)( qnu*, Lagr*, nmpc& ) = NULL;
+
+    unsigned int sd_loop = 0, k = 0, current_tgt_no = 0;
+    float tgtdist, grad_dot_grad = 0.;
+    robot vme(NULL, NULL);
+
+    time_t startup_time;
+    double sd_loop_time;
+
+    nmpc C;
     parse_command_line(argc, argv, &vme);
-//  TODO: Error checking to be sure C.N is defined!
     parse_input_file(C, vme.conffile());
 
     qnu *qu = (qnu*)calloc(C.N, sizeof(qnu));
     Lagr *p = (Lagr*)calloc(C.N, sizeof(Lagr));
     float *grad = (float*)calloc(C.N + 1, sizeof(float));
     float *last_grad = (float*)calloc(C.N + 1, sizeof(float));
-    float *tmp_grad = NULL; // For swapping grad and last_grad
+    double *time_to_tgt = (double*)calloc(C.ntgt, sizeof(float));
 
+    output_path_hook = &print_pathnerr;
+
+    /*
+     * Initialization of dependent variables based on user input.
+     *
+     * TODO: Move this to its own function.
+     */
     qu[0].x = +0.0;
     qu[0].Dx = C.cruising_speed
             * cos(atan2((double)C.tgt[1], (double)C.tgt[0]));
@@ -90,16 +103,17 @@ int main( int argc, char **argv )
     p[C.N - 1].p5 = +0.0;
     C.grang = 20 * M_PI;
     C.horizon_loop = 0;
-    //C.dg *= 2;
-    tgtdist = 100; // Some large(ish) number to get us into the loop.
+    // Some number large enough to get us into the target loop:
+    tgtdist = C.tgttol + 1;
     for ( k = 0; k < C.N; ++k )
       {
         qu[k].v = C.cruising_speed;
         qu[k].Dth = +0;
       }
 
-    printf("\n  Starting vme-nmpc v0.9-alpha\n");
-    printf("  Time and Date\n\n");
+    time(&startup_time);
+    printf("\n Starting vme-nmpc v0.9-alpha\n");
+    printf("  %s\n\n", ctime(&startup_time));
 
     printf("  Integration time step                   (T) : %f\n", C.T);
     printf("  Size of state vector                    (m) : %d\n", C.m);
@@ -128,11 +142,9 @@ int main( int argc, char **argv )
     printf("\n");
     printf("  Origin defaults to (0  0)\n");
     printf("  Desired target list (x  y):\n");
-    // TODO: Change ->size() when I properly test and store the target list
     for ( k = 0; k < C.ntgt; ++k )
       printf("    % f % f\n", C.tgt[2 * k], C.tgt[2 * k + 1]);
     printf("  Point obstacle list (x  y):\n");
-    // TODO: Change ->size() when I properly test and store the target list
     for ( k = 0; k < C.nobst; ++k )
       printf("    % f % f\n", C.obst[2 * k], C.obst[2 * k + 1]);
 
@@ -140,65 +152,73 @@ int main( int argc, char **argv )
      * Enter the loop which will take us through all waypoints.
      * TODO: Add hooks to insert waypoints.
      */
-    while (tgtdist > .1)
+    while (current_tgt_no <= C.ntgt)
       {
-        C.horizon_loop += 1;
-        sd_loop = 0;
-        while (1)
+        time_to_tgt[current_tgt_no] = -wall_time();
+        while (tgtdist > .1)
           {
-            at_max_dg = false;
-            sd_loop += 1;
-            grad_dot_grad = 0.;
-
-            predict_horizon(qu, p, C);
-
-            get_gradient(qu, p, C, grad);
-
-            for ( k = 0; k < C.N; k++ )
+            C.horizon_loop += 1;
+            sd_loop = 0;
+            sd_loop_time = -wall_time();
+            while (1)
               {
-                grad_dot_grad += grad[k] * last_grad[k];
-              }
+                sd_loop += 1;
+                grad_dot_grad = 0.;
 
-            /*
-             * Detect direction changes in the gradient by inspecting the
-             * product <grad, last_grad>. If it is positive, then the iterations
-             * are successfully stepping to the minimum, and we can accelerate
-             * by increasing dg. If we overshoot (and the product becomes
-             * negative), then backstep and drop dg to a safe value.
-             */
-            if ( grad_dot_grad > 0 )
-              {
-                C.dg *= 2;
+                /*
+                 * The core of the gradient decent is in the next few lines:
+                 */
+                tgtdist = predict_horizon(qu, p, C);
+                get_gradient(qu, p, C, grad);
                 for ( k = 0; k < C.N; k++ )
                   {
-                    qu[k].Dth -= C.dg * grad[k];
+                    grad_dot_grad += grad[k] * last_grad[k];
                   }
-              }
-            else
-              {
-                C.dg = 0.1;
-                for ( k = 0; k < C.N; k++ )
+                // Print output if the commandline flag was given
+                output_path_hook( qu, p, C );
+                /*
+                 * Detect direction changes in the gradient by inspecting the
+                 * product <grad, last_grad>. If it is positive, then the
+                 * iterations are successfully stepping to the minimum, and we
+                 * can accelerate by increasing dg. If we overshoot (and the
+                 * product becomes negative), then backstep and drop dg to a
+                 * safe value.
+                 */
+                if ( grad_dot_grad > 0 )
                   {
-                    qu[k].Dth += C.dg * grad[k];
+                    C.dg *= 2;
+                    for ( k = 0; k < C.N; k++ )
+                      {
+                        qu[k].Dth -= C.dg * grad[k];
+                      }
                   }
+                else
+                  {
+                    C.dg = 0.1;
+                    for ( k = 0; k < C.N; k++ )
+                      {
+                        qu[k].Dth += C.dg * grad[k];
+                      }
+                  }
+                swap_fptr(&grad, &last_grad);
+                if ( last_grad[C.N] < .1 ) break;
               }
-
-            tmp_grad = grad;
-            grad = last_grad;
-            last_grad = tmp_grad;
-            if ( last_grad[C.N] < .1 ) break;
+            C.control_step += C.C;
+            qu[0].x = qu[C.C].x;
+            qu[0].Dx = qu[C.C].Dx;
+            qu[0].y = qu[C.C].y;
+            qu[0].Dy = qu[C.C].Dy;
+            qu[0].th = qu[C.C].th;
+            for ( k = 0; k < C.N - C.C - 1; ++k )
+              {
+                qu[k].v = qu[k + C.C].v;
+                qu[k].Dth = qu[k + C.C].Dth;
+              }
+            sd_loop_time += wall_time();
+            printf("# % 3d  % f\n", sd_loop, sd_loop_time);
           }
-        C.control_step += C.C;
-        qu[0].x = qu[C.C].x;
-        qu[0].Dx = qu[C.C].Dx;
-        qu[0].y = qu[C.C].y;
-        qu[0].Dy = qu[C.C].Dy;
-        qu[0].th = qu[C.C].th;
-        for ( k = 0; k < C.N - C.C - 1; ++k )
-          {
-            qu[k].v = qu[k + C.C].v;
-            qu[k].Dth = qu[k + C.C].Dth;
-          }
+        time_to_tgt[current_tgt_no] += wall_time();
+        ++current_tgt_no;
       }
 //    vme.tcp_connect();
 //    vme.update_poshead();

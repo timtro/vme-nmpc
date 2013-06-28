@@ -23,15 +23,15 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
-#include <vector>
 
 #include "inc_errhandler.h"
 #include "class_robot.h"
 #include "struct_nmpc.h"
+#include "struct_intok.h"
+#include "struct_configopts.h"
 
-void parse_command_line( int argc, char **argv, robot *vme )
+void parse_command_line( int argc, char** argv, robot* vme, configopts* opts )
   {
-
     char *pvalue = NULL, *hvalue = NULL, *fvalue = NULL;
     int index;
     int c;
@@ -39,7 +39,7 @@ void parse_command_line( int argc, char **argv, robot *vme )
 
     opterr = 0;
 
-    while ( ( c = getopt(argc, argv, "p:h:f:") ) != -1)
+    while ( ( c = getopt(argc, argv, "vlp:h:f:") ) != -1)
       switch ( c )
         {
       case 'p' :
@@ -51,11 +51,14 @@ void parse_command_line( int argc, char **argv, robot *vme )
       case 'f' :
         vme->set_configfile(optarg);
         break;
+      case 'v' :
+        break;
+      case 'l' :
+        break;
       case '?' :
         if ( optopt == 'p' || optopt == 'h' || optopt == 'f' )
           {
-            sprintf(errnote, "Option -%c: please specify input file name.\n",
-                    optopt);
+            sprintf(errnote, "Option -%c: requires an argument.\n", optopt);
             report_error(CL_NO_ARG, errnote);
           }
         else if ( isprint(optopt) )
@@ -73,7 +76,6 @@ void parse_command_line( int argc, char **argv, robot *vme )
       default :
         abort();
         }
-
   }
 
 void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
@@ -208,9 +210,23 @@ void check_delim( char lastdelim, char expected_delim, int lineno )
 
   }
 
+/*!
+ * Check the input token A to be sure it was seen in the input file. If yes, do
+ * nothing, If no, throw a fetal error.
+ */
+void require_intok( intok* A )
+  {
+    char errmsg[256];
+    if ( ! ( A->saw_tok ) )
+      {
+        sprintf(errmsg, "An entry for '%s' is required from input file\n",
+                A->token);
+        report_error(FATAL_INPUT_FILE_ERROR, errmsg);
+      }
+  }
+
 /*
- * This function parses the input file...
- *
+ * This function parses the input file.
  */
 void parse_input_file( nmpc &controller, const char *infile )
   {
@@ -220,6 +236,28 @@ void parse_input_file( nmpc &controller, const char *infile )
     char errmsg[256];
     FILE *infd;
 
+    /*
+     * List of items we expect to see in the input file. These bools will get
+     * ticked as we go through the input file, and missing items can be handled
+     * ex post facto.
+     */
+    intok tok_N = { "N", false };
+    intok tok_C = { "C", false };
+    intok tok_m = { "m", false };
+    intok tok_n = { "n", false };
+    intok tok_T = { "T", false };
+    intok tok_dg = { "dg", false };
+    intok tok_eps = { "eps", false };
+    intok tok_tgttol = { "tgttol", false };
+    intok tok_cruising_speed = { "cruising_speed", false };
+    intok tok_R = { "R", false };
+    intok tok_Q0 = { "Q0", false };
+    intok tok_Q = { "Q", false };
+    intok tok_S = { "S", false };
+    intok tok_tgt = { "tgt", false };
+    intok tok_obst = { "obst", false };
+
+    // Begin...
     infd = fopen(infile, "r");
     if ( infd == NULL ) report_error(CANNOT_OPEN_INFILE, NULL);
     //
@@ -253,48 +291,63 @@ void parse_input_file( nmpc &controller, const char *infile )
             get_token(infd, buffer, &lastdelim, &lineno);
             check_delim(lastdelim, ';', lineno);
             controller.T = atof(buffer);
+            tok_T.saw_tok = true;
           }
         else if ( strcmp("N", buffer) == 0 )
           {
             get_token(infd, buffer, &lastdelim, &lineno);
             check_delim(lastdelim, ';', lineno);
             controller.N = atoi(buffer);
+            tok_N.saw_tok = true;
           }
         else if ( strcmp("C", buffer) == 0 )
           {
             get_token(infd, buffer, &lastdelim, &lineno);
             check_delim(lastdelim, ';', lineno);
             controller.C = atoi(buffer);
+            tok_C.saw_tok = true;
           }
         else if ( strcmp("m", buffer) == 0 )
           {
             get_token(infd, buffer, &lastdelim, &lineno);
             check_delim(lastdelim, ';', lineno);
             controller.m = atoi(buffer);
+            tok_m.saw_tok = true;
           }
         else if ( strcmp("n", buffer) == 0 )
           {
             get_token(infd, buffer, &lastdelim, &lineno);
             check_delim(lastdelim, ';', lineno);
             controller.n = atoi(buffer);
+            tok_n.saw_tok = true;
           }
         else if ( strcmp("dg", buffer) == 0 )
           {
             get_token(infd, buffer, &lastdelim, &lineno);
             check_delim(lastdelim, ';', lineno);
             controller.dg = atof(buffer);
+            tok_dg.saw_tok = true;
           }
         else if ( strcmp("cruising_speed", buffer) == 0 )
           {
             get_token(infd, buffer, &lastdelim, &lineno);
             check_delim(lastdelim, ';', lineno);
             controller.cruising_speed = atof(buffer);
+            tok_cruising_speed.saw_tok = true;
+          }
+        else if ( strcmp("tgttol", buffer) == 0 )
+          {
+            get_token(infd, buffer, &lastdelim, &lineno);
+            check_delim(lastdelim, ';', lineno);
+            controller.tgttol = atof(buffer);
+            tok_tgttol.saw_tok = true;
           }
         else if ( strcmp("eps", buffer) == 0 )
           {
             get_token(infd, buffer, &lastdelim, &lineno);
             check_delim(lastdelim, ';', lineno);
             controller.eps = atof(buffer);
+            tok_eps.saw_tok = true;
           }
         else if ( strcmp("R", buffer) == 0 )
           {
@@ -312,6 +365,7 @@ void parse_input_file( nmpc &controller, const char *infile )
                   }
                 controller.R[k] = atof(buffer);
               }
+            tok_R.saw_tok = true;
           }
         else if ( strcmp("Q0", buffer) == 0 )
           {
@@ -329,6 +383,7 @@ void parse_input_file( nmpc &controller, const char *infile )
                   }
                 controller.Q0[k] = atof(buffer);
               }
+            tok_Q0.saw_tok = true;
           }
         else if ( strcmp("Q", buffer) == 0 )
           {
@@ -346,6 +401,7 @@ void parse_input_file( nmpc &controller, const char *infile )
                   }
                 controller.Q[k] = atof(buffer);
               }
+            tok_Q.saw_tok = true;
           }
         else if ( strcmp("S", buffer) == 0 )
           {
@@ -363,6 +419,7 @@ void parse_input_file( nmpc &controller, const char *infile )
                   }
                 controller.S[k] = atof(buffer);
               }
+            tok_S.saw_tok = true;
           }
         else if ( strcmp("tgt", buffer) == 0 )
           {
@@ -383,6 +440,7 @@ void parse_input_file( nmpc &controller, const char *infile )
                 report_error(ODD_NUMBER_TGT_COORDINATES, errmsg);
               };
             controller.ntgt = k / 2;
+            tok_tgt.saw_tok = true;
           }
         else if ( strcmp("obst", buffer) == 0 )
           {
@@ -404,6 +462,7 @@ void parse_input_file( nmpc &controller, const char *infile )
                 report_error(ODD_NUMBER_OBST_COORDINATES, errmsg);
               };
             controller.nobst = k / 2;
+            tok_obst.saw_tok = true;
           }
         else
           {
@@ -415,5 +474,20 @@ void parse_input_file( nmpc &controller, const char *infile )
               get_token(infd, buffer, &lastdelim, &lineno);
           }
       }
+    require_intok(&tok_N);
+    require_intok(&tok_C);
+    require_intok(&tok_m);
+    require_intok(&tok_n);
+    require_intok(&tok_T);
+    require_intok(&tok_dg);
+    require_intok(&tok_eps);
+    require_intok(&tok_cruising_speed);
+    require_intok(&tok_R);
+    require_intok(&tok_Q0);
+    require_intok(&tok_Q);
+    require_intok(&tok_S);
+    require_intok(&tok_tgttol);
+    require_intok(&tok_tgt);
+    require_intok(&tok_obst);
     fclose(infd);
   }

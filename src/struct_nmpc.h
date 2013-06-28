@@ -60,6 +60,10 @@ typedef struct nmpc_tag {
    */
   unsigned int ntgt;
   /*!
+   * Tolderance in meters for which we consider ourselves at the target.
+   */
+  float tgttol;
+  /*!
    *  tgt is a 2D column vector to the desired target.
    */
   float* tgt;

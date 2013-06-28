@@ -1,7 +1,7 @@
 /*
- * vme-nmpc.h
+ * time-sync.cpp
  * Author : Timothy A.V. Teatro
- * Date   : 2013-06-10
+ * Date   : 2013-06-27
  *
  * This file is part of vme-nmpc.
  *
@@ -21,23 +21,13 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "class_robot.h"
-#include "struct_nmpc.h"
-#include "struct_qnu.h"
-#include "struct_Lagr.h"
+#include <time.h>
 
-// from sockcomm.cpp
-int init_vme_sock();
+#define SEC_PER_NSEC 1E-9
 
-// from input.cpp
-int parse_command_line( int, char**, robot* );
-void parse_input_file( nmpc&, const char* );
-
-// from nmpc-funcs.cpp
-void get_gradient( qnu*, Lagr*, nmpc&, float* );
-float predict_horizon( qnu*, Lagr*, const nmpc& );
-float costfun( const qnu*, const Lagr*, const nmpc& );
-void swap_fptr( float**, float** );
-
-// from time-sync.cpp
-double wall_time();
+double wall_time ()
+{
+  struct timespec t;
+  clock_gettime (CLOCK_MONOTONIC, &t);
+  return t.tv_sec + SEC_PER_NSEC*t.tv_nsec;
+}

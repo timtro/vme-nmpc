@@ -28,7 +28,7 @@
  * The Lagr holds the langrange multipliers and related variables. An array of
  * these holds the lagrange multipliers for the NMPC horizon.
  */
-typedef struct Lagrtag {
+typedef struct Lagr_tag {
   //! The error of the x-coordinate.
   float ex;
   //! The error of the y-coordinate.

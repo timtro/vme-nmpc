@@ -31,5 +31,7 @@ set (vme-nmpc_VERSION_MINOR 0)
 
 FILE(GLOB vme-nmpc-sources src/*.cpp)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3 -pedantic") 
+
 # add the executable
 add_executable(vme-nmpc ${vme-nmpc-sources})

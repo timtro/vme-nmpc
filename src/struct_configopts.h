@@ -1,7 +1,7 @@
 /*
- * vme-nmpc.h
+ * struct_configopts.cpp
  * Author : Timothy A.V. Teatro
- * Date   : 2013-06-10
+ * Date   : 2013-06-28
  *
  * This file is part of vme-nmpc.
  *
@@ -21,23 +21,6 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "class_robot.h"
-#include "struct_nmpc.h"
-#include "struct_qnu.h"
-#include "struct_Lagr.h"
-
-// from sockcomm.cpp
-int init_vme_sock();
-
-// from input.cpp
-int parse_command_line( int, char**, robot* );
-void parse_input_file( nmpc&, const char* );
-
-// from nmpc-funcs.cpp
-void get_gradient( qnu*, Lagr*, nmpc&, float* );
-float predict_horizon( qnu*, Lagr*, const nmpc& );
-float costfun( const qnu*, const Lagr*, const nmpc& );
-void swap_fptr( float**, float** );
-
-// from time-sync.cpp
-double wall_time();
+typedef struct configopts_tag {
+  bool print_path_and_error;
+} configopts;

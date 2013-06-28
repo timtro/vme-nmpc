@@ -1,6 +1,9 @@
 /*
- * errinclude.h
- * This file is part of vme-nmpc
+ * struct_intok.h
+ * Author : Timothy A.V. Teatro
+ * Date   : 2013-06-28
+ *
+ * This file is part of vme-nmpc.
  *
  * Copyright (C) 2013 - Timothy A.V. Teatro
  *
@@ -18,12 +21,19 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ERRINCLUDE_H__
-#define __ERRINCLUDE_H__
 
-#include "error_codes.h"
 
-// from errhandler.c
-void report_error( const int, const char * );
+#ifndef STRUCT_INTOK_H_
+#define STRUCT_INTOK_H_
 
-#endif
+/*!
+ * A structure that holds the symbol for an input variable, and a bool that is
+ * set true when a value is recorded for that symbol from the input file.
+ */
+typedef struct intok_tag {
+  const char* token;
+  bool saw_tok;
+} intok;
+
+
+#endif /* STRUCT_INTOK_H_ */

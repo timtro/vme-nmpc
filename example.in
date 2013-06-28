@@ -2,14 +2,15 @@
 # Input file for vme-nmpc with sensible defaults.
 #
 
-N     = 40;             # Lookahead horizon
-C     = 3;              # Control horizon
-m     = 5;              # Dimension of state space
-n     = 1;              # Dimension of control space
-T     = 0.03;           # Time step size
-dg    = 0.05;           # Gradient decent mixing factor
-eps   = 0.08;           # Obstacle potential ceeling
-cruising_speed = 0.4;   # Optimal cruising speed of robot
+N      = 80;             # Lookahead horizon
+C      = 3;              # Control horizon
+m      = 5;              # Dimension of state space
+n      = 1;              # Dimension of control space
+T      = 0.02;           # Time step size
+dg     = 0.05;           # Gradient decent mixing factor
+eps    = 0.08;           # Obstacle potential ceeling
+cruising_speed = 0.4;    # Optimal cruising speed of robot
+tgttol = 0.1;            # Tolerance in distance to target
 
 # Input penalty weighting matrix diagonal:
 R     = 0.1;

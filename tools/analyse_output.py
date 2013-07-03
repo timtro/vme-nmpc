@@ -5,7 +5,7 @@ from sys import stdin
 #import numpy as np
 import pylab as pl
 
-import nmpc_output_parse as pn
+from modules import nmpc_output_parse as pn
 
 
 parser = OptionParser()
@@ -49,7 +49,7 @@ while 1:
 
 fig = pl.figure()
 ax = fig.add_subplot(111)
-#pl.rc('font',**{'family':'Nimbus Roman No9 L'})
+#pl.rc('font',**{'family':'serif'})
 ax.set_xlim(0, 10)
 ax.set_ylim(-5, 5)
 ax.grid()

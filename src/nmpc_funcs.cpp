@@ -27,6 +27,32 @@
 #include "struct_qnu.h"
 #include "struct_Lagr.h"
 
+/*
+ * Initialization of dependent variables based on user input.
+ */
+void init_qu_and_p( qnu* qu, Lagr* p, nmpc& C )
+  {
+    qu[0].x = +0.0;
+    qu[0].Dx = C.cruising_speed
+            * cos(atan2((double) C.cur_tgt[1], (double) C.cur_tgt[0]));
+    qu[0].y = +0.0;
+    qu[0].Dy = C.cruising_speed
+            * sin(atan2((double) C.cur_tgt[1], (double) C.cur_tgt[0]));
+    qu[0].th = atan2((double) C.cur_tgt[1], (double) C.cur_tgt[0]);
+    p[0].sintk = sin(qu[0].th);
+    p[0].costk = cos(qu[0].th);
+    p[C.N - 1].p2 = +0.0;
+    p[C.N - 1].p4 = +0.0;
+    p[C.N - 1].p5 = +0.0;
+    C.grang = 20 * M_PI;
+    C.horizon_loop = 0;
+    for ( int k = 0; k < C.N; ++k )
+      {
+        qu[k].v = C.cruising_speed;
+        qu[k].Dth = +0;
+      }
+  }
+
 /*!
  * This function evaluates the cost functional of a given path.
  */
@@ -41,8 +67,8 @@ float costfun( const qnu *qu, const Lagr *p, const nmpc &C )
                 + 2 * p[C.N - 1].ey * p[C.N - 1].ey * C.Q0[1];
         for ( unsigned int j = 0; j < C.nobst; j++ )
           J += 1
-                  / ( ( C.tgt[0] - qu[0].x ) * ( C.tgt[0] - qu[0].x )
-                          + ( C.tgt[1] - qu[0].y ) * ( C.tgt[1] - qu[0].y )
+                  / ( ( C.cur_tgt[0] - qu[0].x ) * ( C.cur_tgt[0] - qu[0].x )
+                          + ( C.cur_tgt[1] - qu[0].y ) * ( C.cur_tgt[1] - qu[0].y )
                           + C.eps );
       }
     return -J;
@@ -59,8 +85,8 @@ float costfun( const qnu *qu, const Lagr *p, const nmpc &C )
  */
 float predict_horizon( qnu *qu, Lagr *p, const nmpc &C )
   {
-    float dirx = C.tgt[0] - qu[0].x;
-    float diry = C.tgt[1] - qu[0].y;
+    float dirx = C.cur_tgt[0] - qu[0].x;
+    float diry = C.cur_tgt[1] - qu[0].y;
     // TODO: Store dist this to use in loop terminator.
     float dist = sqrt(dirx * dirx + diry * diry);
     dirx /= dist;

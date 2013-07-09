@@ -54,11 +54,14 @@ typedef struct nmpc_tag {
    *  make quick course corrections.
    */
   float cruising_speed;
-
   /*!
    * Number of targets in target list
    */
   unsigned int ntgt;
+  /*!
+   * Keeping track of which way-point we are headed towards.
+   */
+  float* cur_tgt;
   /*!
    * Tolderance in meters for which we consider ourselves at the target.
    */

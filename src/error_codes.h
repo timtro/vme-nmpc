@@ -36,5 +36,7 @@
 #define ODD_NUMBER_TGT_COORDINATES       0x1D
 #define ODD_NUMBER_OBST_COORDINATES      0x1E
 #define FATAL_INPUT_FILE_ERROR           0x1F
+#define EXCEEDED_MAX_SD_ITER             0x20
+#define TRAPPED_IN_NMPC_LOOP             0x21
 
 #endif

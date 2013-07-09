@@ -25,15 +25,18 @@
 #include "struct_nmpc.h"
 #include "struct_qnu.h"
 #include "struct_Lagr.h"
+#include "struct_cl_opts.h"
+#include "inc_errhandler.h"
 
 // from sockcomm.cpp
 int init_vme_sock();
 
 // from input.cpp
-int parse_command_line( int, char**, robot* );
+int parse_command_line( int, char**, robot*, cl_opts* );
 void parse_input_file( nmpc&, const char* );
 
 // from nmpc-funcs.cpp
+void init_qu_and_p( qnu*, Lagr*, nmpc& );
 void get_gradient( qnu*, Lagr*, nmpc&, float* );
 float predict_horizon( qnu*, Lagr*, const nmpc& );
 float costfun( const qnu*, const Lagr*, const nmpc& );
@@ -41,3 +44,10 @@ void swap_fptr( float**, float** );
 
 // from time-sync.cpp
 double wall_time();
+
+// from output.cpp
+void empty_output_hook( const qnu*, const Lagr*, const nmpc& );
+void empty_output_hook( const qnu*, const Lagr*, const nmpc&, const float* );
+void print_greeting( const nmpc& );
+void print_pathnerr( const qnu*, const Lagr*, const nmpc& );
+void print_lagrange_grad( const qnu*, const Lagr*, const nmpc&, const float* );

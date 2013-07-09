@@ -50,19 +50,16 @@ robot::~robot()
 void robot::set_host( char *host )
   {
     hostname = host;
-    printf("Host: %s\n", hostname);
   }
 
 void robot::set_port( int portno )
   {
     port = portno;
-    printf("Port: %d\n", port);
   }
 
 void robot::set_configfile( char *config )
   {
     configfile = config;
-    printf("Configfile: %s\n", configfile);
   }
 
 const char *

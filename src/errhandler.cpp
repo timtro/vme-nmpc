@@ -50,6 +50,7 @@ void report_error( const int errno, const char *notes )
       fflush(stderr);
     default :
       fprintf(stderr, "[0x%2x] Exit. Unknown Error\n", errno);
+      printf("# ERR: [0x%2x]\n", errno);
       if ( notes != NULL )
         {
           fprintf(stderr, "Additional info: ");
@@ -57,6 +58,7 @@ void report_error( const int errno, const char *notes )
           fprintf(stderr, "\n\n");
         }
       fflush(stderr);
+      fflush(stdout);
       exit(EXIT_FAILURE);
       }
   }

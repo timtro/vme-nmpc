@@ -28,9 +28,9 @@
 #include "class_robot.h"
 #include "struct_nmpc.h"
 #include "struct_intok.h"
-#include "struct_configopts.h"
+#include "struct_cl_opts.h"
 
-void parse_command_line( int argc, char** argv, robot* vme, configopts* opts )
+void parse_command_line( int argc, char** argv, robot* vme, cl_opts* opts )
   {
     char *pvalue = NULL, *hvalue = NULL, *fvalue = NULL;
     int index;
@@ -43,7 +43,7 @@ void parse_command_line( int argc, char** argv, robot* vme, configopts* opts )
       switch ( c )
         {
       case 'p' :
-        vme->set_port(strtol(optarg, (char **)NULL, 10));
+        vme->set_port(strtol(optarg, (char**) NULL, 10));
         break;
       case 'h' :
         vme->set_host(optarg);
@@ -52,8 +52,11 @@ void parse_command_line( int argc, char** argv, robot* vme, configopts* opts )
         vme->set_configfile(optarg);
         break;
       case 'v' :
+        opts->print_path_and_error = true;
+        opts->print_lagrange_grad = true;
         break;
       case 'l' :
+        opts->print_path_and_error = true;
         break;
       case '?' :
         if ( optopt == 'p' || optopt == 'h' || optopt == 'f' )
@@ -83,31 +86,32 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
     char ch = '\0';
     char *eob = buffer + BUFSIZ - 1;
     char *curb = buffer;
-
-    // Read the file one character at a time while not at end of file...
-    //
+    /*
+     * Read the file one character at a time while not at end of file...
+     */
     while ( ( ch = fgetc(fd) ) != EOF )
       {
-        // If we hit white space, gobble it, and keep track of new lines:
-        //
+        /*
+         * If we hit white space, gobble it, and keep track of new lines:
+         */
         if ( isspace(ch) )
           {
             if ( ch == '\n' ) ++ ( *lineno );
             continue;
           }
-        //
-        // Otherwise, if we hit a '#', gobble the rest of the line, and count the
-        // new line:
-        //
+        /*
+         * Otherwise, if we hit a '#', gobble the rest of the line, and count
+         * the new line:
+         */
         else if ( ch == '#' )
           {
             while (ch != '\n')
               ch = fgetc(fd);
             ++ ( *lineno );
           }
-        //
-        // If we see a delimeter, we shouldn't expect one!
-        //
+        /*
+         *  If we see a delimeter, we shouldn't expect one!
+         */
         else if ( ch == '=' || ch == ':' )
           {
             sprintf(buffer, "Line: %d, Character: '%c'", *lineno, ch);
@@ -115,28 +119,30 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
             buffer[0] = '\0';
             return;
           }
-        //
-        // Made it through ignorable (new word?) stuff, so start recording the
-        // characters into the buffer:
-        //
+        /*
+         *  Made it through ignorable (new word?) stuff, so start recording the
+         *  characters into the buffer:
+         */
         else
           {
             *curb++ = ch;
-            //
-            // Any of these ends the recording:
-            //
+            /*
+             *  Any of these ends the recording:
+             */
             while ( ( ch = fgetc(fd) ) != EOF && !isspace(ch) && ch != '='
                     && ch != ',' && ch != ':' && ch != ';')
               *curb++ = ch;
-            //
-            // We should expect that the recording was ended by these characters,
-            // otherwise, throw an error.
-            //
+            /*
+             *  We should expect that the recording was ended by these
+             *  characters, otherwise, throw an error.
+             */
             if ( ch != ' ' && ch != ',' && ch != ';' && ch != '\t' && ch != '='
                     && ch != '\n' )
               {
-                // This error should really never happen unless we get \r or\v
-                // or something else exoctic.
+                /*
+                 *  This error should really never happen unless we get \r or\v
+                 *  or something else exoctic.
+                 */
                 sprintf(buffer,
                         "Line %d: Found invalid character '0x%x' ending a token.",
                         *lineno, ch);
@@ -144,54 +150,54 @@ void get_token( FILE *fd, char *buffer, char *lastdelim, int *lineno )
               }
             else
               {
-                //
-                // By this point, a token has been recorded, and we have an
-                // acceptible termination. Check to see if it was terminated with
-                // a new line.
-                //
+                /*
+                 *  By this point, a token has been recorded, and we have an
+                 *  acceptible termination. Check to see if it was terminated
+                 *  with a new line.
+                 */
                 if ( ch == '\n' ) lineno++;
-                //
-                // If there is white space between the end of the token and its
-                // delimeter, then gobble it.
-                //
+                /*
+                 *  If there is white space between the end of the token and its
+                 *  delimeter, then gobble it.
+                 */
                 while (isspace(ch))
                   {
                     if ( ch == '\n' ) ++ ( *lineno );
                     ch = fgetc(fd);
                   }
-                //
-                // Regardless of wheather or not the token was ended with white
-                // space, or an accpeted delimeter, ch should hold the delimeter
-                // at this point. Record it.
-                //
+                /*
+                 *  Regardless of wheather or not the token was ended with white
+                 *  space, or an accpeted delimeter, ch should hold the
+                 *  delimeter at this point. Record it.
+                 */
                 if ( ch == '=' || ch == ',' || ch == ';' ) *lastdelim = ch;
-                //
-                // Accept ':' as the same as '='. This behaviour may change later,
-                // if I want '=' to be used for adjustable parameters, and ':' if
-                // the code should keep them constant.
-                //
+                /*
+                 *  Accept ':' as the same as '='. This behaviour may change
+                 *  later, if I want '=' to be used for adjustable parameters,
+                 *  and ':' if the code should keep them constant.
+                 */
                 if ( ch == ':' ) *lastdelim = '=';
               }
             break;
           }
       }
-    //
-    // Terminate the string in the buffer:
-    //
+    /*
+     *  Terminate the string in the buffer:
+     */
     *curb = '\0';
-    //
-    // If we staid out of all of these decision trees, then ch could (should)
-    // be holding the EOF character for the file. Record it to let the calling
-    // routine know that we've hit the end of the file.
-    //
+    /*
+     *  If we staid out of all of these decision trees, then ch could (should)
+     *  be holding the EOF character for the file. Record it to let the calling
+     *  routine know that we've hit the end of the file.
+     */
     if ( ch == EOF )
       {
         *lastdelim = EOF;
-        //
-        // If the input file was made by a descent editor, there will be a
-        // newline character at the end of the file, which shouldn't count towards
-        // the line count. Bump it down.
-        //
+        /*
+         *  If the input file was made by a descent editor, there will be a
+         *  newline character at the end of the file, which shouldn't count
+         *  towards the line count. Bump it down.
+         */
         -- ( *lineno );
       }
   }
@@ -257,23 +263,24 @@ void parse_input_file( nmpc &controller, const char *infile )
     intok tok_tgt = { "tgt", false };
     intok tok_obst = { "obst", false };
 
-    // Begin...
+//  Begin...
     infd = fopen(infile, "r");
     if ( infd == NULL ) report_error(CANNOT_OPEN_INFILE, NULL);
-    //
-    // Loop, reading each record from the input file.
-    //
+    /*
+     *  Loop, reading each record from the input file.
+     */
     while (1)
       {
-        // Begin reading a record. The first token out should be the key that
-        // identifies which variable is being set. E.g. the 'T' in "T = 0.3;".
-        //
+        /*
+         *  Begin reading a record. The first token out should be the key that
+         *  identifies which variable is being set. E.g. the 'T' in "T = 0.3;".
+         */
         get_token(infd, buffer, &lastdelim, &lineno);
         if ( lastdelim == EOF ) break;
-        //
-        // The delim of the first token should be '=', otherwise something has
-        // gone wrong:
-        //
+        /*
+         *  The delim of the first token should be '=', otherwise something has
+         *  gone wrong:
+         */
         if ( lastdelim != '=' && lastdelim != EOF )
           {
             sprintf(errmsg,
@@ -281,11 +288,11 @@ void parse_input_file( nmpc &controller, const char *infile )
                     lineno, lastdelim);
             report_error(INVALID_INPUT_FILE_SYNTAX, errmsg);
           }
-        //
-        // Now that we should have the key, try to identify it and record the
-        // following tokens in their appropriate memory locations.
-        // With error checking!
-        //
+        /*
+         *  Now that we should have the key, try to identify it and record the
+         *  following tokens in their appropriate memory locations.
+         *  With error checking!
+         */
         if ( strcmp("T", buffer) == 0 )
           {
             get_token(infd, buffer, &lastdelim, &lineno);
@@ -428,7 +435,7 @@ void parse_input_file( nmpc &controller, const char *infile )
             while (lastdelim != ';')
               {
                 ++k;
-                controller.tgt = (float*)realloc(controller.tgt,
+                controller.tgt = (float*) realloc(controller.tgt,
                         k * sizeof(float));
                 get_token(infd, buffer, &lastdelim, &lineno);
                 controller.tgt[k - 1] = atof(buffer);
@@ -449,7 +456,7 @@ void parse_input_file( nmpc &controller, const char *infile )
             while (lastdelim != ';')
               {
                 ++k;
-                controller.obst = (float*)realloc(controller.obst,
+                controller.obst = (float*) realloc(controller.obst,
                         k * sizeof(float));
                 get_token(infd, buffer, &lastdelim, &lineno);
                 controller.obst[k - 1] = atof(buffer);

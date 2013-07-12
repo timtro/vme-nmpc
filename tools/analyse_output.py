@@ -29,6 +29,7 @@ output.
 
 This code is also intended as a general demonstration of the usage of the
 nmpc_stats_and_quantities and nmpc_output_parse modules.
+
 """
 
 from optparse import OptionParser
@@ -46,10 +47,10 @@ from modules import nmpc_stats_and_quantities as nsq
 # Parse command line options.
 #
 parser = OptionParser()
-parser.add_option("-f", "--file", dest="filename",
+parser.add_option("-f", "--file", dest="filename", default='',
               help="Path to input file (output from vme-nmpc).",
               metavar="FILE")
-parser.add_option("-c", "--csv", dest="csvout",
+parser.add_option("-c", "--csv", dest="csvout", default='',
               help="Path to CSV output file.",
               metavar="FILE")
 parser.add_option("-p", "--pdf", dest="pdfout", default='',
@@ -77,6 +78,8 @@ sd_meta = {}
 se_meta = {}
 lg_meta = {}
 tr_meta = {}
+sd_fail = False
+loop_trap = False
 
 # Parse the welcome message
 if (nop.parse_welcome(instream, nmpc) == 1):
@@ -148,8 +151,12 @@ while 1:
         if (nop.parse_tgt_wall_time(instream, tgt_time)):
             break
     if '0x20' in line:
+        sd_fail = True
+        exit(0)
         break
     if '0x21' in line:
+        loop_trap = True
+        exit(0)
         break
 
 executed_path = np.array(executed_path)
@@ -157,13 +164,22 @@ tgt_time = np.array(tgt_time)
 nmpc["obst"] = np.transpose(np.array(nmpc["obst"]))
 nmpc["tgt"] = np.transpose(np.array(nmpc["tgt"]))
 
-min_dist_to_obst = nsq.minimum_distance_to_obstacle(nmpc, executed_path,
-                                                    se_meta)
-min_turn_radius = nsq.minimum_turn_radius(nmpc, executed_path, se_meta)
-path_length = nsq.path_length(nmpc, executed_path, se_meta)
-RMS_turn_rate = nsq.RMS_turn_rate(nmpc, executed_path, se_meta)
-avg_speed = nsq.avg_speed(nmpc, executed_path, se_meta)
+if (len(se_meta) != 0):
+    min_dist_to_obst = nsq.minimum_distance_to_obstacle(nmpc, executed_path,
+                                                        se_meta)
+    min_turn_radius = nsq.minimum_turn_radius(nmpc, executed_path, se_meta)
+    path_length = nsq.path_length(nmpc, executed_path, se_meta)
+    RMS_turn_rate = nsq.RMS_turn_rate(nmpc, executed_path, se_meta)
+    avg_speed = nsq.avg_speed(nmpc, executed_path, se_meta)
+else:
+    avg_speed = float('nan')
+    path_length = float('nan')
+    RMS_turn_rate = float('nan')
+    min_turn_radius = float('nan')
+    min_dist_to_obst = float('nan')
+
 total_path_time = nmpc["T"] * executed_path.shape[0]
+
 if tr_meta != {}:
     total_wall_time = sum(tgt_time[:,tr_meta['time_to_tgt']])
 else:
@@ -222,7 +238,7 @@ ax2.text(.98, .95, 'Convergence loop histogram [loops, freq]',
         horizontalalignment='right',
         verticalalignment='top',
         transform=ax2.transAxes)
-ax2.hist(sd_loops, np.arange(1., max(sd_loops), 1.) - .5, rwidth=.3, facecolor='k')
+ax2.hist(sd_loops, np.arange(1., max(sd_loops)+1., 1.) - .5, rwidth=.3, facecolor='k')
 ax2.grid()
 
 ax3.text(.98, .95, 'SD iterations v.s. wall-time [loops, s]',
@@ -264,21 +280,25 @@ if (options.pdfout == ''):
 else:
     plt.savefig(options.pdfout)
 
-    dictlist = [os.path.splitext(options.pdfout)[0]]
-    dictmeta = ['Run ID']
-    del nmpc['obst']
-    del nmpc['tgt']
-    del nmpc['n']
-    del nmpc['m']
-    del nmpc['cruising_speed']
+if (options.csvout != ''):
     csvexists = os.path.exists(
             os.path.join(os.path.dirname(os.path.realpath(__file__)),
                          options.csvout))
     with open(options.csvout, 'ab') as csvfd:
         csvw = csv.writer(csvfd, dialect='excel')
-        for key in nmpc:
-            dictmeta.append(key)
-            dictlist.append(nmpc[key])
-        if not csvexists:
-            csvw.writerow( dictmeta )
+
+        dictmeta = ['Run ID', 'N', 'C', 'T [s]', "eps [m]", 'R', 'Q0', 'Q',
+                    'Path Length [m]', 'Path Duration [s]',
+                    'Min. Dist. to Obst. [m]', 'Max Turn Rate [rad/s]',
+                    'Sm. Turn. Rad. [m]', 'Avg. Speed [m/s]',
+                    'RMS Turn Rate [rad/s]', 'Wall Time [s]', 'SD fail?',
+                    'Loop trap?']
+        dictlist = [os.path.splitext(options.pdfout)[0], nmpc['N'], nmpc['C'],
+                    nmpc['T'], nmpc['eps'], nmpc['R'], nmpc['Q0'][0],
+                    nmpc['Q'][0], path_length, total_path_time,
+                    min_dist_to_obst, max(executed_path[3]), min_turn_radius,
+                    avg_speed, RMS_turn_rate, total_wall_time, sd_fail,
+                    loop_trap]
+#        if not csvexists:
+#            csvw.writerow( dictmeta )
         csvw.writerow( dictlist )

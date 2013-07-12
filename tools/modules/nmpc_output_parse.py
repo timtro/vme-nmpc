@@ -64,21 +64,27 @@ def parse_welcome(infile, nmpc):
         if len(line) == 0:
             return 1
         if ("(T)" in line):
-            nmpc["T"] = float(line.split()[len(line.split()) - 1])
+            nmpc["T"] = float(line.split()[-1])
         if ("(m)" in line):
-            nmpc["m"] = int(line.split()[len(line.split()) - 1])
+            nmpc["m"] = int(line.split()[-1])
         if ("(n)" in line):
-            nmpc["n"] = int(line.split()[len(line.split()) - 1])
+            nmpc["n"] = int(line.split()[-1])
         if ("(N)" in line):
-            nmpc["N"] = int(line.split()[len(line.split()) - 1])
+            nmpc["N"] = int(line.split()[-1])
         if ("(C)" in line):
-            nmpc["C"] = int(line.split()[len(line.split()) - 1])
+            nmpc["C"] = int(line.split()[-1])
         if ("(dg)" in line):
-            nmpc["dg"] = float(line.split()[len(line.split()) - 1])
+            nmpc["dg"] = float(line.split()[-1])
         if ("(cruising_speed)" in line):
-            nmpc["cruising_speed"] = float(line.split()[len(line.split()) - 1])
+            nmpc["cruising_speed"] = float(line.split()[-1])
         if ("(eps)" in line):
-            nmpc["eps"] = float(line.split()[len(line.split()) - 1])
+            nmpc["eps"] = float(line.split()[-1])
+        if ("(Q0)" in line):
+            nmpc["Q0"] = [float(line.split()[-2]), float(line.split()[-1])]
+        if ("(Q)" in line):
+            nmpc["Q"] = [float(line.split()[-2]), float(line.split()[-1])]
+        if ("(R)" in line):
+            nmpc["R"] = float(line.split()[-1])
         if ("(tgt)" in line):
             nmpc["tgt"] = [[], []]
             while 1:

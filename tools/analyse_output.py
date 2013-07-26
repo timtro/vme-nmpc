@@ -238,7 +238,8 @@ ax2.text(.98, .95, 'Convergence loop histogram [loops, freq]',
         horizontalalignment='right',
         verticalalignment='top',
         transform=ax2.transAxes)
-ax2.hist(sd_loops, np.arange(1., max(sd_loops)+1., 1.) - .5, rwidth=.3, facecolor='k')
+ax2.hist(sd_loops, np.arange(1., max(sd_loops)+1., 1.) - .5, rwidth=.3,
+         facecolor='k')
 ax2.grid()
 
 ax3.text(.98, .95, 'SD iterations v.s. wall-time [loops, s]',

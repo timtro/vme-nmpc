@@ -18,6 +18,7 @@ These are basic definitions for the control system and algoritm.
    [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
+kill(all)$
 q(k) := matrix([x[k]], [Dx[k]], [y[k]], [Dy[k]], [th[k]])$
 pr(k) := matrix([p1[k]],[p2[k]],[p3[k]],[p4[k]],[p5[k]])$
 u(k) := matrix([v[k]], [Dth[k]] )$
@@ -47,6 +48,19 @@ dadu(k) := matrix([0,0],
                   [0,T])$
 dPhidq(k) := matrix([PhiX[k], 0, PhiY[k], 0, 0])$
 ddeltadq  :  matrix([1,0,0,0,0],[0,0,1,0,0])$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+Derivation
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: input   start ] */
+L(q(k), u(k)) = transpose(u(k)) . R . u(k) + transpose(delta(k)) . Q . delta(k) + Phi[k];
+H(q(k), u(k)) = L(q, u, k) + transpose(pr(k)) . a(k);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+diff(H(q(k), u(k)),u(k));
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: section start ]

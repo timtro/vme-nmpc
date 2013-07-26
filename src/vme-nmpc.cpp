@@ -30,151 +30,199 @@
 #include "vme-nmpc.h"
 
 #define MAX_SD_ITER 150
-#define MAX_NMPC_ITER 4000
+#define MAX_NMPC_ITER 3000
 
-int main( int argc, char **argv )
-  {
+#define SEC_TO_USEC 1e-6
 
-    void (*hook_output_path_and_error)( const qnu*,
-            const Lagr*,
-            const nmpc& ) = NULL;
+int main(int argc, char **argv)
+{
 
-    void (*hook_output_lagrange_grad)( const qnu*,
-            const Lagr*,
-            const nmpc&,
-            const float* ) = NULL;
+	void
+	(*hook_print_SE)(const qnu*, const Lagr*, const nmpc&) = NULL;
+	void
+	(*hook_print_LG)(const qnu*, const Lagr*, const nmpc&, const float*) = NULL;
+	void
+	(*hook_print_SD)(const unsigned int*, const double*) = NULL;
+	void
+	(*hook_print_TR)(const unsigned int*, const double*) = NULL;
 
-    char errnote[256];
-    unsigned int sd_loop = 0, k = 0, current_tgt_no = 0;
-    float tgtdist, grad_dot_grad = 0.;
-    robot vme(NULL, NULL);
+	double
+	(*hook_exec_control_horiz)(qnu*, const nmpc&, robot*) = NULL;
 
-    double sd_loop_time;
+	char errnote[256];
+	unsigned int sd_loop = 0, k = 0, current_tgt_no = 0;
+	float tgtdist, grad_dot_grad = 0.;
+	robot vme;
 
-    nmpc C;
-    cl_opts clopts = { false };
-    parse_command_line(argc, argv, &vme, &clopts);
-    parse_input_file(C, vme.conffile());
-    print_greeting(C);
+	double sd_loop_time, time_last_cmd_sent = 0, now;
 
-    qnu *qu = (qnu*) calloc(C.N, sizeof(qnu));
-    Lagr *p = (Lagr*) calloc(C.N, sizeof(Lagr));
-    float *grad = (float*) calloc(C.N + 1, sizeof(float));
-    float *last_grad = (float*) calloc(C.N + 1, sizeof(float));
-    double *time_to_tgt = (double*) calloc(C.ntgt, sizeof(float));
+	nmpc C;
+	cl_opts clopts =
+	{ false };
+	parse_command_line(argc, argv, &vme, &clopts);
+	parse_input_file(C, vme.conffile());
+	print_greeting(C);
 
-    init_qu_and_p(qu, p, C);
+	qnu* qu = (qnu*) calloc(C.N, sizeof(qnu));
+	Lagr* p = (Lagr*) calloc(C.N, sizeof(Lagr));
+	//cmd* cmd_horiz = (cmd*) calloc(C.C, sizeof(cmd));
+	float* grad = (float*) calloc(C.N + 1, sizeof(float));
+	float* last_grad = (float*) calloc(C.N + 1, sizeof(float));
+	double* time_to_tgt = (double*) calloc(C.ntgt, sizeof(float));
 
-    tgtdist = C.tgttol + 1; // Just to get us into the waypoint loop.
-    C.horizon_loop = 0;
+	init_qu_and_p(qu, p, C);
 
-    if ( clopts.print_path_and_error )
-      {
-        hook_output_path_and_error = &print_pathnerr;
-      }
-    else
-      {
-        hook_output_path_and_error = &empty_output_hook;
-      }
-    if ( clopts.print_lagrange_grad )
-      {
-        hook_output_lagrange_grad = &print_lagrange_grad;
-      }
-    else
-      {
-        hook_output_lagrange_grad = &empty_output_hook;
-      }
+	tgtdist = C.tgttol + 1; // Just to get us into the waypoint loop.
+	C.horizon_loop = 0;
 
-    /*
-     * Enter the loop which will take us through all waypoints.
-     */
-    while (current_tgt_no < C.ntgt)
-      {
-        time_to_tgt[current_tgt_no] = -wall_time();
-        C.cur_tgt = &C.tgt[current_tgt_no * 2];
-        tgtdist = C.tgttol + 1;
-        while (tgtdist > .1)
-          {
-            C.horizon_loop += 1;
-            sd_loop = 0;
-            sd_loop_time = -wall_time();
-            while (1)
-              {
-                sd_loop += 1;
-                grad_dot_grad = 0.;
-                /*
-                 * The core of the gradient decent is in the next few lines:
-                 */
-                tgtdist = predict_horizon(qu, p, C);
-                get_gradient(qu, p, C, grad);
-                for ( k = 0; k < C.N; k++ )
-                  {
-                    grad_dot_grad += grad[k] * last_grad[k];
-                  }
-                /*
-                 * Detect direction changes in the gradient by inspecting the
-                 * product <grad, last_grad>. If it is positive, then the
-                 * iterations are successfully stepping to the minimum, and we
-                 * can accelerate by increasing dg. If we overshoot (and the
-                 * product becomes negative), then backstep and drop dg to a
-                 * safe value.
-                 */
-                if ( grad_dot_grad > 0 )
-                  {
-                    C.dg *= 2;
-                    for ( k = 0; k < C.N; ++k )
-                      {
-                        qu[k].Dth -= C.dg * grad[k];
-                      }
-                  }
-                else
-                  {
-                    C.dg = 0.1;
-                    for ( k = 0; k < C.N; ++k )
-                      {
-                        qu[k].Dth += C.dg * grad[k];
-                      }
-                  }
-                swap_fptr(&grad, &last_grad);
-                if ( last_grad[C.N] < .1 ) break;
-                if ( sd_loop >= MAX_SD_ITER )
-                  {
-                    sprintf(errnote, "Reached %d SD iterations. Stopping.",
-                            sd_loop);
-                    report_error(EXCEEDED_MAX_SD_ITER, errnote);
-                  }
-              }
-            hook_output_path_and_error(qu, p, C);
-            hook_output_lagrange_grad(qu, p, C, grad);
-            C.control_step += C.C;
-            qu[0].x = qu[C.C].x;
-            qu[0].Dx = qu[C.C].Dx;
-            qu[0].y = qu[C.C].y;
-            qu[0].Dy = qu[C.C].Dy;
-            qu[0].th = qu[C.C].th;
-            for ( k = 0; k < C.N - C.C - 1; ++k )
-              {
-                qu[k].v = qu[k + C.C].v;
-                qu[k].Dth = qu[k + C.C].Dth;
-              }
-            sd_loop_time += wall_time();
-            printf("# (SD) loop completed.\n#sd_loop sd_loop_time\n");
-            printf("%8d % 14.9f\n", sd_loop, sd_loop_time);
-            if ( C.control_step > MAX_NMPC_ITER * C.C )
-              {
-                sprintf(errnote,
-                        "Reached %d NMPC steps without reaching tgt. Stopping.",
-                        MAX_NMPC_ITER);
-                report_error(TRAPPED_IN_NMPC_LOOP, errnote);
-              }
-          }
-        time_to_tgt[current_tgt_no] += wall_time();
-        printf("# (TR) Target reached.\n#current_tgt_no time_to_tgt\n");
-        printf("%15d %11f\n", current_tgt_no, time_to_tgt[current_tgt_no]);
-        ++current_tgt_no;
-      }
-//    vme.tcp_connect();
-//    vme.update_poshead();
-//    usleep(2*SEC_TO_USEC);
-    return 0;
-  }
+	/*
+	 * This next block of decisions sort out the hooks used to print output.
+	 * Rather than include the ifs in each loop, I'm using function pointers
+	 * which are set at runtime based on CL flags for verbosity.
+	 */
+	if (clopts.selec_verbose)
+	{
+		hook_print_SE = &print_pathnerr;
+		hook_print_LG = &print_LG;
+		hook_print_SD = &print_SD;
+		hook_print_TR = &print_TR;
+	}
+	else if (clopts.selec_verbose)
+	{
+		hook_print_SE = &empty_output_hook;
+		hook_print_LG = &empty_output_hook;
+		hook_print_SD = &empty_output_hook;
+		hook_print_TR = &empty_output_hook;
+	}
+	else
+	{
+		if (clopts.selec_state_and_error_SE)
+			hook_print_SE = &print_pathnerr;
+		else
+			hook_print_SE = &empty_output_hook;
+
+		if (clopts.selec_lagrange_grad_LG)
+			hook_print_LG = &print_LG;
+		else
+			hook_print_LG = &empty_output_hook;
+
+		if (clopts.selec_SD_converged_SD)
+			hook_print_SD = &print_SD;
+		else
+			hook_print_SD = &empty_output_hook;
+
+		if (clopts.selec_target_reached_TR)
+			hook_print_TR = &print_TR;
+		else
+			hook_print_TR = &empty_output_hook;
+	}
+	if (clopts.selec_sim)
+		hook_exec_control_horiz = &exec_control_horiz_dummy;
+	else
+		hook_exec_control_horiz = &exec_control_horiz_vme;
+
+	if (!clopts.selec_sim)
+	{
+		vme.tcp_connect();
+		vme.update_poshead(qu, C);
+	}
+
+	/*
+	 * Enter the loop which will take us through all waypoints.
+	 */
+	while (current_tgt_no < C.ntgt)
+	{
+		time_to_tgt[current_tgt_no] = -wall_time();
+		C.cur_tgt = &C.tgt[current_tgt_no * 2];
+		tgtdist = C.tgttol + 1;
+		while (tgtdist > .1)
+		{
+			C.horizon_loop += 1;
+			sd_loop = 0;
+			sd_loop_time = -wall_time();
+			/*
+			 * SD loop.
+			 */
+			while (1)
+			{
+				sd_loop += 1;
+				grad_dot_grad = 0.;
+				/*
+				 * The core of the gradient decent is in the next few lines:
+				 */
+				tgtdist = predict_horizon(qu, p, C);
+				get_gradient(qu, p, C, grad);
+				for (k = 0; k < C.N; k++)
+				{
+					grad_dot_grad += grad[k] * last_grad[k];
+				}
+				/*
+				 * Detect direction changes in the gradient by inspecting the
+				 * product <grad, last_grad>. If it is positive, then the
+				 * iterations are successfully stepping to the minimum, and we
+				 * can accelerate by increasing dg. If we overshoot (and the
+				 * product becomes negative), then backstep and drop dg to a
+				 * safe value.
+				 */
+				if (grad_dot_grad > 0)
+				{
+					C.dg *= 2;
+					for (k = 0; k < C.N; ++k)
+					{
+						qu[k].Dth -= C.dg * grad[k];
+					}
+				}
+				else
+				{
+					C.dg = 0.1; // TODO: Adaptive.
+					for (k = 0; k < C.N; ++k)
+					{
+						qu[k].Dth += C.dg * grad[k];
+					}
+				}
+				swap_fptr(&grad, &last_grad);
+				if (last_grad[C.N] < .1)
+					break;
+				if (sd_loop >= MAX_SD_ITER)
+				{
+					sprintf(errnote, "Reached %d SD iterations. Stopping.",
+							sd_loop);
+					report_error(EXCEEDED_MAX_SD_ITER, errnote);
+				}
+			}
+			hook_print_SE(qu, p, C);
+			hook_print_LG(qu, p, C, grad);
+			sd_loop_time += wall_time();
+			hook_print_SD(&sd_loop, &sd_loop_time);
+			C.control_step += C.C;
+
+			hook_exec_control_horiz(qu, C, &vme);
+
+			for (k = 0; k < C.N - C.C - 1; ++k)
+			{
+//              cmd_horiz[k].v = qu[k].v;
+//              cmd_horiz[k].Dth = qu[k].Dth;
+				qu[k].v = qu[k + C.C].v;
+				qu[k].Dth = qu[k + C.C].Dth;
+			}
+
+			if (C.control_step > MAX_NMPC_ITER * C.C)
+			{
+				sprintf(errnote,
+						"Reached %d NMPC steps without reaching tgt. Stopping.",
+						MAX_NMPC_ITER);
+				report_error(TRAPPED_IN_NMPC_LOOP, errnote);
+			}
+			/*
+			 * The last thing we do is get the new position and heading for
+			 * the next SD calculation.
+			 */
+//			vme.update_poshead(qu);
+		}
+		time_to_tgt[current_tgt_no] += wall_time();
+		hook_print_TR(&current_tgt_no, &time_to_tgt[current_tgt_no]);
+		++current_tgt_no;
+	}
+
+	return 0;
+}

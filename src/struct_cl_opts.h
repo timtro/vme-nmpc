@@ -24,9 +24,15 @@
 #ifndef STRUCT_CL_OPTS_H_
 #define STRUCT_CL_OPTS_H_
 
-typedef struct cl_opts_tag {
-  bool print_path_and_error;
-  bool print_lagrange_grad;
+typedef struct cl_opts_tag
+{
+	bool selec_verbose;
+	bool selec_quiet;
+	bool selec_state_and_error_SE;
+	bool selec_lagrange_grad_LG;
+	bool selec_SD_converged_SD;
+	bool selec_target_reached_TR;
+	bool selec_sim;
 } cl_opts;
 
 #endif /* STRUCT_CL_OPTS_H_ */

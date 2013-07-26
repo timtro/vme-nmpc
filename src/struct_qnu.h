@@ -28,21 +28,22 @@
  * The qnu structure holds q and u related variables for the robot. An array of
  * qnu holds the state and conrol information for the NMPC horizon.
  */
-typedef struct qnu_tag {
-  //! The x-coordinate.
-  float x;
-  //! The time rate-of-change of x.
-  float Dx;
-  //! The y-coordinate.
-  float y;
-  //! The time rate-of-change of y.
-  float Dy;
-  //! The angle from the x-axis of the direction of travel.
-  float th;
-  //! The steering rate. That is, the time rate-of-change of th.
-  float Dth;
-  //! The radial component of speed.
-  float v;
+typedef struct qnu_tag
+{
+	//! The x-coordinate.
+	float x;
+	//! The time rate-of-change of x.
+	float Dx;
+	//! The y-coordinate.
+	float y;
+	//! The time rate-of-change of y.
+	float Dy;
+	//! The angle from the x-axis of the direction of travel.
+	float th;
+	//! The steering rate. That is, the time rate-of-change of th.
+	float Dth;
+	//! The radial component of speed.
+	float v;
 } qnu;
 
 #endif // __STRUCT_QNU_H__

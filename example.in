@@ -6,7 +6,7 @@ N      = 80;             # Lookahead horizon
 C      = 3;              # Control horizon
 m      = 5;              # Dimension of state space
 n      = 1;              # Dimension of control space
-T      = 0.02;           # Time step size
+T      = 0.012;          # Time step size
 dg     = 0.05;           # Gradient decent mixing factor
 eps    = 0.08;           # Obstacle potential ceeling
 cruising_speed = 0.4;    # Optimal cruising speed of robot
@@ -25,9 +25,30 @@ Q     = 20.0, 20.0;
 S     = 0.0, 0.0, 0.0, 0.0, 0.0;
 
 # Desired target xy-coordinate:
-tgt   = 10.00, 0.00;
+tgt   = 5.00,  0.00,
+        0.00, -0.50;
 
 # List of obstacle coordinates as xy-pairs.
-obst  = 1.0, -0.33,
-        1.6,  0.66,
-        6.0,  0.00;
+obst  =
+3.007664, -1.156874,
+1.235639, -0.284773,
+3.449549, -1.914512,
+2.695583, -1.539575,
+5.609185, -1.543453,
+5.518731, 0.791001,
+7.079206, -1.263628,
+7.723586, -3.735337,
+0.068167, 1.763270,
+1.897979, 0.436840,
+2.021546, 0.385308,
+3.688284, -0.391492,
+7.201984, 1.727000,
+7.551841, -1.115384,
+6.453219, 0.682746,
+0.892491, -0.350501,
+1.864283, 0.863395,
+4.818302, 1.286716,
+4.306561, 1.357587,
+7.265149, 1.376594,
+5.923917, 0.557702;
+

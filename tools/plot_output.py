@@ -43,6 +43,11 @@ import matplotlib.animation as animation
 from modules import nmpc_output_parse as nop
 from modules import nmpc_stats_and_quantities as nsq
 
+def empty_func():
+    return
+def empty_func(x):
+    return
+
 def update_plot(data):
     """
     This function is the blood and guts of the program. It mines the information
@@ -59,16 +64,19 @@ def update_plot(data):
             path_and_error = []
             # Read the first line after the previous parse. This line should
             # contain the block label (SD), (SE), (LG) or (TR).
-            curpos = instream.tell()
+            if not options.stdintrue:
+                curpos = instream.tell()
             line = instream.readline()
             if len(line) == 0:
                 update_plot.pause = True
-                break
+                return ax1xy, ax1xryr, execp, ax2xy, ax2xryr
             if '(SE)' in line:
-                update_plot.filepos.append(curpos)
+                if not options.stdintrue:
+                    update_plot.filepos.append(curpos)
                 if len(se_meta) == 0:
                     if (nop.get_block_meta(instream, se_meta)):
-                        break
+                        update_plot.pause = True
+                        return ax1xy, ax1xryr, execp, ax2xy, ax2xryr
                     del se_meta['k']
                     # I hate doing this, but for now, parse_path_and_error()
                     # doesn't store k, it needs to be taken from the metadata.
@@ -77,22 +85,22 @@ def update_plot(data):
                 nop.parse_path_and_error(instream, nmpc, path_and_error)
                 path_and_error = np.array(path_and_error)
                 break
-    
+
         # xmin, xmax = ax.get_xlim()
-        xrdata = path_and_error[:,se_meta['x']] - path_and_error[:,se_meta['ex']]
-        yrdata = path_and_error[:,se_meta['y']] - path_and_error[:,se_meta['ey']]
-        ax1xy.set_data(path_and_error[:,se_meta['x']],
-                       path_and_error[:,se_meta['y']])
+        xrdata = path_and_error[:, se_meta['x']] - path_and_error[:, se_meta['ex']]
+        yrdata = path_and_error[:, se_meta['y']] - path_and_error[:, se_meta['ey']]
+        ax1xy.set_data(path_and_error[:, se_meta['x']],
+                       path_and_error[:, se_meta['y']])
         ax1xryr.set_data(xrdata, yrdata)
-        ax2xy.set_data(path_and_error[:,se_meta['x']]
-                            - path_and_error[0,se_meta['x']],
-                       path_and_error[:,se_meta['y']]
-                            - path_and_error[0,se_meta['y']])
-        ax2xryr.set_data(xrdata - path_and_error[0,se_meta['x']],
-                       yrdata - path_and_error[0,se_meta['y']])
+        ax2xy.set_data(path_and_error[:, se_meta['x']]
+                            - path_and_error[0, se_meta['x']],
+                       path_and_error[:, se_meta['y']]
+                            - path_and_error[0, se_meta['y']])
+        ax2xryr.set_data(xrdata - path_and_error[0, se_meta['x']],
+                       yrdata - path_and_error[0, se_meta['y']])
         for k in range(0, nmpc['C']):
-            update_plot.exec_path[0].append(path_and_error[k,se_meta['x']])
-            update_plot.exec_path[1].append(path_and_error[k,se_meta['y']])
+            update_plot.exec_path[0].append(path_and_error[k, se_meta['x']])
+            update_plot.exec_path[1].append(path_and_error[k, se_meta['y']])
         execp.set_data(update_plot.exec_path[0], update_plot.exec_path[1])
     if update_plot.isstep:
         update_plot.isstep = False
@@ -113,10 +121,11 @@ def on_key(event):
     """
     on_key.instream
     if (event.key == 'left'):
-        instream.seek(update_plot.filepos[-50])
-        del update_plot.filepos[-50:]
-        del update_plot.exec_path[0][-nmpc['C']*50:]
-        del update_plot.exec_path[1][-nmpc['C']*50:]
+        if not options.stdintrue:
+            instream.seek(update_plot.filepos[-50])
+            del update_plot.filepos[-50:]
+            del update_plot.exec_path[0][-nmpc['C'] * 50:]
+            del update_plot.exec_path[1][-nmpc['C'] * 50:]
     elif (event.key == ' '):
         update_plot.pause ^= True
     elif (event.key == 'right' and update_plot.pause):
@@ -171,7 +180,7 @@ nmpc["tgt"] = np.transpose(np.array(nmpc["tgt"]))
 # Set up the figure:
 xr = [0, 10]
 yr = [-5, 5]
-X,Y,Phi = nsq.obst_potential(nmpc, [xr[0], xr[1], .1], [yr[0], yr[1], .1])
+X, Y, Phi = nsq.obst_potential(nmpc, [xr[0], xr[1], .1], [yr[0], yr[1], .1])
 Phiamax = np.amax(Phi)
 fig = plt.figure(figsize=(11, 8.5), dpi=94, facecolor='#efefef')
 gs = gridspec.GridSpec(1, 2, width_ratios=[1, 1])
@@ -180,14 +189,14 @@ gs = gridspec.GridSpec(1, 2, width_ratios=[1, 1])
 if not options.stdintrue:
     cid = fig.canvas.mpl_connect('key_press_event', on_key)
 
-#All of the axis 1 stuff:
+# All of the axis 1 stuff:
 ax1 = fig.add_subplot(gs[0], adjustable='box', aspect=1.0)
 ax1.set_xlim(xr[0], xr[1])
 ax1.set_ylim(yr[0], yr[1])
 ax1xy, = ax1.plot([], [], 'ro-', lw=3, ms=3)
 ax1xryr, = ax1.plot([], [], 'yo-', lw=4, ms=3)
 execp, = ax1.plot([], [], 'r-')
-#ax.contour(X, Y, Phi, alpha=.3, cmap='jet',
+# ax.contour(X, Y, Phi, alpha=.3, cmap='jet',
 #           levels=np.arange(0, Phiamax, Phiamax/20))
 ax1.imshow(Phi, cmap=plt.get_cmap('jet'),
           extent=[xr[0], xr[1], yr[0], yr[1]], origin='lower')

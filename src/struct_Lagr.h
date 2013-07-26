@@ -28,25 +28,26 @@
  * The Lagr holds the langrange multipliers and related variables. An array of
  * these holds the lagrange multipliers for the NMPC horizon.
  */
-typedef struct Lagr_tag {
-  //! The error of the x-coordinate.
-  float ex;
-  //! The error of the y-coordinate.
-  float ey;
-  /*!
-   * The Lagrange multipliers used in the gradient decent are in p1-p5.
-   */
-  float p1;
-  float p2;
-  float p3;
-  float p4;
-  float p5;
-  /*!
-   * Because they are used a few times, these are stored rather than computed
-   * Explicitly each time
-   */
-  float sintk;
-  float costk;
+typedef struct Lagr_tag
+{
+	//! The error of the x-coordinate.
+	float ex;
+	//! The error of the y-coordinate.
+	float ey;
+	/*!
+	 * The Lagrange multipliers used in the gradient decent are in p1-p5.
+	 */
+	float p1;
+	float p2;
+	float p3;
+	float p4;
+	float p5;
+	/*!
+	 * Because they are used a few times, these are stored rather than computed
+	 * Explicitly each time
+	 */
+	float sintk;
+	float costk;
 } Lagr;
 
 #endif // __STRUCT_LAGR_H__

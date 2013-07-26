@@ -25,9 +25,9 @@
 
 #define SEC_PER_NSEC 1E-9
 
-double wall_time ()
+double wall_time()
 {
-  struct timespec t;
-  clock_gettime (CLOCK_MONOTONIC, &t);
-  return t.tv_sec + SEC_PER_NSEC*t.tv_nsec;
+	struct timespec t;
+	clock_gettime(CLOCK_MONOTONIC, &t);
+	return t.tv_sec + SEC_PER_NSEC * t.tv_nsec;
 }

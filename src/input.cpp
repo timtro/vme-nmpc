@@ -95,9 +95,9 @@ void parse_command_line(int argc, char** argv, robot* vme, cl_opts* opts)
 		}
 }
 
-void get_token(FILE *fd, char *buffer, char *lastdelim, int *lineno)
+void get_token(FILE *fd, char *buffer, int *lastdelim, int *lineno)
 {
-	char ch = '\0';
+	int ch = '\0';
 	char *eob = buffer + BUFSIZ - 1;
 	char *curb = buffer;
 	/*
@@ -171,7 +171,7 @@ void get_token(FILE *fd, char *buffer, char *lastdelim, int *lineno)
 				 *  with a new line.
 				 */
 				if (ch == '\n')
-					lineno++;
+					++(*lineno);
 				/*
 				 *  If there is white space between the end of the token and its
 				 *  delimeter, then gobble it.
@@ -221,7 +221,7 @@ void get_token(FILE *fd, char *buffer, char *lastdelim, int *lineno)
 	}
 }
 
-void check_delim(char lastdelim, char expected_delim, int lineno)
+void check_delim(int lastdelim, char expected_delim, int lineno)
 {
 
 	char errmsg[BUFSIZ];
@@ -256,7 +256,8 @@ void require_intok(intok* A)
 void parse_input_file(nmpc &controller, const char *infile)
 {
 	int k = 0, lineno = 1;
-	char *token, lastdelim;
+	char *token;
+	int lastdelim;
 	char buffer[BUFSIZ];
 	char errmsg[256];
 	FILE *infd;

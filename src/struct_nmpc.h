@@ -60,7 +60,7 @@ typedef struct nmpc_tag
 	 */
 	unsigned int ntgt;
 	/*!
-	 * Keeping track of which way-point we are headed towards.
+	 * Keeping track of coords of way-point we are headed towards.
 	 */
 	float* cur_tgt;
 	/*!

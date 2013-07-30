@@ -70,6 +70,9 @@ int main(int argc, char **argv)
 	float* last_grad = (float*) calloc(C.N + 1, sizeof(float));
 	double* time_to_tgt = (double*) calloc(C.ntgt, sizeof(float));
 
+	C.cur_tgt = C.tgt;
+	C.control_step = 0;
+
 	init_qu_and_p(qu, p, C);
 
 	tgtdist = C.tgttol + 1; // Just to get us into the waypoint loop.

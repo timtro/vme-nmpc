@@ -178,8 +178,15 @@ nmpc["obst"] = np.transpose(np.array(nmpc["obst"]))
 nmpc["tgt"] = np.transpose(np.array(nmpc["tgt"]))
 
 # Set up the figure:
-xr = [0, 10]
-yr = [-5, 5]
+xrmin = min([min(nmpc['obst'][:, 0]), min(nmpc['tgt'][:, 0])])
+xrmax = max([max(nmpc['obst'][:, 0]), max(nmpc['tgt'][:, 0])])
+yrmin = min([min(nmpc['obst'][:, 1]), min(nmpc['tgt'][:, 1])])
+yrmax = max([max(nmpc['obst'][:, 1]), max(nmpc['tgt'][:, 1])])
+xcent = xrmin + (xrmax - xrmin)/2
+ycent = yrmin + (yrmax - yrmin)/2
+xyr = int(1.5*max([(xrmax - xrmin), (yrmax - yrmin)])/2)
+xr = [xcent - xyr, xcent + xyr]
+yr = [ycent - xyr, ycent + xyr]
 X, Y, Phi = nsq.obst_potential(nmpc, [xr[0], xr[1], .1], [yr[0], yr[1], .1])
 Phiamax = np.amax(Phi)
 fig = plt.figure(figsize=(11, 8.5), dpi=94, facecolor='#efefef')

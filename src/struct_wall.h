@@ -1,7 +1,7 @@
 /*
- * struct_intok.h
+ * struct_wall.h
  * Author : Timothy A.V. Teatro
- * Date   : 2013-06-28
+ * Date   : 2013-11-14
  *
  * This file is part of vme-nmpc.
  *
@@ -21,17 +21,15 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __STRUCT_INTOK_H_
-#define __STRUCT_INTOK_H_
+#ifndef __struct_wall_h__
+#define __struct_wall_h__
 
-/*!
- * A structure that holds the symbol for an input variable, and a bool that is
- * set true when a value is recorded for that symbol from the input file.
- */
-typedef struct intok_tag
+typedef struct wall_tag
 {
-	const char* token;
-	bool saw_tok;
-} intok;
+	float x0;
+	float y0;
+	float x1;
+	float y1;
+} wall;
 
-#endif /* __STRUCT_INTOK_H_ */
+#endif // __struct_wall_h__

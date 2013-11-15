@@ -32,7 +32,7 @@ void empty_output_hook(const qnu* qu, const Lagr* p, const nmpc& C)
 }
 
 void empty_output_hook(const qnu* qu, const Lagr* p, const nmpc& C,
-		const float* grad)
+                       const float* grad)
 {
 }
 
@@ -56,7 +56,7 @@ void print_greeting(const nmpc& C)
 	printf("  Control horizon size                    (C) : %d\n", C.C);
 	printf("  Default SD mixing                      (dg) : %f\n", C.dg);
 	printf("  Desired cruising speed     (cruising_speed) : %f\n",
-			C.cruising_speed);
+	       C.cruising_speed);
 	printf("  Obstacle peak inverse maximum         (eps) : %f\n", C.eps);
 	printf("  Terminal cost weight diag.             (Q0) : ");
 	for (k = 0; k < 2; ++k)
@@ -81,6 +81,10 @@ void print_greeting(const nmpc& C)
 	printf("  Point obstacle list (obst) :\n");
 	for (k = 0; k < C.nobst; ++k)
 		printf("    % f % f\n", C.obst[2 * k], C.obst[2 * k + 1]);
+	printf("  List of wall segments (walls) :\n");
+	for (k = 0; k < C.nwalls; ++k)
+		printf("    % f % f - % f % f\n", C.walls[k].x0, C.walls[k].y0,
+		       C.walls[k].x1, C.walls[k].y1);
 	printf("#\n");
 }
 
@@ -92,9 +96,9 @@ void print_pathnerr(const qnu* qu, const Lagr* p, const nmpc& C)
 	for (unsigned int k = 0; k < C.N; ++k)
 	{
 		printf("%2d % 10.4f % 10.4f % 10.4f % 10.4f", k, qu[k].x, qu[k].y,
-				qu[k].Dx, qu[k].Dy);
+		       qu[k].Dx, qu[k].Dy);
 		printf(" % 10.4f % 10.4f % 10.4f % 10.4f % 10.4f\n", qu[k].th, qu[k].v,
-				qu[k].Dth, p[k].ex, p[k].ey);
+		       qu[k].Dth, p[k].ex, p[k].ey);
 	}
 }
 
@@ -106,7 +110,7 @@ void print_LG(const qnu* qu, const Lagr* p, const nmpc& C, const float* grad)
 	for (unsigned int k = 0; k < C.N; ++k)
 	{
 		printf("%2d % 10.4f % 10.4f % 10.4f % 10.4f % 10.4f % 10.4f\n", k,
-				p[k].p1, p[k].p2, p[k].p3, p[k].p4, p[k].p5, grad[k]);
+		       p[k].p1, p[k].p2, p[k].p3, p[k].p4, p[k].p5, grad[k]);
 	}
 }
 

@@ -24,6 +24,6 @@
 #include "error_codes.h"
 
 // from errhandler.c
-void report_error( const int, const char * );
+void report_error(const int, const char*);
 
 #endif // __INC_ERRHANDLER_H__

@@ -92,7 +92,7 @@ def RMS_turn_rate(nmpc, path, met):
         met - The meta dictionary identifying the columns in path
     Returns:
         RMS_turn_rate - what it says on the tin.
-    """ 
+    """
     RMS_turn_rate = 0
     for Dth in path[:, met['Dth']]:
         RMS_turn_rate = Dth ** 2
@@ -107,7 +107,7 @@ def avg_speed(nmpc, path, met):
         path - The state path with the pertinent data.
         met - The meta dictionary identifying the columns in path
     Returns:
-        avg_speed - The average speed over path, using nmpc['T'] for the step. 
+        avg_speed - The average speed over path, using nmpc['T'] for the step.
     """
     avg_speed = 0
     for v in path[:, met['v']]:
@@ -130,6 +130,26 @@ def obst_potential(nmpc, xr, yr):
                        np.arange(yr[0], yr[1], yr[2]))
     Phi = np.zeros(X.shape)
     for k in range(0, nmpc["obst"].shape[0]):
-        Phi += 1/ ((nmpc["obst"][k, 0]-X)**2 
+        Phi += 1/ ((nmpc["obst"][k, 0]-X)**2
                  + (nmpc["obst"][k, 1]-Y) **2 + nmpc["eps"])
+    for k in range(0, nmpc["walls"].shape[0]):
+        # I have to find a more numpy-ier way to do this:
+        for i in range(0, Phi.shape[0]):
+            for j in range(0, Phi.shape[1]):
+                WPx = X[i,j] - nmpc["walls"][k,0]
+                WPy = Y[i,j] - nmpc["walls"][k,1]
+                vx = nmpc["walls"][k,2] - nmpc["walls"][k,0]
+                vy = nmpc["walls"][k,3] - nmpc["walls"][k,1]
+                c1 = (vx * WPx + vy * WPy)
+                c2 = (vx*vx + vy*vy)
+                if (c1 <= 0):
+                    Phi[i,j] += 1/ ( (nmpc["walls"][k,0]-X[i,j])**2 +
+                                (nmpc["walls"][k,1]-Y[i,j])**2 + nmpc["eps"])
+                elif (c2 <= c1):
+                     Phi[i,j] += 1/ ( (nmpc["walls"][k,2]-X[i,j])**2 +
+                                (nmpc["walls"][k,3]-Y[i,j])**2 + nmpc["eps"])
+                else:
+                    dx = (nmpc["walls"][k,0]+c1*vx/c2) - X[i,j]
+                    dy = (nmpc["walls"][k,1]+c1*vy/c2) - Y[i,j]
+                    Phi[i,j] += 1/ ( dx**2 + dy**2 + nmpc["eps"])
     return X, Y, Phi

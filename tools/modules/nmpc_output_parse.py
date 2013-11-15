@@ -28,7 +28,7 @@ This module contains functions for parsing the output of vme-nmpc. For the most
 part, the functions package data in lists. It is reccomended to cast them into
 numpy arrays before doing any serious work. This is demonstrated in
 analyse_output.py
- 
+
 """
 
 def is_number(s):
@@ -105,6 +105,20 @@ def parse_welcome(infile, nmpc):
                 if is_number(line.split()[0]):
                     nmpc["obst"][0].append(float(line.split()[0]))
                     nmpc["obst"][1].append(float(line.split()[1]))
+                else:
+                    break
+        if ("(walls)" in line):
+            nmpc["walls"] = []
+            while 1:
+                line = infile.readline()
+                if len(line) == 0:
+                    return 1
+                if is_number(line.split()[0]):
+                    nmpc["walls"].append([ \
+                        float(line.split()[0]),
+                        float(line.split()[1]),
+                        float(line.split()[3]),
+                        float(line.split()[4])])
                 else:
                     break
     return line
@@ -198,9 +212,9 @@ def get_block_meta(infile, meta):
     Return:
         1 - Failure.
         0 - Success.
-    
+
     Caution: the meta data must be in the next line of the stream.
-    
+
     """
     line = infile.readline()
     if len(line) == 0:

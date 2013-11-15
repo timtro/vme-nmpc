@@ -22,6 +22,7 @@
 #define __STRUCT_NMPC_H__
 
 #include "stdio.h"
+#include "struct_wall.h"
 
 typedef struct nmpc_tag
 {
@@ -72,14 +73,23 @@ typedef struct nmpc_tag
 	 */
 	float* tgt;
 	/*!
-	 * Number of obstacles in obstacle list
+	 * Number of obstacles in obstacle list.
 	 */
 	unsigned int nobst;
+	/*!
+	 * The number of walls in the environment.
+	 */
+	unsigned int nwalls;
 	/*!
 	 *  obst is a matrix containing a concainated list of 2D column
 	 *  vectors of point obstacle coordinates.
 	 */
 	float* obst;
+	/*!
+	 *  walls is an array containing a concainated list of 2D column
+	 *  vectors of end point coordinates for line segements.
+	 */
+	wall* walls;
 	/*!
 	 *  Q0 is the weighting matrix associated with the tracking error in
 	 *  the last state in the prediction horizon.

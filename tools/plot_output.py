@@ -176,12 +176,13 @@ if (nop.parse_welcome(instream, nmpc) == 1):
 # As suggested in the module headers.
 nmpc["obst"] = np.transpose(np.array(nmpc["obst"]))
 nmpc["tgt"] = np.transpose(np.array(nmpc["tgt"]))
+nmpc["walls"] = np.array(nmpc["walls"])
 
 # Set up the figure:
-xrmin = min([min(nmpc['obst'][:, 0]), min(nmpc['tgt'][:, 0])])
-xrmax = max([max(nmpc['obst'][:, 0]), max(nmpc['tgt'][:, 0])])
-yrmin = min([min(nmpc['obst'][:, 1]), min(nmpc['tgt'][:, 1])])
-yrmax = max([max(nmpc['obst'][:, 1]), max(nmpc['tgt'][:, 1])])
+xrmin = min([min(nmpc['obst'][:, 0]), min(nmpc['tgt'][:, 0]), 0., nmpc['walls'][:,::2].min()])
+xrmax = max([max(nmpc['obst'][:, 0]), max(nmpc['tgt'][:, 0]), 0., nmpc['walls'][:,::2].max()])
+yrmin = min([min(nmpc['obst'][:, 1]), min(nmpc['tgt'][:, 1]), 0., nmpc['walls'][:,1::2].min()])
+yrmax = max([max(nmpc['obst'][:, 1]), max(nmpc['tgt'][:, 1]), 0., nmpc['walls'][:,1::2].max()])
 xcent = xrmin + (xrmax - xrmin)/2
 ycent = yrmin + (yrmax - yrmin)/2
 xyr = int(1.5*max([(xrmax - xrmin), (yrmax - yrmin)])/2)

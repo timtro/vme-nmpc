@@ -29,7 +29,7 @@ public:
 	void set_port(int);
 	void set_configfile(char*);
 	void update_poshead(qnu*, const nmpc&);
-	int Nav2_v(float*, float*) ;
+	int Nav2_v(float*, float*);
 	char *conffile();
 
 };

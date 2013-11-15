@@ -28,8 +28,8 @@
  * that it can be executed after the close of the SD loop.
  */
 
-#ifndef STRUCT_CMD_H_
-#define STRUCT_CMD_H_
+#ifndef __STRUCT_CMD_H_
+#define __STRUCT_CMD_H_
 
 typedef struct cmd_tag
 {
@@ -37,4 +37,4 @@ typedef struct cmd_tag
 	float Dth;
 } cmd;
 
-#endif /* STRUCT_CMD_H_ */
+#endif /* __STRUCT_CMD_H_ */

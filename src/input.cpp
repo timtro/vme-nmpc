@@ -54,7 +54,7 @@ void parse_command_line(int argc, char** argv, robot* vme, cl_opts* opts)
 		case 'v':
 			opts->selec_verbose = true;
 			break;
-		case 's':
+		case 'S':
 			opts->selec_state_and_error_SE = true;
 			break;
 		case 'q':
@@ -69,7 +69,7 @@ void parse_command_line(int argc, char** argv, robot* vme, cl_opts* opts)
 		case 't':
 			opts->selec_target_reached_TR = true;
 			break;
-		case 'S':
+		case 's':
 			opts->selec_sim = true;
 			break;
 		case '?':
@@ -95,7 +95,7 @@ void parse_command_line(int argc, char** argv, robot* vme, cl_opts* opts)
 		}
 }
 
-void get_token(FILE *fd, char *buffer, int *lastdelim, int *lineno)
+void get_token(FILE* fd, char* buffer, int* lastdelim, int* lineno)
 {
 	int ch = '\0';
 	char *eob = buffer + BUFSIZ - 1;
@@ -145,22 +145,22 @@ void get_token(FILE *fd, char *buffer, int *lastdelim, int *lineno)
 			 *  Any of these ends the recording:
 			 */
 			while ((ch = fgetc(fd)) != EOF && !isspace(ch) && ch != '='
-					&& ch != ',' && ch != ':' && ch != ';')
+			       && ch != ',' && ch != ':' && ch != ';')
 				*curb++ = ch;
 			/*
 			 *  We should expect that the recording was ended by these
 			 *  characters, otherwise, throw an error.
 			 */
 			if (ch != ' ' && ch != ',' && ch != ';' && ch != '\t' && ch != '='
-					&& ch != '\n')
+			      && ch != '\n')
 			{
 				/*
 				 *  This error should really never happen unless we get \r or\v
 				 *  or something else exoctic.
 				 */
 				sprintf(buffer,
-						"Line %d: Found invalid character '0x%x' ending a token.",
-						*lineno, ch);
+				        "Line %d: Found invalid character '0x%x' ending a token.",
+				        *lineno, ch);
 				report_error(INVALID_INPUT_FILE_SYNTAX, buffer);
 			}
 			else
@@ -229,7 +229,7 @@ void check_delim(int lastdelim, char expected_delim, int lineno)
 	if (lastdelim != expected_delim)
 	{
 		sprintf(errmsg, "Line %d: Expected ';' to end record. Got '%c'", lineno,
-				lastdelim);
+		        lastdelim);
 		report_error(FATAL_INPUT_FILE_SYNTAX, errmsg);
 	}
 
@@ -245,7 +245,7 @@ void require_intok(intok* A)
 	if (!(A->saw_tok))
 	{
 		sprintf(errmsg, "An entry for '%s' is required from input file\n",
-				A->token);
+		        A->token);
 		report_error(FATAL_INPUT_FILE_ERROR, errmsg);
 	}
 }
@@ -253,9 +253,9 @@ void require_intok(intok* A)
 /*
  * This function parses the input file.
  */
-void parse_input_file(nmpc &controller, const char *infile)
+void parse_input_file(nmpc& controller, const char* infile)
 {
-	int k = 0, lineno = 1;
+	int k = 0, lineno = 1, j;
 	char *token;
 	int lastdelim;
 	char buffer[BUFSIZ];
@@ -267,36 +267,22 @@ void parse_input_file(nmpc &controller, const char *infile)
 	 * ticked as we go through the input file, and missing items can be handled
 	 * ex post facto.
 	 */
-	intok tok_N =
-	{ "N", false };
-	intok tok_C =
-	{ "C", false };
-	intok tok_m =
-	{ "m", false };
-	intok tok_n =
-	{ "n", false };
-	intok tok_T =
-	{ "T", false };
-	intok tok_dg =
-	{ "dg", false };
-	intok tok_eps =
-	{ "eps", false };
-	intok tok_tgttol =
-	{ "tgttol", false };
-	intok tok_cruising_speed =
-	{ "cruising_speed", false };
-	intok tok_R =
-	{ "R", false };
-	intok tok_Q0 =
-	{ "Q0", false };
-	intok tok_Q =
-	{ "Q", false };
-	intok tok_S =
-	{ "S", false };
-	intok tok_tgt =
-	{ "tgt", false };
-	intok tok_obst =
-	{ "obst", false };
+	intok tok_N = { "N", false };
+	intok tok_C = { "C", false };
+	intok tok_m = { "m", false };
+	intok tok_n = { "n", false };
+	intok tok_T = { "T", false };
+	intok tok_dg = { "dg", false };
+	intok tok_eps = { "eps", false };
+	intok tok_tgttol = { "tgttol", false };
+	intok tok_cruising_speed = { "cruising_speed", false };
+	intok tok_R = { "R", false };
+	intok tok_Q0 = { "Q0", false };
+	intok tok_Q = { "Q", false };
+	intok tok_S = { "S", false };
+	intok tok_tgt = { "tgt", false };
+	intok tok_obst = { "obst", false };
+	intok tok_walls = { "walls", false };
 
 //  Begin...
 	infd = fopen(infile, "r");
@@ -321,8 +307,8 @@ void parse_input_file(nmpc &controller, const char *infile)
 		if (lastdelim != '=' && lastdelim != EOF)
 		{
 			sprintf(errmsg,
-					"Line %d: Invalid field delimeter '%c', expected '=' or ':'.",
-					lineno, lastdelim);
+			        "Line %d: Invalid field delimeter '%c', expected '=' or ':'.",
+			        lineno, lastdelim);
 			report_error(INVALID_INPUT_FILE_SYNTAX, errmsg);
 		}
 		/*
@@ -473,16 +459,16 @@ void parse_input_file(nmpc &controller, const char *infile)
 			{
 				++k;
 				controller.tgt = (float*) realloc(controller.tgt,
-						k * sizeof(float));
+				                                  k * sizeof(float));
 				get_token(infd, buffer, &lastdelim, &lineno);
 				controller.tgt[k - 1] = atof(buffer);
 			}
 			if (k % 2 != 0)
 			{
 				sprintf(errmsg,
-						"The odd number of entreis for tgt: cannot make pairs");
+				        "The odd number of entreis for tgt: cannot make pairs");
 				report_error(ODD_NUMBER_TGT_COORDINATES, errmsg);
-			};
+			}
 			controller.ntgt = k / 2;
 			tok_tgt.saw_tok = true;
 		}
@@ -494,7 +480,7 @@ void parse_input_file(nmpc &controller, const char *infile)
 			{
 				++k;
 				controller.obst = (float*) realloc(controller.obst,
-						k * sizeof(float));
+				                                   k * sizeof(float));
 				get_token(infd, buffer, &lastdelim, &lineno);
 				controller.obst[k - 1] = atof(buffer);
 			}
@@ -502,17 +488,49 @@ void parse_input_file(nmpc &controller, const char *infile)
 			if (k % 2 != 0)
 			{
 				sprintf(errmsg,
-						"The odd number of entreis for obst: cannot make pairs");
+				        "The odd number of entreis for obst: cannot make pairs");
 				report_error(ODD_NUMBER_OBST_COORDINATES, errmsg);
-			};
+			}
 			controller.nobst = k / 2;
 			tok_obst.saw_tok = true;
+		}
+		else if (strcmp("walls", buffer) == 0)
+		{
+			k = 0;
+			controller.walls = NULL;
+			float* tmpwalls = NULL;
+			while (lastdelim != ';')
+			{
+				++k;
+				tmpwalls = (float*) realloc(tmpwalls,
+				                            k * sizeof(float));
+				get_token(infd, buffer, &lastdelim, &lineno);
+				tmpwalls[k - 1] = atof(buffer);
+			}
+
+			if (k % 4 != 0)
+			{
+				sprintf(errmsg,
+				        "Each wall requires 2 pairs of coordinates!");
+				report_error(ODD_NUMBER_OBST_COORDINATES, errmsg);
+			}
+			controller.nwalls = k / 4;
+			tok_walls.saw_tok = true;
+			controller.walls = (wall*) malloc(controller.nwalls * sizeof(wall));
+			// Pack the array tmpwalls into walls structure in controller:
+			for (j=0; j < controller.nwalls; ++j)
+			{
+				controller.walls[j].x0 = tmpwalls[j*4];
+				controller.walls[j].y0 = tmpwalls[j*4+1];
+				controller.walls[j].x1 = tmpwalls[j*4+2];
+				controller.walls[j].y1 = tmpwalls[j*4+3];
+			}
 		}
 		else
 		{
 			sprintf(errmsg,
-					"WARNING: Line %d: Unrecognized key '%s'. Skipping record",
-					lineno, buffer);
+			        "WARNING: Line %d: Unrecognized key '%s'. Skipping record",
+			        lineno, buffer);
 			report_error(RECOVERABLE_INPUT_FILE_SYNTAX, errmsg);
 			while (lastdelim != ';')
 				get_token(infd, buffer, &lastdelim, &lineno);
@@ -533,5 +551,6 @@ void parse_input_file(nmpc &controller, const char *infile)
 	require_intok(&tok_tgttol);
 	require_intok(&tok_tgt);
 	require_intok(&tok_obst);
+	require_intok(&tok_walls);
 	fclose(infd);
 }

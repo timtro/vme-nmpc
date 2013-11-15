@@ -98,7 +98,7 @@ if (nop.parse_welcome(instream, nmpc) == 1):
 # the gradient and TR marks where the target is reached and the wall-time for
 # that waypoint is listed.
 #
-    
+
 while 1:
     path_and_error = []
     lagrange_and_gradient = []
@@ -163,6 +163,7 @@ executed_path = np.array(executed_path)
 tgt_time = np.array(tgt_time)
 nmpc["obst"] = np.transpose(np.array(nmpc["obst"]))
 nmpc["tgt"] = np.transpose(np.array(nmpc["tgt"]))
+nmpc["walls"] = np.array(nmpc["walls"])
 
 if (len(se_meta) != 0):
     min_dist_to_obst = nsq.minimum_distance_to_obstacle(nmpc, executed_path,
@@ -184,6 +185,17 @@ if tr_meta != {}:
     total_wall_time = sum(tgt_time[:,tr_meta['time_to_tgt']])
 else:
     total_wall_time = float('NaN')
+
+xrmin = min([min(nmpc['obst'][:, 0]), min(nmpc['tgt'][:, 0]), 0., nmpc['walls'][:,::2].min()])
+xrmax = max([max(nmpc['obst'][:, 0]), max(nmpc['tgt'][:, 0]), 0., nmpc['walls'][:,::2].max()])
+yrmin = min([min(nmpc['obst'][:, 1]), min(nmpc['tgt'][:, 1]), 0., nmpc['walls'][:,1::2].min()])
+yrmax = max([max(nmpc['obst'][:, 1]), max(nmpc['tgt'][:, 1]), 0., nmpc['walls'][:,1::2].max()])
+xcent = xrmin + (xrmax - xrmin)/2
+ycent = yrmin + (yrmax - yrmin)/2
+xyr = int(1.5*max([(xrmax - xrmin), (yrmax - yrmin)])/2)
+xr = [xcent - xyr, xcent + xyr]
+yr = [ycent - xyr, ycent + xyr]
+
 #
 # We've parsed the file, and computed the core statistics. Now create the
 # report document.
@@ -223,10 +235,10 @@ ax1.text(.98, .98, 'Path [m, m]',
         horizontalalignment='right',
         verticalalignment='top',
         transform=ax1.transAxes)
-ax1.set_xlim(0, 10)
-ax1.set_ylim(-5, 5)
+ax1.set_xlim(xr[0], xr[1])
+ax1.set_ylim(yr[0], yr[1])
 ax1.grid()
-X,Y,Phi = nsq.obst_potential(nmpc, [0,10,.1], [-5,5,.1])
+X,Y,Phi = nsq.obst_potential(nmpc, [xr[0],xr[1],.1], [yr[0], yr[1], .1])
 Phiamax = np.amax(Phi)
 ax1.plot(executed_path[:, se_meta['x']], executed_path[:, se_meta['y']], 'k-')
 ax1.plot(nmpc["obst"][:,0], nmpc["obst"][:,1], 'ko', ms=3)

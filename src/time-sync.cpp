@@ -28,6 +28,6 @@
 double wall_time()
 {
 	struct timespec t;
-	clock_gettime(CLOCK_MONOTONIC, &t);
+	clock_gettime( CLOCK_MONOTONIC, &t );
 	return t.tv_sec + SEC_PER_NSEC * t.tv_nsec;
 }

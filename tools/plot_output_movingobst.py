@@ -69,14 +69,14 @@ def update_plot(data):
             line = instream.readline()
             if len(line) == 0:
                 update_plot.pause = True
-                return ax1xy, ax1xryr, execp, ax2xy, ax2xryr
+                return ax1xy, ax1xryr, execp, ax1mobst
             if '(SE)' in line:
                 if not options.stdintrue:
                     update_plot.filepos.append(curpos)
                 if len(se_meta) == 0:
                     if (nop.get_block_meta(instream, se_meta)):
                         update_plot.pause = True
-                        return ax1xy, ax1xryr, execp, ax2xy, ax2xryr
+                        return ax1xy, ax1xryr, execp, ax1mobst
                     del se_meta['k']
                     # I hate doing this, but for now, parse_path_and_error()
                     # doesn't store k, it needs to be taken from the metadata.
@@ -92,12 +92,8 @@ def update_plot(data):
         ax1xy.set_data(path_and_error[:, se_meta['x']],
                        path_and_error[:, se_meta['y']])
         ax1xryr.set_data(xrdata, yrdata)
-        ax2xy.set_data(path_and_error[:, se_meta['x']]
-                            - path_and_error[0, se_meta['x']],
-                       path_and_error[:, se_meta['y']]
-                            - path_and_error[0, se_meta['y']])
-        ax2xryr.set_data(xrdata - path_and_error[0, se_meta['x']],
-                       yrdata - path_and_error[0, se_meta['y']])
+        nmpc['obst'][:,1] += 0.4 * nmpc['C'] * nmpc['T']
+        ax1mobst.set_data(nmpc['obst'][:,0], nmpc['obst'][:,1])
         for k in range(0, nmpc['C']):
             update_plot.exec_path[0].append(path_and_error[k, se_meta['x']])
             update_plot.exec_path[1].append(path_and_error[k, se_meta['y']])
@@ -105,15 +101,13 @@ def update_plot(data):
     if update_plot.isstep:
         update_plot.isstep = False
         update_plot.pause = True
-    return ax1xy, ax1xryr, execp, ax2xy, ax2xryr
+    return ax1xy, ax1xryr, execp, ax1mobst
 
 def init():
     ax1xy.set_data([], [])
     ax1xryr.set_data([], [])
-    ax2xy.set_data([], [])
-    ax2xryr.set_data([], [])
     execp.set_data([], [])
-    return ax1xy, ax1xryr, execp, ax2xy, ax2xryr
+    return ax1xy, ax1xryr, execp
 
 def on_key(event):
     """
@@ -174,14 +168,11 @@ update_plot.isstep = False
 if (nop.parse_welcome(instream, nmpc) == 1):
     exit(1)
 # As suggested in the module headers.
-
 nmpc['tgt'] = np.transpose(np.array(nmpc['tgt']))
 if ('obst' in nmpc):
     nmpc['obst'] = np.transpose(np.array(nmpc['obst']))
 if ('walls' in nmpc):
     nmpc['walls'] = np.array(nmpc['walls'])
-
-# Set up the figure:
 
 x_features = [nmpc['tgt'][:, 0].max(), nmpc['tgt'][:, 0].min()]
 y_features = [nmpc['tgt'][:, 1].max(), nmpc['tgt'][:, 1].min()]
@@ -203,10 +194,11 @@ xyr = int(1.5*max([(xrmax - xrmin), (yrmax - yrmin)])/2)
 xr, yr = ([xcent - xyr, xcent + xyr],
     [ycent - xyr, ycent + xyr])
 
+
 X, Y, Phi = nsq.obst_potential(nmpc, [xr[0], xr[1], .05], [yr[0], yr[1], .05])
 Phiamax = np.amax(Phi)
 fig = plt.figure(figsize=(11, 8.5), dpi=94, facecolor='#efefef')
-gs = gridspec.GridSpec(1, 2, width_ratios=[1, 1])
+gs = gridspec.GridSpec(1, 1)
 
 # We don't want to respond to keyboard events if we are sreaming live.
 if not options.stdintrue:
@@ -218,25 +210,18 @@ ax1.set_xlim(xr[0], xr[1])
 ax1.set_ylim(yr[0], yr[1])
 ax1xy, = ax1.plot([], [], 'ro-', lw=3, ms=3)
 ax1xryr, = ax1.plot([], [], 'yo-', lw=4, ms=3)
+ax1mobst, = ax1.plot([], [], 'ro', ms=10)
 execp, = ax1.plot([], [], 'r-')
-ax1.contour(X, Y, Phi, alpha=.3, cmap='jet',
-    levels=np.arange(0, Phiamax, Phiamax/20))
-#ax1.imshow(Phi, cmap=plt.get_cmap('jet'),
-#          extent=[xr[0], xr[1], yr[0], yr[1]], origin='lower')
+#ax1.contour(X, Y, Phi, alpha=.3, cmap='jet',
+#    levels=np.arange(0, Phiamax, Phiamax/20))
+ax1.imshow(Phi, cmap=plt.get_cmap('jet'),
+    extent=[xr[0], xr[1], yr[0], yr[1]], origin='lower')
 ax1.grid()
-
-# Axis 2 stuff:
-ax2 = fig.add_subplot(gs[1], adjustable='box', aspect=1.0, axisbg='b')
-plt.setp(ax2.get_xticklabels(), visible=False)
-plt.setp(ax2.get_yticklabels(), visible=False)
-max_pathlength = nmpc['N'] * nmpc['cruising_speed'] * nmpc['T']
-ax2.set_ylim(-max_pathlength, max_pathlength)
-ax2.set_xlim(-max_pathlength, max_pathlength)
-ax2xy, = ax2.plot([], [], 'ro-', lw=2, ms=5)
-ax2xryr, = ax2.plot([], [], 'yo-', lw=2, ms=5)
 
 # Tighten the figure and begin the animation:
 plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
 anim = animation.FuncAnimation(fig, update_plot, init_func=init,
-    interval=options.interval, blit=True)
+                               interval=options.interval, blit=True)
+
+#anim.save('/home/timtro/Desktop/test.mp4', bitrate=1400)
 plt.show()

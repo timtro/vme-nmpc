@@ -1,11 +1,11 @@
 /*
- * struct_cl_opts.h
+ * class_graphDescription.h
  * Author : Timothy A.V. Teatro
- * Date   : 2013-06-28
+ * Date   : Mar 2014
  *
  * This file is part of vme-nmpc.
  *
- * Copyright (C) 2013 - Timothy A.V. Teatro
+ * Copyright (C) 2013, 2014 - Timothy A.V. Teatro
  *
  * vme-nmpc is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,20 +21,31 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRUCT_CL_OPTS_H_
-#define STRUCT_CL_OPTS_H_
+#ifndef __class_graphDescription_h__
+#define __class_graphDescription_h__
 
-typedef struct cl_opts_tag
+#include <vector>
+#include "class_graphNode.h"
+
+class graphDescription
 {
-	bool selec_verbose;
-	bool selec_quiet;
-	bool selec_state_and_error_SE;
-	bool selec_lagrange_grad_LG;
-	bool selec_SD_converged_SD;
-	bool selec_target_reached_TR;
-	bool selec_sim;
-	bool write_hdf5;
-	char* hdf5_file;
-} cl_opts;
+public:
 
-#endif /* STRUCT_CL_OPTS_H_ */
+	graphDescription ( int cr, std::vector<float> euclid_ranges, float ds );
+	graphDescription ();
+
+	int getHashBin( graphNode& n );
+	bool isAccessible( graphNode& n );
+	void getSuccessors( graphNode& n, std::vector<graphNode>* s, std::vector<double>* c );
+	double getHeuristics( graphNode& n1, graphNode& n2 );
+
+private:
+
+	int circleRadius;
+	int Ximin, Ximax, Yimin, Yimax;
+	float Xmin, Xmax, Ymin, Ymax;
+	float ds;
+
+};
+
+#endif // __class_graphDescription_h__

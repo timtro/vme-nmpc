@@ -22,6 +22,8 @@
  */
 
 #include "class_robot.h"
+#include "class_graphNode.h"
+#include "class_graphDescription.h"
 #include "struct_nmpc.h"
 #include "struct_qnu.h"
 #include "struct_Lagr.h"
@@ -29,31 +31,35 @@
 #include "struct_cmd.h"
 #include "inc_errhandler.h"
 
+#include "yagsbpl_base.h"
+#include "planners/A_star.h"
+
 // from sockcomm.cpp
 int init_vme_sock();
 
 // from input.cpp
-int parse_command_line(int, char**, robot*, cl_opts*);
-void parse_input_file(nmpc&, const char*);
+int parse_command_line( int, char**, robot*, cl_opts* );
+void parse_input_file( nmpc&, const char* );
 
 // from nmpc-funcs.cpp
-void init_qu_and_p(qnu*, Lagr*, nmpc&);
-void get_gradient(qnu*, Lagr*, nmpc&, float*);
-float predict_horizon(qnu*, Lagr*, const nmpc&);
-float costfun(const qnu*, const Lagr*, const nmpc&);
-void swap_fptr(float**, float**);
-double exec_control_horiz_dummy(qnu* qu, const nmpc& C, robot* vme);
-double exec_control_horiz_vme(qnu* qu, const nmpc& C, robot* vme);
+void init_qu_and_p( qnu*, Lagr*, nmpc& );
+void get_gradient( qnu*, Lagr*, nmpc&, float* );
+float predict_horizon( qnu*, Lagr*, const nmpc& );
+float costfun( const qnu*, const Lagr*, const nmpc& );
+void swap_fptr( float**, float** );
+double exec_control_horiz_dummy( qnu* qu, const nmpc& C, robot* vme );
+double exec_control_horiz_vme( qnu* qu, const nmpc& C, robot* vme );
+void set_tracking_errors ( qnu* qu, Lagr* p, const nmpc& C );
 
 // from time-sync.cpp
 double wall_time();
 
 // from output.cpp
-void empty_output_hook(const qnu*, const Lagr*, const nmpc&);
-void empty_output_hook(const qnu*, const Lagr*, const nmpc&, const float*);
-void empty_output_hook(const unsigned int*, const double*);
-void print_greeting(const nmpc&);
-void print_pathnerr(const qnu*, const Lagr*, const nmpc&);
-void print_LG(const qnu*, const Lagr*, const nmpc&, const float*);
-void print_SD(const unsigned int*, const double*);
-void print_TR(const unsigned int*, const double*);
+void empty_output_hook( const qnu*, const Lagr*, const nmpc& );
+void empty_output_hook( const qnu*, const Lagr*, const nmpc&, const float* );
+void empty_output_hook( const unsigned int*, const double* );
+void print_greeting( const nmpc& );
+void print_pathnerr( const qnu*, const Lagr*, const nmpc& );
+void print_LG( const qnu*, const Lagr*, const nmpc&, const float* );
+void print_SD( const unsigned int*, const double* );
+void print_TR( const unsigned int*, const double* );

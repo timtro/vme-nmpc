@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""
+'''
  * analyse_output.py
  * Author : Timothy A.V. Teatro
  * Date   : 2013-06-10
@@ -30,7 +30,7 @@ output.
 This code is also intended as a general demonstration of the usage of the
 nmpc_stats_and_quantities and nmpc_output_parse modules.
 
-"""
+'''
 
 from optparse import OptionParser
 from sys import stdin
@@ -47,18 +47,24 @@ from modules import nmpc_stats_and_quantities as nsq
 # Parse command line options.
 #
 parser = OptionParser()
-parser.add_option("-f", "--file", dest="filename", default='',
-              help="Path to input file (output from vme-nmpc).",
-              metavar="FILE")
-parser.add_option("-c", "--csv", dest="csvout", default='',
-              help="Path to CSV output file.",
-              metavar="FILE")
-parser.add_option("-p", "--pdf", dest="pdfout", default='',
-              help="Path to PDF output file.",
-              metavar="FILE")
-parser.add_option("-s", "--stdin",
-              action="store_true", dest="stdintrue", default=False,
-              help="Take input from stdin. vme-nmpc [otps] | thisscript.py -s")
+parser.add_option('-f', '--file', dest='filename', default='',
+    help='Path to input file (output from vme-nmpc).',
+    metavar='FILE')
+parser.add_option('-c', '--csv', dest='csvout', default='',
+    help='Path to CSV output file.',
+    metavar='FILE')
+parser.add_option('-p', '--pdf', dest='pdfout', default='',
+    help='Path to PDF output file.',
+    metavar='FILE')
+parser.add_option('-s', '--stdin',
+    action='store_true', dest='stdintrue', default=False,
+    help='Take input from stdin. vme-nmpc [otps] | thisscript.py -s')
+parser.add_option('--savephi', dest='phifile', default='',
+    help='Path to npz file to contain X,Y,Phi.',
+    metavar='FILE')
+parser.add_option('--savepath', dest='pathfile', default='',
+    help='Path to npy file to contain the executed path.',
+    metavar='FILE')
 
 (options, args) = parser.parse_args()
 if options.stdintrue:
@@ -128,7 +134,7 @@ while 1:
         if (nop.parse_path_and_error(instream, nmpc, path_and_error)):
             break
         # Pull first C x,y,v,Dth into the executed path.
-        for k in range(0, nmpc["C"]):
+        for k in range(0, nmpc['C']):
             executed_path.append(path_and_error[k])
     # Detect the (LG) Lagrangian and Gradient output block
     if '(LG)' in line:
@@ -161,13 +167,19 @@ while 1:
 
 executed_path = np.array(executed_path)
 tgt_time = np.array(tgt_time)
-nmpc["obst"] = np.transpose(np.array(nmpc["obst"]))
-nmpc["tgt"] = np.transpose(np.array(nmpc["tgt"]))
-nmpc["walls"] = np.array(nmpc["walls"])
+
+nmpc['tgt'] = np.transpose(np.array(nmpc['tgt']))
+if ('obst' in nmpc):
+    nmpc['obst'] = np.transpose(np.array(nmpc['obst']))
+if ('walls' in nmpc):
+    nmpc['walls'] = np.array(nmpc['walls'])
 
 if (len(se_meta) != 0):
-    min_dist_to_obst = nsq.minimum_distance_to_obstacle(nmpc, executed_path,
-                                                        se_meta)
+    if 'obst' in nmpc:
+        min_dist_to_obst = nsq.minimum_distance_to_obstacle(nmpc,
+            executed_path, se_meta)
+    else:
+        min_dist_to_obst = float('nan')
     min_turn_radius = nsq.minimum_turn_radius(nmpc, executed_path, se_meta)
     path_length = nsq.path_length(nmpc, executed_path, se_meta)
     RMS_turn_rate = nsq.RMS_turn_rate(nmpc, executed_path, se_meta)
@@ -179,23 +191,33 @@ else:
     min_turn_radius = float('nan')
     min_dist_to_obst = float('nan')
 
-total_path_time = nmpc["T"] * executed_path.shape[0]
+total_path_time = nmpc['T'] * executed_path.shape[0]
 
 if tr_meta != {}:
     total_wall_time = sum(tgt_time[:,tr_meta['time_to_tgt']])
 else:
     total_wall_time = float('NaN')
 
-xrmin = min([min(nmpc['obst'][:, 0]), min(nmpc['tgt'][:, 0]), 0., nmpc['walls'][:,::2].min()])
-xrmax = max([max(nmpc['obst'][:, 0]), max(nmpc['tgt'][:, 0]), 0., nmpc['walls'][:,::2].max()])
-yrmin = min([min(nmpc['obst'][:, 1]), min(nmpc['tgt'][:, 1]), 0., nmpc['walls'][:,1::2].min()])
-yrmax = max([max(nmpc['obst'][:, 1]), max(nmpc['tgt'][:, 1]), 0., nmpc['walls'][:,1::2].max()])
-xcent = xrmin + (xrmax - xrmin)/2
-ycent = yrmin + (yrmax - yrmin)/2
-xyr = int(1.5*max([(xrmax - xrmin), (yrmax - yrmin)])/2)
-xr = [xcent - xyr, xcent + xyr]
-yr = [ycent - xyr, ycent + xyr]
 
+x_features = [nmpc['tgt'][:, 0].max(), nmpc['tgt'][:, 0].min()]
+y_features = [nmpc['tgt'][:, 1].max(), nmpc['tgt'][:, 1].min()]
+if ('obst' in nmpc):
+    x_features.extend([nmpc['obst'][:, 0].max(),
+        nmpc['obst'][:, 0].min()])
+    y_features.extend([nmpc['obst'][:, 1].max(),
+        nmpc['obst'][:, 1].min()])
+if ('walls' in nmpc):
+    x_features.extend([nmpc['walls'][:,::2].max(),
+        nmpc['walls'][:,::2].min()])
+    y_features.extend([nmpc['walls'][:,1::2].max(),
+        nmpc['walls'][:,1::2].min()])
+xrmin, xrmax = (min(x_features), max(x_features))
+yrmin, yrmax = (min(y_features), max(y_features))
+xcent, ycent = (xrmin + (xrmax - xrmin)/2,
+    yrmin + (yrmax - yrmin)/2)
+xyr = int(1.5*max([(xrmax - xrmin), (yrmax - yrmin)])/2)
+xr, yr = ([xcent - xyr, xcent + xyr],
+    [ycent - xyr, ycent + xyr])
 #
 # We've parsed the file, and computed the core statistics. Now create the
 # report document.
@@ -204,31 +226,34 @@ plt.rc('font', **{'family': 'sans', 'size': 12})
 
 fig = plt.figure(figsize=(11, 8.5), dpi=94, facecolor='#efefef', edgecolor='k')
 gs = gridspec.GridSpec(4, 2, width_ratios=[1, 1.5], height_ratios=[1, 1, 1, 1])
-ax1 = plt.subplot(gs[0:2, 0], axisbg="#ffffff", adjustable='box', aspect=1.0)
-ax2 = plt.subplot(gs[0, -1], axisbg="#ffffff", adjustable='box')
-ax3 = plt.subplot(gs[1, -1], axisbg="#ffffff", adjustable='box')
-ax4 = plt.subplot(gs[2, -1], axisbg="#ffffff", adjustable='box')
+ax1 = plt.subplot(gs[0:2, 0], axisbg='#ffffff', adjustable='box', aspect=1.0)
+ax2 = plt.subplot(gs[0, -1], axisbg='#ffffff', adjustable='box')
+ax3 = plt.subplot(gs[1, -1], axisbg='#ffffff', adjustable='box')
+ax4 = plt.subplot(gs[2, -1], axisbg='#ffffff', adjustable='box')
 plt.yticks(np.arange(.3, .5, .05))
-ax5 = plt.subplot(gs[3, -1], axisbg="#ffffff", adjustable='box')
+ax5 = plt.subplot(gs[3, -1], axisbg='#ffffff', adjustable='box')
 ax3.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
 plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
 
 plt.figtext(.02,.02, 'Total path length [m]        : ' \
                 + '{:< 8.4f}'.format(path_length)
-            + "\nTotal path duration [s]      : " \
+            + '\nTotal path duration [s]      : ' \
                 + '{:< 8.4f}'.format(total_path_time)
-            + "\nMin distance to obstacle [m] : " \
+            + '\nMin distance to obstacle [m] : ' \
                 + '{:< 8.4f}'.format(min_dist_to_obst)
-            + "\nMaximum turn rate [rad/s]    : " \
-                + '{:< 8.4f}'.format(max(executed_path[3]))
-            + "\nSmallest turn radius [m]     : " \
+            + '\nMaximum turn rate [rad/s]    : ' \
+                + '{:< 8.4f}'.format(np.absolute(executed_path[:,se_meta['Dth']]).max())
+            + '\nSmallest turn radius [m]     : ' \
                 + '{:< 8.4f}'.format(min_turn_radius)
-            + "\nAverage speed [m/s]          : " \
+            + '\nAverage speed [m/s]          : ' \
                 + '{:< 8.4f}'.format(avg_speed)
-            + "\nRMS turn rate [rad/s]        : " \
+            + '\nRMS turn rate [rad/s]        : ' \
                 + '{:< 8.7f}'.format(RMS_turn_rate)
-            + "\nTotal trip wall time [s]     : " \
-                + '{:< 8.7f}'.format(total_wall_time),
+            + '\nTotal trip wall time [s]     : ' \
+                + '{:< 8.7f}'.format(total_wall_time)
+            + '\nEnd dist from final waypt [m]: ' \
+                + '{:< 8.7f}'.format(np.sqrt(  (nmpc['tgt'][-1,0] - executed_path[-1, se_meta['x']])**2
+    + (nmpc['tgt'][-1,1] - executed_path[-1, se_meta['y']])**2  )),
             family='monospace', verticalalignment='bottom')
 
 ax1.text(.98, .98, 'Path [m, m]',
@@ -238,11 +263,12 @@ ax1.text(.98, .98, 'Path [m, m]',
 ax1.set_xlim(xr[0], xr[1])
 ax1.set_ylim(yr[0], yr[1])
 ax1.grid()
-X,Y,Phi = nsq.obst_potential(nmpc, [xr[0],xr[1],.1], [yr[0], yr[1], .1])
+X,Y,Phi = nsq.obst_potential(nmpc, [xr[0],xr[1],.1], [yr[0], yr[1], .05])
 Phiamax = np.amax(Phi)
 ax1.plot(executed_path[:, se_meta['x']], executed_path[:, se_meta['y']], 'k-')
-ax1.plot(nmpc["obst"][:,0], nmpc["obst"][:,1], 'ko', ms=3)
-ax1.plot(nmpc["tgt"][:,0], nmpc["tgt"][:,1], 'k^')
+if 'obst' in nmpc:
+    ax1.plot(nmpc['obst'][:,0], nmpc['obst'][:,1], 'ko', ms=3)
+ax1.plot(nmpc['tgt'][:,0], nmpc['tgt'][:,1], 'k^')
 cp = ax1.contour(X, Y, Phi, alpha=.3, cmap='jet',
             levels=np.arange(0, Phiamax, Phiamax/20), lw=.75)
 
@@ -275,7 +301,7 @@ ax4.text(.98, .95, 'Speed control value [s, m/s]',
         horizontalalignment='right',
         verticalalignment='top',
         transform=ax4.transAxes)
-ax4.plot(np.arange(0, executed_path.shape[0]) * nmpc["T"],
+ax4.plot(np.arange(0, executed_path.shape[0]) * nmpc['T'],
          executed_path[:, se_meta['v']], color='k')
 plt.setp(ax4.get_xticklabels(), visible=False)
 ax4.grid()
@@ -284,7 +310,7 @@ ax5.text(.98, .95, 'Steering rate control value [s, rad/s]',
         horizontalalignment='right',
         verticalalignment='top',
         transform=ax5.transAxes)
-ax5.plot(np.arange(0, executed_path.shape[0]) * nmpc["T"],
+ax5.plot(np.arange(0, executed_path.shape[0]) * nmpc['T'],
          executed_path[:, se_meta['Dth']], color='k')
 ax5.grid()
 
@@ -293,6 +319,17 @@ if (options.pdfout == ''):
 else:
     plt.savefig(options.pdfout)
 
+if (options.phifile != ''):
+    np.savez(options.phifile, X=X, Y=Y, Phi=Phi)
+
+if (options.pathfile != ''):
+    argdict = {'execp' : executed_path}
+    if 'obst' in nmpc:
+        argdict.update({'obst': nmpc['obst']})
+    if 'tgt' in nmpc:
+        argdict.update({'tgt': nmpc['tgt']})
+    np.savez(options.pathfile, **argdict)
+
 if (options.csvout != ''):
     csvexists = os.path.exists(
             os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -300,7 +337,7 @@ if (options.csvout != ''):
     with open(options.csvout, 'ab') as csvfd:
         csvw = csv.writer(csvfd, dialect='excel')
 
-        dictmeta = ['Run ID', 'N', 'C', 'T [s]', "eps [m]", 'R', 'Q0', 'Q',
+        dictmeta = ['Run ID', 'N', 'C', 'T [s]', 'eps [m]', 'R', 'Q0', 'Q',
                     'Path Length [m]', 'Path Duration [s]',
                     'Min. Dist. to Obst. [m]', 'Max Turn Rate [rad/s]',
                     'Sm. Turn. Rad. [m]', 'Avg. Speed [m/s]',

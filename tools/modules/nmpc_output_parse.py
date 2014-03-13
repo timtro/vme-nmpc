@@ -31,6 +31,8 @@ analyse_output.py
 
 """
 
+from _collections import defaultdict
+
 def is_number(s):
     """
     This function tests if a string can be represented by a float. If so, it
@@ -107,6 +109,8 @@ def parse_welcome(infile, nmpc):
                     nmpc["obst"][1].append(float(line.split()[1]))
                 else:
                     break
+            if not nmpc['obst'][0]:
+                del nmpc['obst']
         if ("(walls)" in line):
             nmpc["walls"] = []
             while 1:
@@ -224,3 +228,26 @@ def get_block_meta(infile, meta):
     linesplit = line.split()
     for k in range(0, len(linesplit)):
         meta[linesplit[k]] = k
+
+# def get_entire_ts(infile, nmpc):
+#     path_and_error = []
+#     lagrange_and_gradient = []
+#     sd_loop_data = []
+#     meta = {}
+
+#     block_names = ['(SD)', '(SE)', '(LG)', '(TR)']
+#     seenames = defaultdict(bool)
+
+#     # Loop lines in the file, which we'll break from
+#     for line in infile:
+#         # Check to see which output block we're reading:
+#         for name in block_names:
+#             if name in line:
+#                 metalist = infile.next()[1:].split()
+#                 meta = dict( zip(metalist, range(1, len(metalist)+1)) )
+#                 # A second infile interating loop to get the data:
+#                 for line in infile:
+#                     line.
+
+#             else:
+#                 continue

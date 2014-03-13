@@ -30,6 +30,7 @@ these cases, simple recasting is all that is required (i.e., a = np.array(a)).
 """
 
 import numpy as np
+from itertools import izip
 
 def minimum_distance_to_obstacle(nmpc, path, met):
     """
@@ -42,13 +43,11 @@ def minimum_distance_to_obstacle(nmpc, path, met):
         between the (discrete) path and the obstacles in the environemtnt.
     """
     min_dist_to_obst = 0
-    for j in range(0, path.shape[0]):
-        for k in range(0, nmpc["obst"].shape[0]):
-            dx = nmpc["obst"][k, 0] - path[j, met['x']]
-            dy = nmpc["obst"][k, 1] - path[j, met['y']]
-            dist_to_obst = np.sqrt(dx ** 2 + dy ** 2)
-            if (min_dist_to_obst > dist_to_obst) or (min_dist_to_obst == 0):
-                min_dist_to_obst = dist_to_obst
+    for ox,oy in izip(nmpc["obst"][:, 0], nmpc["obst"][:, 1]):
+        dist = np.sqrt( (path[:,met['x']]-ox)**2
+            + (path[:,met['y']]-oy)**2 ).min()
+        if (dist < min_dist_to_obst) or (min_dist_to_obst == 0):
+            min_dist_to_obst = dist
     return min_dist_to_obst
 
 
@@ -62,10 +61,9 @@ def minimum_turn_radius(nmpc, path, met):
         min_turn_rad - What it says on the tin. Computed from v = R*omega.
     """
     min_turn_rad = 0
-    for k in range(0, path.shape[0]):
-        if path[k, met['Dth']] != 0:
-            turn_rad = abs(path[k, met['v']]
-                           / path[k, met['Dth']])
+    for Dth, v in izip(path[:, met['Dth']], path[:, met['v']]):
+        if Dth != 0:
+            turn_rad = abs(v/Dth)
             if (min_turn_rad > turn_rad) or (min_turn_rad == 0):
                 min_turn_rad = turn_rad
     return min_turn_rad
@@ -79,10 +77,8 @@ def path_length(nmpc, path, met):
     Returns:
         path_length - integral of speed over time using trapezoids.
     """
-    path_length = 0
-    for v in path[:,met['v']]:
-        path_length += v * nmpc['T']
-    return path_length
+    return np.sum( np.sqrt( (path[1:,met['x']]-path[:-1,met['x']])**2
+        + (path[1:,met['y']] - path[:-1,met['y']])**2 ) )
 
 def RMS_turn_rate(nmpc, path, met):
     """
@@ -93,12 +89,7 @@ def RMS_turn_rate(nmpc, path, met):
     Returns:
         RMS_turn_rate - what it says on the tin.
     """
-    RMS_turn_rate = 0
-    for Dth in path[:, met['Dth']]:
-        RMS_turn_rate = Dth ** 2
-    RMS_turn_rate /= path.shape[0]
-    RMS_turn_rate = np.sqrt(RMS_turn_rate)
-    return RMS_turn_rate
+    return np.sqrt( np.average( path[:, met['Dth']]**2 ) )
 
 def avg_speed(nmpc, path, met):
     """
@@ -109,11 +100,7 @@ def avg_speed(nmpc, path, met):
     Returns:
         avg_speed - The average speed over path, using nmpc['T'] for the step.
     """
-    avg_speed = 0
-    for v in path[:, met['v']]:
-        avg_speed += v
-    avg_speed /= path.shape[0]
-    return avg_speed
+    return np.average(path[:, met['v']])
 
 def obst_potential(nmpc, xr, yr):
     """
@@ -129,27 +116,28 @@ def obst_potential(nmpc, xr, yr):
     X, Y = np.meshgrid(np.arange(xr[0], xr[1], xr[2]),
                        np.arange(yr[0], yr[1], yr[2]))
     Phi = np.zeros(X.shape)
-    for k in range(0, nmpc["obst"].shape[0]):
-        Phi += 1/ ((nmpc["obst"][k, 0]-X)**2
-                 + (nmpc["obst"][k, 1]-Y) **2 + nmpc["eps"])
-    for k in range(0, nmpc["walls"].shape[0]):
-        # I have to find a more numpy-ier way to do this:
-        for i in range(0, Phi.shape[0]):
-            for j in range(0, Phi.shape[1]):
-                WPx = X[i,j] - nmpc["walls"][k,0]
-                WPy = Y[i,j] - nmpc["walls"][k,1]
-                vx = nmpc["walls"][k,2] - nmpc["walls"][k,0]
-                vy = nmpc["walls"][k,3] - nmpc["walls"][k,1]
-                c1 = (vx * WPx + vy * WPy)
-                c2 = (vx*vx + vy*vy)
+    if ('obst' in nmpc):
+        for x,y in izip(nmpc["obst"][:, 0], nmpc["obst"][:, 1]):
+            Phi += 1 / ((x-X)**2 + (y-Y)**2 + nmpc["eps"])
+    if ('walls' in nmpc):
+        for x1,y1,x2,y2 in izip(
+                nmpc["walls"][:,0],
+                nmpc["walls"][:,1],
+                nmpc["walls"][:,2],
+                nmpc["walls"][:,3]
+                ):
+            # I have to find a more numpy-ier way to do this:
+            for (i,j), val in np.ndenumerate(Phi):
+                WPx, WPy = X[i,j] - x1, Y[i,j] - y1
+                vx, vy = x2 - x1, y2 - y1
+                c1, c2 = vx * WPx + vy * WPy, vx*vx + vy*vy
                 if (c1 <= 0):
-                    Phi[i,j] += 1/ ( (nmpc["walls"][k,0]-X[i,j])**2 +
-                                (nmpc["walls"][k,1]-Y[i,j])**2 + nmpc["eps"])
+                    Phi[i,j] += 1/ ( (x1-X[i,j])**2
+                        + (y1-Y[i,j])**2 + nmpc["eps"])
                 elif (c2 <= c1):
-                     Phi[i,j] += 1/ ( (nmpc["walls"][k,2]-X[i,j])**2 +
-                                (nmpc["walls"][k,3]-Y[i,j])**2 + nmpc["eps"])
+                     Phi[i,j] += 1/ ( (x2-X[i,j])**2
+                        + (y2-Y[i,j])**2 + nmpc["eps"])
                 else:
-                    dx = (nmpc["walls"][k,0]+c1*vx/c2) - X[i,j]
-                    dy = (nmpc["walls"][k,1]+c1*vy/c2) - Y[i,j]
+                    dx, dy = x1+c1*vx/c2 - X[i,j], y1+c1*vy/c2 - Y[i,j]
                     Phi[i,j] += 1/ ( dx**2 + dy**2 + nmpc["eps"])
     return X, Y, Phi

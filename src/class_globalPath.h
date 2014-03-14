@@ -21,10 +21,13 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __class_global_path_h__
-#define __class_global_path_h__
+#ifndef __class_globalPath_h__
+#define __class_globalPath_h__
 
 #include <vector>
+#include "struct_nmpc.h"
+#include "struct_qnu.h"
+#include "struct_Lagr.h"
 
 typedef struct point_tag
 {
@@ -32,13 +35,18 @@ typedef struct point_tag
 	float y;
 } point;
 
-class global_path
+class globalPath
 {
 
 public:
 	std::vector<point> Path;
-	std::vector<point> sampledPath;
-	global_path()
+	std::vector<point> sPath;
+
+	void refreshPath( const qnu* qu, const Lagr* p, const nmpc& C );
+	void samplePath( const nmpc& C );
+	void setExEy( qnu* qu, Lagr* p, const nmpc& C );
+	point* setEndP( const qnu* qu, const nmpc& C );
+
 };
 
-#endif // __class_global_path_h__
+#endif // __class_globalPath_h__

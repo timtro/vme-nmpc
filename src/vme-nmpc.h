@@ -22,17 +22,13 @@
  */
 
 #include "class_robot.h"
-#include "class_graphNode.h"
-#include "class_graphDescription.h"
 #include "struct_nmpc.h"
 #include "struct_qnu.h"
 #include "struct_Lagr.h"
 #include "struct_cl_opts.h"
 #include "struct_cmd.h"
 #include "inc_errhandler.h"
-
-#include "yagsbpl_base.h"
-#include "planners/A_star.h"
+#include "class_globalPath.h"
 
 // from sockcomm.cpp
 int init_vme_sock();
@@ -44,6 +40,7 @@ void parse_input_file( nmpc&, const char* );
 // from nmpc-funcs.cpp
 void init_qu_and_p( qnu*, Lagr*, nmpc& );
 void get_gradient( qnu*, Lagr*, nmpc&, float* );
+void get_gradient_globalEndPenalty( qnu* qu, Lagr* p, nmpc& C, float* grad, point* endp );
 float predict_horizon( qnu*, Lagr*, const nmpc& );
 float costfun( const qnu*, const Lagr*, const nmpc& );
 void swap_fptr( float**, float** );

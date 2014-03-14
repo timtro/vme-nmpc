@@ -26,15 +26,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
-#include <vector>
 
-#include "hdf5.h"
 #include "vme-nmpc.h"
 
 #define MAX_SD_ITER 150
 #define MAX_NMPC_ITER 3000
 
 #define SEC_TO_USEC 1e-6
+
 
 int main( int argc, char **argv )
 {
@@ -49,8 +48,6 @@ int main( int argc, char **argv )
 	( *hook_print_TR )( const unsigned int*, const double* ) = NULL;
 	double
 	( *hook_exec_control_horiz )( qnu*, const nmpc&, robot* ) = NULL;
-	void
-	( *compute_tracking_error )( qnu*, Lagr*, const nmpc& ) = set_tracking_errors;
 
 	char errnote[256];
 	unsigned int sd_loop = 0, k = 0, current_tgt_no = 0;
@@ -83,56 +80,15 @@ int main( int argc, char **argv )
 	float* last_grad = ( float* ) calloc( C.N + 1, sizeof( float ) );
 	double* time_to_tgt = ( double* ) calloc( C.ntgt, sizeof( float ) );
 
-	// Stuff related to A* search
-	GenericSearchGraphDescriptor<graphNode, double> myGraph;
-	std::vector<float> graphRanges( 4 );
-	graphRanges[0] = -.2;
-	graphRanges[1] = -.2;
-	graphRanges[2] = 2.8;
-	graphRanges[3] = 4.3;
-	float graphDs = 0.1;
-	int graphObjRad = 75;
-
-	graphDescription myGraphClassInstance( graphObjRad, graphRanges, graphDs );
-
-	SearchGraphDescriptorFunctionPointerContainer<graphNode, double, graphDescription>* fun_pointer_container
-	   = new SearchGraphDescriptorFunctionPointerContainer<graphNode, double, graphDescription>;
-	fun_pointer_container->p
-	   = &myGraphClassInstance;
-	fun_pointer_container->getHashBin_fp
-	   = &graphDescription::getHashBin;
-	fun_pointer_container->isAccessible_fp
-	   = &graphDescription::isAccessible;
-	fun_pointer_container->getSuccessors_fp
-	   = &graphDescription::getSuccessors;
-	fun_pointer_container->getHeuristics_fp
-	   = &graphDescription::getHeuristics;
-	myGraph.func_container
-	   = ( SearchGraphDescriptorFunctionContainer<graphNode, double>* )fun_pointer_container;
-
-	myGraph.hashTableSize = 212; // Since in this problem, "getHashBin" can return a max of value 201.
-	myGraph.hashBinSizeIncreaseStep = 512; // By default it's 128. For this problem, we choose a higher value.
-
-	graphNode tempNode;
-	tempNode.x = 0;
-	tempNode.y = 0; // Start node
-	myGraph.SeedNode = tempNode;
-	tempNode.x = 28 - 2;
-	tempNode.y = 43 - 2; // Goal node
-	myGraph.TargetNode = tempNode;
-
-	// Planning
-	A_star_planner<graphNode, double>  planner;
-	planner.setParams( 1.0, 10 ); // optional.
-	planner.init( myGraph );
-	planner.plan();
-
-	std::vector< std::vector< graphNode > > paths = planner.getPlannedPaths();
 
 	C.cur_tgt = C.tgt;
 	C.control_step = 0;
 
 	init_qu_and_p( qu, p, C );
+
+	globalPath gPath;
+	gPath.refreshPath( qu, p, C );
+	gPath.samplePath( C );
 
 	tgtdist = C.tgttol + 1; // Just to get us into the waypoint loop.
 	C.horizon_loop = 0;
@@ -189,12 +145,6 @@ int main( int argc, char **argv )
 		vme.update_poshead( qu, C );
 	}
 
-	if ( clopts.write_hdf5 )
-	{
-		hid_t file_id = H5Fcreate( clopts.hdf5_file,
-		                           H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
-	}
-
 	/*
 	 * Enter the loop which will take us through all waypoints.
 	 */
@@ -219,8 +169,15 @@ int main( int argc, char **argv )
 				 * The core of the gradient decent is in the next few lines:
 				 */
 				tgtdist = predict_horizon( qu, p, C );
-				compute_tracking_error( qu, p, C );
-				get_gradient( qu, p, C, grad );
+				set_tracking_errors( qu, p, C );
+				//gPath.refreshPath( qu, p, C );
+				//gPath.samplePath( C );
+				//gPath.setExEy( qu, p, C );
+				//get_gradient( qu, p, C, grad );
+				point* endp = gPath.setEndP( qu, C );
+				printf( "# endp: (%f, %f)\n", endp->x, endp->y );
+				get_gradient_globalEndPenalty( qu, p, C, grad, endp );
+				free( endp );
 				for ( k = 0; k < C.N; k++ )
 				{
 					grad_dot_grad += grad[k] * last_grad[k];

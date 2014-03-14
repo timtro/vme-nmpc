@@ -31,7 +31,7 @@
 #include "struct_Lagr.h"
 #include "struct_wall.h"
 #include "class_robot.h"
-#include "class_graphNode.h"
+#include "class_globalPath.h"
 
 // from time-sync.cpp
 double wall_time();
@@ -146,8 +146,6 @@ float predict_horizon( qnu* qu, Lagr* p, const nmpc& C )
 		qu[k].Dx = C.cruising_speed * p[k].costk;       // X-speed.
 		qu[k].y = qu[k - 1].y + qu[k - 1].Dy * C.T;     // Y-position.
 		qu[k].Dy = C.cruising_speed * p[k].sintk;       // Y-speed.
-		p[k].ex = qu[k].x - ( qu[0].x + C.cruising_speed * dirx * k * C.T );
-		p[k].ey = qu[k].y - ( qu[0].y + C.cruising_speed * diry * k * C.T );
 	}
 	return dist;
 }
@@ -167,34 +165,13 @@ void set_tracking_errors ( qnu* qu, Lagr* p, const nmpc& C )
 	dirx /= dist;
 	diry /= dist;
 
-	for ( unsigned int k = 1; k < C.N; k++ )
+	for ( unsigned int k = 1; k < C.N; ++k )
 	{
 		p[k].ex = qu[k].x - ( qu[0].x + C.cruising_speed * dirx * k * C.T );
 		p[k].ey = qu[k].y - ( qu[0].y + C.cruising_speed * diry * k * C.T );
 	}
 }
 
-/*!
- * This function sets the tracking error. This function is overloaded,
- * and in other flavours, will take clobal paths.
- *
- * This is should track a path in the vector of graph nodes.
- */
-void set_tracking_errors ( qnu* qu, Lagr* p, const nmpc& C, std::vector< std::vector< graphNode > > )
-{
-	float dirx = C.cur_tgt[0] - qu[0].x;
-	float diry = C.cur_tgt[1] - qu[0].y;
-	// TODO: Store dist this to use in loop terminator.
-	float dist = sqrt( dirx * dirx + diry * diry );
-	dirx /= dist;
-	diry /= dist;
-
-	for ( unsigned int k = 1; k < C.N; k++ )
-	{
-		p[k].ex = qu[k].x - ( qu[0].x + C.cruising_speed * dirx * k * C.T );
-		p[k].ey = qu[k].y - ( qu[0].y + C.cruising_speed * diry * k * C.T );
-	}
-}
 
 /*!
  * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
@@ -213,6 +190,72 @@ void get_gradient( qnu* qu, Lagr* p, nmpc& C, float* grad )
 
 	p[C.N - 1].p1 = C.Q0[0] * p[C.N - 1].ex;
 	p[C.N - 1].p3 = C.Q0[1] * p[C.N - 1].ey;
+	qu[C.N - 2].Dth -= C.dg * C.R[0] * qu[C.N - 2].Dth;
+
+	/*!
+	 * Get the gradient ∂H/∂u_k, for each step, k in the horizon, loop
+	 * through each k in N. This involves computing the obstacle potential
+	 * and Lagrange multipliers. Then, the control plan is updated by
+	 * stepping against the direction of the gradient.
+	 */
+	for ( k = C.N - 2; k >= 0; --k )
+	{
+		PhiX = 0.;
+		PhiY = 0.;
+		/*
+		 * Compute the obstacle potential by looping through the list of
+		 * obstacles:
+		 */
+		for ( j = 0; j < C.nobst; ++j )
+		{
+			difx = qu[k].x - C.obst[j * 2];
+			//dify = qu[k].y - ( C.obst[( j * 2 ) + 1] + k * C.T * 1.0 ); // for fine grained moving obst.
+			dify = qu[k].y - C.obst[( j * 2 ) + 1];
+			denom = difx * difx + dify * dify + C.eps;
+			denom *= denom;
+			PhiX += 2 * difx / denom;
+			PhiY += 2 * dify / denom;
+		}
+		// Add the potential due to walls:
+		for ( j = 0; j < C.nwalls; ++j )
+		{
+			dW = dist_from_wall( qu[k], C.walls[j] );
+			denom = dW[0] * dW[0] + dW[1] * dW[1] + C.eps;
+			denom *= denom;
+			PhiX -= 2 * dW[0] / denom;
+			PhiY -= 2 * dW[1] / denom;
+		}
+		// Compute the Lagrange multipliers:
+		p[k].p1 = C.Q[0] * p[k].ex - PhiX + p[k + 1].p1;
+		p[k].p2 = p[k + 1].p1 * C.T;
+		p[k].p3 = C.Q[1] * p[k].ey - PhiY + p[k + 1].p3;
+		p[k].p4 = p[k + 1].p3 * C.T;
+		p[k].p5 = p[k + 1].p5 + p[k + 1].p4 * qu[k].v * p[k].costk
+		          - p[k + 1].p2 * qu[k].v * p[k].sintk;
+		grad[k] = C.R[0] * qu[k].Dth + p[k + 1].p5 * C.T;
+		grad[C.N] += grad[k] * grad[k];
+	}
+	grad[C.N] = sqrt( grad[C.N] );
+}
+
+/*!
+ * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
+ * are computed. The norm of the gradient vector is also sotred in the N+1th
+ * element of the gradient array.
+ */
+void get_gradient_globalEndPenalty( qnu* qu, Lagr* p, nmpc& C, float* grad, point* endp )
+{
+	// TODO use 'point' type for dW.
+	float* dW;
+
+	int k;
+	unsigned int j;
+	float PhiX, PhiY, denom, difx, dify, gDth;
+
+	grad[C.N] = 0.;
+
+	p[C.N - 1].p1 = C.Q0[0] * endp->x;
+	p[C.N - 1].p3 = C.Q0[1] * endp->y;
 	qu[C.N - 2].Dth -= C.dg * C.R[0] * qu[C.N - 2].Dth;
 
 	/*!

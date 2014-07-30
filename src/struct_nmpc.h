@@ -21,7 +21,8 @@
 #ifndef __STRUCT_NMPC_H__
 #define __STRUCT_NMPC_H__
 
-#include "stdio.h"
+#include <cstdio>
+
 #include "struct_wall.h"
 
 typedef struct nmpc_tag

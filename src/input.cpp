@@ -18,12 +18,12 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <getopt.h>
 #include <ctype.h>
-#include <string.h>
+#include <unistd.h>
 
 #include "inc_errhandler.h"
 #include "class_robot.h"

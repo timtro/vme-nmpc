@@ -41,12 +41,18 @@ class globalPath
 public:
 	std::vector<point> Path;
 	std::vector<point> sPath;
+	point gtgt;
 
-	void refreshPath( const qnu* qu, const Lagr* p, const nmpc& C );
+	void refreshPath1r( const qnu* qu, const Lagr* p, const nmpc& C );
+	void refreshPath2r( const qnu* qu, const Lagr* p, const nmpc& C );
+	void refreshPath2rEP( const qnu* qu, const Lagr* p, const nmpc& C );
 	void samplePath( const nmpc& C );
 	void setExEy( qnu* qu, Lagr* p, const nmpc& C );
-	point* setEndP( const qnu* qu, const nmpc& C );
-
+	void getEndPenalty( const qnu* qu, const nmpc& C, point* tp );
+	float length();
+	void GPE( const qnu* qu, const nmpc& C, point* tp );
+	void AE( const qnu* qu, const nmpc& C, point* tp );
+	int GetG( const nmpc& C );
 };
 
 #endif // __class_globalPath_h__

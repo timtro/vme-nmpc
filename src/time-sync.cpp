@@ -21,7 +21,7 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <time.h>
+#include <ctime>
 
 #define SEC_PER_NSEC 1E-9
 

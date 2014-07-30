@@ -18,47 +18,47 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include "error_codes.h"
 
-void report_error(const int errno, const char *notes)
+void report_error( const int errno, const char *notes )
 {
-	switch (errno)
+	switch ( errno )
 	{
 	case SOCK_CANNOT_CREATE_SOCK:
-		fprintf(stderr, "\n[0x%2x] Exit. Could not create socket\n", errno);
-		exit(EXIT_FAILURE);
+		fprintf( stderr, "\n[0x%2x] Exit. Could not create socket\n", errno );
+		exit( EXIT_FAILURE );
 	case SOCK_CANNOT_CONNECT:
-		fprintf(stderr, "\n[0x%2x] Exit. Could not connect to server\n", errno);
-		exit(EXIT_FAILURE);
+		fprintf( stderr, "\n[0x%2x] Exit. Could not connect to server\n", errno );
+		exit( EXIT_FAILURE );
 	case RECOVERABLE_INPUT_FILE_SYNTAX:
-		fprintf(stderr,
-				"\n[0x%2x] Warning: Recoverable syntax error\
+		fprintf( stderr,
+		         "\n[0x%2x] Warning: Recoverable syntax error\
  in input file.\n",
-				errno);
-		fprintf(stderr, "%s\n\n", notes);
-		fflush(stderr);
+		         errno );
+		fprintf( stderr, "%s\n\n", notes );
+		fflush( stderr );
 		break;
 	case FATAL_INPUT_FILE_SYNTAX:
-		fprintf(stderr,
-				"\n[0x%2x] Fatal: Unrecoverable syntax error while\
+		fprintf( stderr,
+		         "\n[0x%2x] Fatal: Unrecoverable syntax error while\
  reading input file.\n",
-				errno);
-		fprintf(stderr, "%s\n\n", notes);
-		fflush(stderr);
+		         errno );
+		fprintf( stderr, "%s\n\n", notes );
+		fflush( stderr );
 	default:
-		fprintf(stderr, "[0x%2x] Exit. Unknown Error\n", errno);
-		printf("# ERR: [0x%2x]\n", errno);
-		if (notes != NULL)
+		fprintf( stderr, "[0x%2x] Exit. Unknown Error\n", errno );
+		printf( "# ERR: [0x%2x]\n", errno );
+		if ( notes != NULL )
 		{
-			fprintf(stderr, "Additional info: ");
-			fputs(notes, stderr);
-			fprintf(stderr, "\n\n");
+			fprintf( stderr, "Additional info: " );
+			fputs( notes, stderr );
+			fprintf( stderr, "\n\n" );
 		}
-		fflush(stderr);
-		fflush(stdout);
-		exit(EXIT_FAILURE);
+		fflush( stderr );
+		fflush( stdout );
+		exit( EXIT_FAILURE );
 	}
 }

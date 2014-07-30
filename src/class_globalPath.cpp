@@ -26,7 +26,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-void globalPath::refreshPath( const qnu* qu, const Lagr* p, const nmpc& C )
+void globalPath::refreshPath1r( const qnu* qu, const Lagr* p, const nmpc& C )
 {
 	point tp; // scrap point for working.
 
@@ -42,6 +42,48 @@ void globalPath::refreshPath( const qnu* qu, const Lagr* p, const nmpc& C )
 	tp.x = C.tgt[0];
 	tp.y = C.tgt[1];
 	Path.push_back( tp );
+}
+
+void globalPath::refreshPath2r( const qnu* qu, const Lagr* p, const nmpc& C )
+{
+	point tp[4]; // scrap point for working.
+
+	Path.clear();
+	tp[0].x = qu[0].x;
+	tp[0].y = qu[0].y;
+	tp[1].x = C.walls[C.nwalls - 2].x1;
+	tp[1].y = C.walls[C.nwalls - 2].y1;
+	tp[2].x = C.walls[C.nwalls - 1].x0;
+	tp[2].y = C.walls[C.nwalls - 1].y0;
+	Path.push_back( tp[0] );
+	if ( qu[C.N - 1].y <= tp[1].y )
+		if( atan2( tp[1].y - tp[0].y, tp[1].x - tp[0].x ) < atan2( tp[2].y - tp[0].y, tp[2].x - tp[0].x ) )
+			Path.push_back( tp[1] );
+	if ( qu[C.N - 1].y <= tp[2].y )
+		if ( atan2( tp[2].y - tp[0].y, tp[2].x - tp[0].x ) > atan2( gtgt.y - tp[0].y, gtgt.x - tp[0].x ) )
+			Path.push_back( tp[2] );
+	Path.push_back( gtgt );
+}
+
+void globalPath::refreshPath2rEP( const qnu* qu, const Lagr* p, const nmpc& C )
+{
+	point tp[4]; // scrap point for working.
+
+	Path.clear();
+	tp[0].x = qu[C.N - 1].x;
+	tp[0].y = qu[C.N - 1].y;
+	tp[1].x = C.walls[C.nwalls - 2].x1;
+	tp[1].y = C.walls[C.nwalls - 2].y1;
+	tp[2].x = C.walls[C.nwalls - 1].x0;
+	tp[2].y = C.walls[C.nwalls - 1].y0;
+	Path.push_back( tp[0] );
+	if ( qu[C.N - 1].y <= tp[1].y )
+		if( atan2( tp[1].y - tp[0].y, tp[1].x - tp[0].x ) < atan2( tp[2].y - tp[0].y, tp[2].x - tp[0].x ) )
+			Path.push_back( tp[1] );
+	if ( qu[C.N - 1].y <= tp[2].y )
+		if ( atan2( tp[2].y - tp[0].y, tp[2].x - tp[0].x ) > atan2( gtgt.y - tp[0].y, gtgt.x - tp[0].x ) )
+			Path.push_back( tp[2] );
+	Path.push_back( gtgt );
 }
 
 void globalPath::samplePath( const nmpc& C )
@@ -134,12 +176,11 @@ void globalPath::setExEy( qnu* qu, Lagr* p, const nmpc& C )
 	}
 }
 
-point* globalPath::setEndP( const qnu* qu, const nmpc& C )
+void globalPath::getEndPenalty( const qnu* qu, const nmpc& C, point* tp )
 {
 	float dist;
 	float mindist = hypot( sPath[0].x - qu[C.N - 1].x, sPath[0].y - qu[C.N - 1].y );
 	int mink = 0;
-	point* tp = ( point* ) malloc( sizeof( point ) );
 
 	for ( unsigned int k = 1; k < sPath.size(); ++k )
 	{
@@ -152,6 +193,56 @@ point* globalPath::setEndP( const qnu* qu, const nmpc& C )
 	}
 	tp->x = qu[C.N - 1].x - sPath[mink].x;
 	tp->y = qu[C.N - 1].y - sPath[mink].y;
+}
 
-	return tp;
+float globalPath::length()
+{
+	float len = 0.;
+	for ( unsigned int k = 0; k < Path.size() - 1; ++k )
+	{
+		len += hypot( Path[k + 1].x - Path[k].x, Path[k + 1].y - Path[k].y );
+	}
+	return len;
+}
+
+void globalPath::GPE( const qnu* qu, const nmpc& C, point* tp )
+{
+	float len, dist;
+	len = 0.;
+
+	for ( unsigned int k = 0; k < Path.size() - 1; ++k )
+	{
+		len += hypot( Path[k + 1].x - Path[k].x, Path[k + 1].y - Path[k].y );
+	}
+	dist = hypot( Path[1].x - qu[C.N - 1].x, Path[1].y - qu[C.N - 1].y );
+	if ( hypot( qu[0].x - Path[Path.size() - 1].x, qu[0].y - Path[Path.size() - 1].y ) < C.cruising_speed * C.N * C.T  )
+	{
+		tp->x = 0.;
+		tp->y = 0.;
+	}
+	else
+	{
+		tp->x = -len * ( Path[1].x - qu[C.N - 1].x ) / dist;
+		tp->y = -len * ( Path[1].y - qu[C.N - 1].y ) / dist;
+	}
+}
+
+void globalPath::AE( const qnu* qu, const nmpc& C, point* tp )
+{
+	int end = Path.size() - 1;
+	tp->x = qu[C.N - 1].x - Path[end].x;
+	tp->y = qu[C.N - 1].y - Path[end].y;
+}
+
+int globalPath::GetG( const nmpc& C )
+{
+	float len, dist;
+	len = 0.;
+
+	for ( unsigned int k = 0; k < Path.size() - 1; ++k )
+	{
+		len += hypot( Path[k + 1].x - Path[k].x, Path[k + 1].y - Path[k].y );
+	}
+
+	return int( len / ( C.cruising_speed * C.T ) );
 }

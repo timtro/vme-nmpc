@@ -29,6 +29,8 @@
 #include "struct_cmd.h"
 #include "inc_errhandler.h"
 #include "class_globalPath.h"
+#include "class_nmpcEngine.h"
+#include "class_SDmin.h"
 
 // from sockcomm.cpp
 int init_vme_sock();
@@ -36,17 +38,6 @@ int init_vme_sock();
 // from input.cpp
 int parse_command_line( int, char**, robot*, cl_opts* );
 void parse_input_file( nmpc&, const char* );
-
-// from nmpc-funcs.cpp
-void init_qu_and_p( qnu*, Lagr*, nmpc& );
-void get_gradient( qnu*, Lagr*, nmpc&, float* );
-void get_gradient_globalEndPenalty( qnu* qu, Lagr* p, nmpc& C, float* grad, point* endp );
-float predict_horizon( qnu*, Lagr*, const nmpc& );
-float costfun( const qnu*, const Lagr*, const nmpc& );
-void swap_fptr( float**, float** );
-double exec_control_horiz_dummy( qnu* qu, const nmpc& C, robot* vme );
-double exec_control_horiz_vme( qnu* qu, const nmpc& C, robot* vme );
-void set_tracking_errors ( qnu* qu, Lagr* p, const nmpc& C );
 
 // from time-sync.cpp
 double wall_time();

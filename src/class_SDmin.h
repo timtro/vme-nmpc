@@ -1,11 +1,11 @@
 /*
- * class_graphDescription.h
+ * class_SDmin.h
  * Author : Timothy A.V. Teatro
- * Date   : Mar 2014
+ * Date   : Apr 2014
  *
  * This file is part of vme-nmpc.
  *
- * Copyright (C) 2013, 2014 - Timothy A.V. Teatro
+ * Copyright (C) 2014 - Timothy A.V. Teatro
  *
  * vme-nmpc is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,31 +21,34 @@
  * along with vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __class_graphDescription_h__
-#define __class_graphDescription_h__
+#ifndef __class_SDmin_h__
+#define __class_SDmin_h__
 
-#include <vector>
-#include "class_graphNode.h"
+#include "struct_nmpc.h"
+#include "struct_qnu.h"
+#include "struct_Lagr.h"
 
-class graphDescription
+class optimizer
 {
+
 public:
+	float* grad;
+	float* last_grad;
 
-	graphDescription ( int cr, std::vector<float> euclid_ranges, float ds );
-	graphDescription ();
+	optimizer( const qnu*, const Lagr*, const nmpc&, int );
+	~optimizer();
+	bool iterate( qnu*, Lagr*, nmpc& );
+	void teeup();
 
-	int getHashBin( graphNode& n );
-	bool isAccessible( graphNode& n );
-	void getSuccessors( graphNode& n, std::vector<graphNode>* s, std::vector<double>* c );
-	double getHeuristics( graphNode& n1, graphNode& n2 );
 
 private:
+	float dg;
+	int max_iter;
+	float tol;
+	unsigned int sd_loop;
 
-	int circleRadius;
-	int Ximin, Ximax, Yimin, Yimax;
-	float Xmin, Xmax, Ymin, Ymax;
-	float ds;
+	void swap_fptr( float** A, float** B );
 
 };
 
-#endif // __class_graphDescription_h__
+#endif // __class_SDmin_h__

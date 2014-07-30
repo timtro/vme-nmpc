@@ -84,10 +84,13 @@ void print_greeting( const nmpc& C )
 	printf( "  Point obstacle list (obst) :\n" );
 	for ( k = 0; k < C.nobst; ++k )
 		printf( "    % f % f\n", C.obst[2 * k], C.obst[2 * k + 1] );
-	printf( "  List of wall segments (walls) :\n" );
-	for ( k = 0; k < C.nwalls; ++k )
-		printf( "    % f % f - % f % f\n", C.walls[k].x0, C.walls[k].y0,
-		        C.walls[k].x1, C.walls[k].y1 );
+	if ( C.nwalls > 0 )
+	{
+		printf( "  List of wall segments (walls) :\n" );
+		for ( k = 0; k < C.nwalls; ++k )
+			printf( "    % f % f - % f % f\n", C.walls[k].x0, C.walls[k].y0,
+			        C.walls[k].x1, C.walls[k].y1 );
+	}
 	printf( "#\n" );
 }
 

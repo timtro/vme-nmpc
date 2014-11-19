@@ -33,11 +33,13 @@ xymask = np.array([True, False, True, False, False])
 # Write a thing to compute the airline path, get the error and then
 # construct the while loop to do a convergence test.
 
-plt.ion()
 nmpc.f(x, u, vref, Phi, obstacles, T, eps, n)
-refline, = plt.plot(xref[0, :], xref[1, :], 'r.')
-line, = plt.plot(x[0,:], x[1,:], 'b-', marker='.')
-obplot, = plt.plot(obstacles[0,:], obstacles[1,:], 'ko', ms = 8)
+
+
+# plt.ion()
+# refline, = plt.plot(xref[0, :], xref[1, :], 'r.')
+# line, = plt.plot(x[0,:], x[1,:], 'b-', marker='.')
+# obplot, = plt.plot(obstacles[0,:], obstacles[1,:], 'ko', ms = 8)
 # gradline, = plt.plot(current_grad[0, :], current_grad[1, :], 'c.')
 
 
@@ -48,17 +50,15 @@ while np.sqrt(np.sum((x[xymask, 0] - waypts[:, 0])**2)) > .1:
 	nmpc.f(x, u, vref, Phi, obstacles, T, eps, n)
 	nmpc.airline_path(x[:, 0], vref, xref, T, waypts[:, 0])
 
-	line.set_xdata(x[0, :])
-	line.set_ydata(x[2, :])
-	refline.set_xdata(xref[0, :])
-	refline.set_ydata(xref[2, :])
-	ax = plt.gca()
-	ax.relim()
-	ax.autoscale_view()
-	ax.set_aspect('equal')
-	plt.draw()
-
-	plt.draw()
+	# line.set_xdata(x[0, :])
+	# line.set_ydata(x[2, :])
+	# refline.set_xdata(xref[0, :])
+	# refline.set_ydata(xref[2, :])
+	# ax = plt.gca()
+	# ax.relim()
+	# ax.autoscale_view()
+	# ax.set_aspect('equal')
+	# plt.draw()
 
 	while True:
 		nmpc.f(x, u, vref, Phi, obstacles, T, eps, n)
@@ -89,7 +89,7 @@ while np.sqrt(np.sum((x[xymask, 0] - waypts[:, 0])**2)) > .1:
 
 	# Execute H steps (or simulate by replacing the first element in x)
 	x[:, 0] = x[:, H]
-	u[:, :-H] = u[:, H:]
+	# u[:, :-H] = u[:, H:]
 	# time.sleep(5)
 
 print('fin\n')

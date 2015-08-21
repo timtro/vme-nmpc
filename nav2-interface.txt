@@ -1,0 +1,144 @@
+Nav2-Commander Interface (draft 2)
+------------------------
+
+All commands are case-insensitive.
+
+I2C Commands
+------------
+
+ SD <i2c-address> <byte>...   - Send data to an I2C device
+ RD <i2c-address> <length>    - Read data from an I2C device
+
+Turtle Commands
+---------------
+
+ RT <n>      - Turn right <n> degrees
+ LT <n>      - Turn left <n> degrees
+ FD <x>      - Move forward <x> meters
+ BK <x>      - Move backward <x> meters
+
+T.T. It appears that MV arguments are reversed from what it says here:
+ MV <n> <x>  - Move <x> meters in direction <n> degrees left of current heading
+ S           - Stop the robot and clear the turtle command queue
+
+If turtle commands are sent in quick succession, they will queue up.
+Consecutive rotations without intervening movement may be squashed into a
+single net rotation.
+
+Whenever a move command is in the queue while an earlier move command is
+still in process, the robot will attempt to transition from one movement
+to the next without slowing down, by selecting the tightest transitional
+arc which respects its maximum acceleration.  In some cases, this is
+impossible, so the robot will slow down as necessary.
+
+Speed Control Commands
+----------------------
+
+ V <n> <s> [<t>]  - Set the velocity to <s> meters per second in the direction
+                    <n> degrees to the left of its current heading.  If a
+                    turn-rate <t> is specified, the robot's orientation and
+                    direction of travel will both rotate at a rate of <t>
+                    degrees per second.  This should be useful for applications
+                    such as line-following.
+ AV <vx> <vy>     - Set the absolute velocity to the given vector, in meters
+                    per second.
+ O <n>            - Set the absolute target orientation to <n> degrees.
+ S                - Stop the robot
+
+While the robot is executing the V command, the RT and LT commands can be
+used to rotate the robot without otherwise altering its motion.
+
+Odometry Commands
+-----------------
+
+ Q              - Estimate the robot's position and heading.  This command
+                  also outputs the number of turtle commands remaining in
+                  the queue.
+ P <x> <y> <n>  - Set the robot's position and heading.  Estimates
+                  will be based on this ground truth.
+
+Head Tilt Commands
+------------------
+
+ TILT <n>       - Tilt the head to the given position in degrees
+ QTILT          - Query the current head tilt position
+
+Configuration Commands
+----------------------
+
+ SMS <s>        - Set maximum turtle speed to <s> meters per second
+ SMA <a>        - Set maximum turtle acceleration to <a> m/s^2
+ SMCE <x>       - Set maximum turtle cornering error to <x> meters
+ QMS            - Query the maximum turtle speed
+ QMA            - Query the maximum turtle acceleration
+ QMCE           - Query the maximum turtle cornering error
+
+Sensor Fusion Interface
+-----------------------
+
+Lines beginning with a ':' character are evaluated by the sensor fusion
+expression evaluator.  The evaluator is a powerful, extensible sensor
+fusion framework based on the mathematics of extended Kalman filters.
+Among other uses, it can be used to close the loop on the robot's internal
+odometry.
+
+The framework provides three essential functions:
+
+ - Evaluation of mathematical expressions involving Gaussian unknowns
+ - Persistent (named) variables for extending system state
+ - An explicit "equivalence" operator for applying sensor readings
+
+Expression Syntax is C-language style, with the following operators (in
+order of decreasing precedence):
+
+  + -              Unary plus and negation
+  * /              Multiplication and division
+  + -              Binary addition and subtraction
+  = += -= *= /=    Assignment and compound assignment
+  <=>              Equivalence operator (See description below)
+  ,                Comma operator
+
+It also includes the following built-in functions:
+
+  N(e,v)       Returns a new, independent Gaussian unknown with the
+               given mean and variance.
+  E(X)         Returns the expected value of X.
+  sin(X)       Compute the sine of X
+  cos(X)       Compute the cosine of X
+  tan(X)       Compute the tangent of X
+  atan(X)      Compute the arctangent of X
+  atan2(Y,X)   Compute the full circle arctangent of Y/X between -pi and pi.
+  sqrt(X)      Compute the square root of X
+  sqr(X)       Compute X times X (helps avoid repeated subexpressions)
+  exp(X)       Compute e raised to the power of X
+  log(X)       Compute the natural logarithm of X
+
+The output of an expression is returned as a single line of text of the
+form "N(a,b)" where a and b are real numbers (possibly in scientific notation).
+
+The following built-in variables are provided to interface with the
+robot's odometry:
+
+   x     The robot's absolute x coordinate in meters
+   y     The robot's absolute y coordinate in meters
+   o     The robot's absolute orientation in radians
+
+Use the assignment operator to define your own persistent state variables.
+Note that the built-in variables can't be assigned to.  Use the
+equivalence operator to incorporate external position measurements.
+
+The equivalence operator <=> provides a way of declaring the equivalence of
+two Gaussian unknowns.  Its function is to assert that two unknown values
+represent the same underlying physical quantity.  The two unknowns will
+then take on the same mean and variance, and all other correlated values
+will be adjusted according to standard Bayesian principles.
+
+For example, suppose some sensor indicates that the robot is 7.2 meters away
+from a landmark located at (5.6,3.2) with a measurement variance of 0.1.
+This reading can be incorporated using the following expression:
+
+  :sqr(x-5.6) + sqr(y-3.2) <=> sqr(N(7.2,0.1))
+
+Note that, due to nonlinearity, this example is subject to the usual
+caveats of extended Kalman filters (non-optimality, possible divergence).
+Purely linear applications will behave according to a true Kalman filter.

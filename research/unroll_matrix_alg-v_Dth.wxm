@@ -1,0 +1,106 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 13.04.2 ] */
+
+/* [wxMaxima: comment start ]
+Unrolled Matrix Algebra for VirtualME - NMPC algorithm
+Controlled turn-rate
+
+Timothy A.V. Teatro
+
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: section start ]
+Definitions
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: comment start ]
+These are basic definitions for the control system and algoritm.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+q(k) := matrix([x[k]], [y[k]], [Dx[k]], [Dy[k]], [theta[k]]);
+pr(k) := matrix([px[k]],[py[k]], [pDx[k]],[pDy[k]], [ptheta[k]]);
+u(k) := matrix( [v[k]], [omega[k]] );
+eq(k) := matrix([ex[k]], [ey[k]], [eDx[k]], [eDy[k]], [etheta[k]]);
+R : matrix([R1, 0], [0, R2]);
+Q0 : matrix([Q01, 0, 0, 0, 0],
+            [0, Q02, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]);
+Q : matrix([Q1, 0, 0, 0, 0],
+           [0, Q2, 0, 0, 0],
+           [0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0]);
+S : ident(5)*0;
+f(k) := matrix([q(k)[1] + q(k)[3]*T],
+               [q(k)[2] + q(k)[4]*T],
+               [u(k-1)[1]*cos(q(k)[5])],
+               [u(k-1)[1]*sin(q(k)[5])],
+               [q(k)[5] + u(k-1)[2]*T]);
+dfdq(k) := matrix([1, 0, T, 0, 0],
+                  [0, 1, 0, T, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 1]);
+dfdu(k) := matrix([0, 0],
+                  [0, 0],
+                  [cos(q(k)[5]), 0],
+                  [sin(q(k)[5]), 0],
+                  [0, T]);
+dPhidq(k) := matrix([PhiX[k], PhiY[k], 0, 0, 0]);
+deqdq  :  -ident(5);
+deudq  :  -ident(2);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+Cost Function
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: input   start ] */
+J : transpose(eq(N-1)) . Q0 . eq(N-1)
+   + sum( transpose(eq(N-1)) . Q0 . eq(N-1)
+        + transpose(eq(N-1)) . Q0 . eq(N-1)
+        + Phi[k]
++ transpose(pr(k+1)) . (f(k) - q(k+1)), k, 0, N-1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+Lagrange Multipliers and Gradient
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: subsect start ]
+For the Nth element
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+Starting from zero, the last element of the horizon is N-1.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+transpose(transpose(eq(N-1)) . Q0 . deqdq);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+transpose( transpose(u(N-2)) . R+transpose(pr(N-1)) . dfdu(k) );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+For the kth element
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+p(k) := transpose(transpose(eq(k)) . Q . deqdq 
+           + transpose(pr(k+1)) . dfdq(k)
+           - dPhidq(k))$
+p(k);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+dHdu(k) := transpose(u(k)) . R + transpose(pr(k+1)) . dfdu(k)$
+transpose(dHdu(k));
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

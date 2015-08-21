@@ -1,0 +1,21 @@
+{
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"backup",
+				".*",
+				"gpl.txt",
+				"*.sublime-project"
+			],
+			"folder_exclude_patterns":
+			[
+				"backup",
+				".*"
+			],
+			"follow_symlinks": true,
+			"path": "."
+		}
+	]
+}

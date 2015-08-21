@@ -13,7 +13,7 @@ INCLUDE(FindPkgConfig)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # The version number.
-set (vme-nmpc_VERSION_MAJOR 1)
+set (vme-nmpc_VERSION_MAJOR 2)
 set (vme-nmpc_VERSION_MINOR 0)
 
 # configure a header file to pass some of the CMake settings
@@ -31,7 +31,13 @@ set (vme-nmpc_VERSION_MINOR 0)
 
 FILE(GLOB vme-nmpc-sources src/*.cpp)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3 -pedantic") 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -Wall -pedantic-errors -flto -lpthread -std=c++14")
 
 # add the executable
 add_executable(vme-nmpc ${vme-nmpc-sources})
+
+# find_package (HDF5)
+# if (HDF5_FOUND)
+#   include_directories(${HDF5_INCLUDE_DIRS})
+#   target_link_libraries (vme-nmpc ${HDF5_LIBRARIES})
+# endif (HDF5_FOUND)

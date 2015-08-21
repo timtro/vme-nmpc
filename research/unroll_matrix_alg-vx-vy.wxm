@@ -18,35 +18,21 @@ These are basic definitions for the control system and algoritm.
    [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
-q(k) := matrix([x[k]], [Dx[k]], [y[k]], [Dy[k]], [th[k]])$
-pr(k) := matrix([p1[k]],[p2[k]],[p3[k]],[p4[k]],[p5[k]])$
-u(k) := matrix( [Dth[k]] )$
-delta(k) := matrix([ex[k]], [ey[k]])$
-R : matrix([R1])$
-Q0 : matrix([Q01, 0],[0, Q02])$
-Q : matrix([Q1, 0],[0, Q2])$
-S : matrix([S1,0,0,0,0],
-           [0,S2,0,0,0],
-           [0,0,S3,0,0],
-           [0,0,0,S4,0],
-           [0,0,0,0,S5])$
-a(k) := matrix([q(k)[1] + q(k)[2]*T],
-               [v * sin(q(k)[5])],
-               [q(k)[3] + q(k)[4]*T],
-               [v * cos(q(k)[5])],
-               [q(k)[5] + u(k)[1]*T])$
-dadq(k) := matrix( [1,T,0,0,0],
-                   [0,0,0,0,-v*sin(q(k)[5])],
-                   [0,0,1,T,0],
-                   [0,0,0,0,v*cos(q(k)[5])],
-                   [0,0,0,0,1])$
-dadu(k) := matrix([0],
-                  [0],
-                  [0],
-                  [0],
-                  [T])$
-dPhidq(k) := matrix([PhiX[k], 0, PhiY[k], 0, 0])$
-ddeltadq  :  matrix([1,0,0,0,0],[0,0,1,0,0])$
+q(k) := matrix([x[k]], [y[k]]);
+pr(k) := matrix([p1[k]],[p2[k]]);
+u(k) := matrix( [Dx[k]], [Dy[k]] );
+delta(k) := matrix([ex[k]], [ey[k]]);
+R : matrix([R1, 0], [0, R2]);
+Q0 : matrix([Q01, 0],[0, Q02]);
+Q : matrix([Q1, 0],[0, Q2]);
+S : ident(2)*0;
+a(k) := matrix([q(k)[1] + u(k)[1]*T],
+               [q(k)[2] + u(k)[2]*T]);
+dadq(k) := matrix( [1, 0],
+                   [0, 1]);
+dadu(k) := matrix([T, 0], [0, T]);
+dPhidq(k) := matrix([PhiX[k], PhiY[k]]);
+ddeltadq  :  matrix([1, 0], [0, 1]);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: section start ]
@@ -78,7 +64,7 @@ transpose(transpose(delta(N-1)) . Q0 . ddeltadq);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-transpose( transpose(u(N-2)) *R  + transpose(pr(N-1)) . dadu(k) );
+transpose( transpose(u(N-2)) . R+transpose(pr(N-1)) . dadu(k) );
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: subsect start ]
@@ -86,14 +72,14 @@ For the kth element
    [wxMaxima: subsect end   ] */
 
 /* [wxMaxima: input   start ] */
-p(k) := transpose(transpose(delta(k)) . Q0 . ddeltadq 
+p(k) := transpose(transpose(delta(k)) . Q . ddeltadq 
            + transpose(pr(k+1)) . dadq(k)
            - dPhidq(k))$
 p(k);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-dHdu(k) := transpose(u(k)) * R + transpose(pr(k+1)) . dadu(k)$
+dHdu(k) := transpose(u(k)) . R + transpose(pr(k+1)) . dadu(k)$
 transpose(dHdu(k));
 /* [wxMaxima: input   end   ] */
 
@@ -106,14 +92,6 @@ but now p_k+2 elements are explicit.
 /* [wxMaxima: input   start ] */
 dHdu(k) := transpose(u(k)) . R + transpose(p(k+1)) . dadu(k);
 ratsimp(transpose(dHdu(k)));
-/* [wxMaxima: input   end   ] */
-
-/* [wxMaxima: input   start ] */
-dHdu(k) := transpose(u(k)) . R + transpose(pr(k+1)) . dadu(k);
-/* [wxMaxima: input   end   ] */
-
-/* [wxMaxima: input   start ] */
-transpose(dHdu(k));
 /* [wxMaxima: input   end   ] */
 
 /* Maxima can't load/batch files which end with a comment! */

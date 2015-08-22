@@ -31,6 +31,8 @@
 #include <iostream>
 #include <tuple>
 
+#include <boost/program_options.hpp>
+
 #include <unistd.h>
 
 // TODO(T.T.): Use Boost property_tree and JSON as input files.
@@ -40,6 +42,7 @@
 /* NOTES(T.T.):
  *
  */
+
 
 void request_handler(int sockfd) {
 
@@ -51,7 +54,20 @@ void request_handler(int sockfd) {
   return;
 }
 
-int main() {
+namespace po = boost::program_options;
+
+int main(int argc, char *argv[]) {
+
+  // Process commandline options
+  po::options_description desc("Allowed options");
+  desc.add_options()("help", "produce help message");
+  desc.add_options()("infile", po::value<std::string>(),
+                     "Initialization file path");
+
+  po::variables_map commandline_opts;
+  po::store(po::parse_command_line(argc, argv, desc), commandline_opts);
+  po::notify(commandline_opts);
+
 
   // Daemon command_server(5111, request_handler);
   Nav2Robot vme("localhost", 5010);
@@ -68,6 +84,8 @@ int main() {
   // for(;;) {
   //   std::this_thread::sleep_for(std::chrono::seconds(10));
   // }
+
+
 
   printf("Shutting down!\n");
   fflush(stdout);

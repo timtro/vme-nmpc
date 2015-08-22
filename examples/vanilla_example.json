@@ -1,0 +1,10 @@
+// A straightforward example of an input file.
+{
+    "N" : 90,       // Lookahead horizon
+    "m" : 5,        // Dimension of state space
+    "n" : 1,        // Dimension of control space
+    "T" : 0.012,    // Time step size
+    "dg": 0.05,     // Gradient decent mixing factor
+    "cruising_speed" : 0.4, // Optimal cruising speed of robot
+    "tgttol": 0.1,  // Tolerance in distance to target
+}

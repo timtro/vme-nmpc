@@ -79,15 +79,14 @@
 
 #include <thread>
 
-void listenerfn(int);
-
 class Daemon {
-  int sockfd_;
   void (*server_child_)(int);
+  bool shutdown_flag;
+  int sockfd_;
   std::thread daemon_thread_;
+
   friend void daemon_threadfn(const Daemon*);
   friend class RequestTicket;
-  bool shutdown_flag;
 
  public:
   Daemon(int port, void(int));
@@ -99,15 +98,11 @@ class RequestTicket {
   int connectionfd_;
   std::thread server_thread_;
   friend void server_child_wrapper(RequestTicket*);
-
   void (*get_server_child())(int) {
     return parent_daemon_->server_child_;
   }
-
  public:
-
   bool done;
-
   RequestTicket(const Daemon*);
   ~RequestTicket();
 };

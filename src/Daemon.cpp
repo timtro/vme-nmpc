@@ -26,6 +26,10 @@
  * his daemon class from the telep-head source tree, found in
  * telep-head/unwarp/Daemon.cpp
  */
+
+// TODO(TT): Wrap the server thread so that all pathways out make the thread
+// joinable. Sugg: use Anthony Williams' scoped thread class.
+
 #include "Daemon.hpp"
 
 #include <cstdio>
@@ -62,7 +66,7 @@ void daemon_threadfn(const Daemon* parent_daemon) {
 }
 
 Daemon::Daemon(int port, void (*server_child)(int))
-  : sockfd_{-1}, server_child_{server_child}, shutdown_flag{false} {
+  : server_child_{server_child}, shutdown_flag{false}, sockfd_{-1} {
 
   char buf[80];
   struct addrinfo *ai;
@@ -110,8 +114,8 @@ Daemon::~Daemon() {
   /* Shut down the socket to break daemon_thread_ out of the accept() call so
    * that the thread can be properly joined.
    *
-   * The shutdown flag must be true for safe shutdownbecause if it is false
-   * when accept() returns -1, std::runtime error is thrown.
+   * The shutdown flag must be true for safe shutdown, otherwise when accept()
+   * returns -1, std::runtime error is thrown.
    */
   shutdown_flag = true;
   shutdown(sockfd_, SHUT_RDWR);
@@ -134,10 +138,10 @@ RequestTicket::RequestTicket(const Daemon* d) : parent_daemon_{d}, done{false} {
      * destructor also sets its member shutdown_flag to true, so we can
      * distinguish.
      */
-    if(!d->shutdown_flag)
-      throw std::runtime_error("Can't accept");
-    else
+    if(d->shutdown_flag)
       throw blocked_socket();
+    else
+      throw std::runtime_error("Daemon can't accept connection");
   }
 
   try {

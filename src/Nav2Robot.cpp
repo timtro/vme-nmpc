@@ -30,6 +30,7 @@
 #include <tuple>
 #include <vector>
 
+#include <errno.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -42,48 +43,62 @@ template<typename T>
 constexpr T pi_180{T(pi<T>/180)};
 
 Nav2Robot::Nav2Robot()   : hostname_{"localhost"}, portno_{5010}, sockfd_{},
-  pose_{}, is_connected_{false} { }
+  pose_{}, is_connected_{false} {}
 
 Nav2Robot::Nav2Robot(std::string host, unsigned int portno)
-  : hostname_{host}, portno_{portno}, sockfd_{}, pose_{}, is_connected_{false} {
-
-  connect();
-
-}
+  : hostname_{host}, portno_{portno}, sockfd_{}, pose_{}, is_connected_{false} {}
 
 Nav2Robot::~Nav2Robot() {
   close(sockfd_);
 }
 
 void Nav2Robot::connect() {
-
+  // TODO(TT): Create a timeout exception. Temporarily set the socket to non-
+  // blocking and use select() to implement a timeout.
   if(is_connected_) throw
     std::logic_error("Connection attempt while already connected to server."
-                     " Disconnect before attempting a connection.");
+                     " Disconnect before attempting a new connection.");
 
-  struct sockaddr_in serv_addr;
-  struct hostent* server;
+  struct addrinfo hints;
+  memset(&hints, 0, sizeof hints);
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
 
-  sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
-  if(sockfd_ < 0)
-    throw std::runtime_error("Cannot create socket to Nav2 device");
+  struct addrinfo* servinfo;
+  {
+    // localize scope for rv
+    int rv = getaddrinfo(hostname_.c_str(), std::to_string(portno_).c_str(),
+                         &hints, &servinfo);
+    if(rv != 0) {
+      throw std::runtime_error(
+        std::string{"Function getaddrinfo() returned error: "}
+        + gai_strerror(rv));
+    }
+  }
 
-  server = gethostbyname(hostname_.c_str());
-  if(server == nullptr)
-    throw std::runtime_error("Could not resolve address of Nav2 device");
+  // loop through serverinfo list.
+  struct addrinfo* p;
+  for(p = servinfo; p != NULL; p = p->ai_next) {
+    if((sockfd_ = socket(p->ai_family, p->ai_socktype,
+                         p->ai_protocol)) == -1) {
+      throw std::runtime_error(
+        std::string{"Function socket() returned error: "} + strerror(errno)
+      );
+    }
+    if(::connect(sockfd_, p->ai_addr, p->ai_addrlen) == -1) {
+      close(sockfd_);
+      continue;
+    }
+    break; // successfully connected
+  }
 
-  memset((char*) &serv_addr, '\0', sizeof(serv_addr));
-  serv_addr.sin_family = AF_INET;
-  memmove((char*) &serv_addr.sin_addr.s_addr, (char*) server->h_addr,
-          server->h_length);
-  serv_addr.sin_port = htons(portno_);
+  if(p == nullptr) {
+    throw std::runtime_error(
+      std::string{"Function connect() returned error: "} + strerror(errno)
+    );
+  }
 
-  if(::connect(sockfd_, (struct sockaddr*) &serv_addr,
-               sizeof(serv_addr)) < 0)
-    throw std::runtime_error("Cannot connect to Nav2 device");
-
-  // Why did I have this?
-  // write(sockfd_, "fd 0.5\n", 7);
+  freeaddrinfo(servinfo); // all done with this structure
   is_connected_ = true;
   return;
 }

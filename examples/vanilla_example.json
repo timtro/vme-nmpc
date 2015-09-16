@@ -7,4 +7,7 @@
     "dg": 0.05,     // Gradient decent mixing factor
     "cruising_speed" : 0.4, // Optimal cruising speed of robot
     "tgttol": 0.1,  // Tolerance in distance to target
+    "R" : 0.1,
+    "Q" : 0.1,
+    "Q0": 0.1
 }

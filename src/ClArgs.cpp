@@ -1,5 +1,5 @@
 /*
- * vme-nmpc/src/commandline_options.cpp
+ * vme-nmpc/src/ClArgs.cpp
  * Author : Timothy A.V. Teatro
  * Date   : 2015-08-21
  *
@@ -21,23 +21,25 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CLopts.hpp"
+#include "ClArgs.hpp"
 
 #include <cstdio>
 #include <cstdlib>
-// #include <cstring>
+#include <stdexcept>
 #include <string>
 #include <getopt.h>
 
 
-CLopts::CLopts(int argc, char** argv)
+ClArgs::ClArgs(int argc, char** argv)
   : infile{"null"}, host{"localhost"}, port{5010},
     verbose{false}, quiet{false} {
 
   // char *pvalue = nullptr, *hvalue = nullptr, *fvalue = nullptr;
   // int index;
   int c;
-
+  // I prefer std::string, but optopt is a char typed as int which means I'll
+  // need nasty static_casts that make me feel bad about my code.
+  char errnote[256];
   opterr = 0;
 
   for(;;) {
@@ -76,14 +78,14 @@ CLopts::CLopts(int argc, char** argv)
       break;
     case '?':
       if(optopt == 'p' || optopt == 'h' || optopt == 'f') {
-        // std::string err{"Option -"+optopt+" requires an argument"};
-        // throw std::runtime_error(err);
+        sprintf(errnote, "Option -%c: requires an argument.\n", optopt);
+        throw std::runtime_error(errnote);
       } else if(isprint(optopt)) {
-        // std::string err{"Unknown option `-"+optopt+"'"};
-        // throw std::runtime_error(err);
+        sprintf(errnote, "Unknown option `-%c'.\n", optopt);
+        throw std::runtime_error(errnote);
       } else {
-        // std::string err{"Unknown option character `"+optopt+"'.\n"};
-        // throw std::runtime_error(err);
+        sprintf(errnote, "Unknown option character `\\x%x'.\n", optopt);
+        throw std::runtime_error(errnote);
         return;
       }
       break;

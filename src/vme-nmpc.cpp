@@ -1,5 +1,5 @@
 /*
- * vme-nmpc/vme-nmpc.cc
+ * vme-nmpc/vme-nmpc.cpp
  * Author : Timothy A.V. Teatro
  * Date   : 2015-07-28
  *
@@ -24,6 +24,8 @@
 #include "vme-nmpc.h"
 #include "Daemon.hpp"
 #include "Nav2Robot.hpp"
+#include "ClArgs.hpp"
+#include "InputFileData.hpp"
 
 #include <chrono>
 #include <cstdio>
@@ -48,31 +50,33 @@ void request_handler(int sockfd) {
 
   char buff[80];
 
-  if(read(sockfd, &buff, 80) < 1) return;
-  if(strstr(buff, "exit")) std::exit(0);
+  if (read(sockfd, &buff, 80) < 1) return;
+
+  if (strstr(buff, "exit")) std::exit(0);
+
   printf("Recieved Message: %s", buff);
   return;
 }
 
-namespace po = boost::program_options;
+int main(int argc, char** argv) {
 
-int main(int argc, char *argv[]) {
+  ClArgs cmdln_args(argc, argv);
 
-  // Process commandline options
-  po::options_description desc("Allowed options");
-  desc.add_options()("help", "produce help message");
-  desc.add_options()("infile", po::value<std::string>(),
-                     "Initialization file path");
+  InputFileData input_data;
+  input_data.load(cmdln_args.infile);
 
-  po::variables_map commandline_opts;
-  po::store(po::parse_command_line(argc, argv, desc), commandline_opts);
-  po::notify(commandline_opts);
+  Nav2Robot vme(cmdln_args.host, cmdln_args.port);
 
+  try {
+    vme.connect();
+  } catch (const std::exception& ex) {
+    printf("Errer while trying to connect to Nav2 device.\n Error message: ");
+    printf("%s\n", ex.what());
+    std::exit(1);
+  }
 
   // Daemon command_server(5111, request_handler);
-  Nav2Robot vme("localhost", 5010);
-  vme.disconnect();
-  vme.connect();
+
 
   vme.originate();
   vme.fd(1);
@@ -84,8 +88,6 @@ int main(int argc, char *argv[]) {
   // for(;;) {
   //   std::this_thread::sleep_for(std::chrono::seconds(10));
   // }
-
-
 
   printf("Shutting down!\n");
   fflush(stdout);

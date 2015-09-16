@@ -1,5 +1,5 @@
 /*
- * vme-nmpc/src/InputFileParser.cpp
+ * vme-nmpc/src/InputFileData.cpp
  * Author : Timothy A.V. Teatro
  * Date   : 2015-08-21
  *
@@ -23,8 +23,10 @@
 
 // #include "InputFileParser.hpp"
 
+#include "InputFileData.hpp"
+
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include <boost/foreach.hpp>
 #include <string>
 #include <set>
@@ -33,12 +35,19 @@
 
 namespace pt = boost::property_tree;
 
-// struct InputFileParser {
-//   std::string m_file;
-//   void load(const std::string &);
-//   // void save(const std::string &);
-// };
+void InputFileData::load(const std::string& filename) {
 
-// InputFileParser::InputFileParser(std::string input_file)
-//   : input_file_{input_file} {}
+  pt::ptree tree;
+  pt::read_json(filename, tree);
 
+  N = tree.get<int>("N");
+  m = tree.get<int>("m");
+  n = tree.get<int>("n");
+  T = tree.get<float>("T");
+  dg = tree.get<float>("dg");
+  tgttol = tree.get<float>("tgttol");
+  cruising_speed = tree.get<float>("cruising_speed");
+  Q = tree.get<float>("Q");
+  Q0 = tree.get<float>("Q0");
+  R = tree.get<float>("R");
+}

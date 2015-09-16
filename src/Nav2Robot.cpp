@@ -55,7 +55,7 @@ Nav2Robot::~Nav2Robot() {
 void Nav2Robot::connect() {
   // TODO(TT): Create a timeout exception. Temporarily set the socket to non-
   // blocking and use select() to implement a timeout.
-  if(is_connected_) throw
+  if (is_connected_) throw
     std::logic_error("Connection attempt while already connected to server."
                      " Disconnect before attempting a new connection.");
 
@@ -69,7 +69,8 @@ void Nav2Robot::connect() {
     // localize scope for rv
     int rv = getaddrinfo(hostname_.c_str(), std::to_string(portno_).c_str(),
                          &hints, &servinfo);
-    if(rv != 0) {
+
+    if (rv != 0) {
       throw std::runtime_error(
         std::string{"Function getaddrinfo() returned error: "}
         + gai_strerror(rv));
@@ -78,27 +79,30 @@ void Nav2Robot::connect() {
 
   // loop through serverinfo list.
   struct addrinfo* p;
-  for(p = servinfo; p != NULL; p = p->ai_next) {
-    if((sockfd_ = socket(p->ai_family, p->ai_socktype,
-                         p->ai_protocol)) == -1) {
+
+  for (p = servinfo; p != nullptr; p = p->ai_next) {
+    if ((sockfd_ = socket(p->ai_family, p->ai_socktype,
+                          p->ai_protocol)) == -1) {
       throw std::runtime_error(
         std::string{"Function socket() returned error: "} + strerror(errno)
       );
     }
-    if(::connect(sockfd_, p->ai_addr, p->ai_addrlen) == -1) {
+
+    if (::connect(sockfd_, p->ai_addr, p->ai_addrlen) == -1) {
       close(sockfd_);
       continue;
     }
+
     break; // successfully connected
   }
 
-  if(p == nullptr) {
+  if (p == nullptr) {
     throw std::runtime_error(
       std::string{"Function connect() returned error: "} + strerror(errno)
     );
   }
 
-  freeaddrinfo(servinfo); // all done with this structure
+  freeaddrinfo(servinfo);
   is_connected_ = true;
   return;
 }
@@ -131,7 +135,7 @@ int Nav2Robot::sendstr(std::string msg) {
  * @param  msg The message to be sent.
  */
 int Nav2Robot::sendline(std::string cmd) {
-  if(cmd.back() == '\n')
+  if (cmd.back() == '\n')
     return sendstr(cmd);
   else
     return sendstr(cmd+'\n');
@@ -156,21 +160,25 @@ int Nav2Robot::sendline(std::string cmd) {
 [[ deprecated ]]
 int Nav2Robot::sendline(const char* cmd, const int size) {
   const char* s = cmd;
+  const char* end = cmd + size;
 
-  for(; *s != '\0'; s++) {
+  for (; (*s != '\0') && (s <= end); s++) {
     // If cmd already has a newline character read it into a well sized piece of
     // memory and ship it out.
-    if(*s == '\n') {
+    if (*s == '\n') {
       char* msg = (char*) calloc(sizeof(char),
                                  (s - cmd + 1) * sizeof(char));
       strncpy(msg, cmd, (s - cmd) / sizeof(char));
       int a = write(sockfd_, msg, strlen(msg));
-      if(a < 0)
+
+      if (a < 0)
         throw std::runtime_error("Could not write to Nav2 device");
+
       free(msg);
       return a;
     }
   }
+
   // If we're here, then we've found a \0 and no \n, so create a new array and
   // add a \n and ship it out.
   char* msg = (char*) calloc(sizeof(char),
@@ -178,7 +186,8 @@ int Nav2Robot::sendline(const char* cmd, const int size) {
   strncpy(msg, cmd, (s - cmd) / sizeof(char));
   strncat(msg, "\n", 1);
   int a = write(sockfd_, msg, strlen(msg));
-  if(a < 0)
+
+  if (a < 0)
     throw std::runtime_error("Could not write to Nav2 device");
 
   free(msg);
@@ -186,14 +195,14 @@ int Nav2Robot::sendline(const char* cmd, const int size) {
 }
 
 void Nav2Robot::set_host(std::string host) {
-  if(is_connected_) throw
+  if (is_connected_) throw
     std::logic_error("Cannot change Nav2Robot hostname while connected");
   else
     hostname_= host;
 }
 
 void Nav2Robot::set_port(int portno) {
-  if(is_connected_) throw
+  if (is_connected_) throw
     std::logic_error("Cannot change Nav2Robot port while connected");
   else
     portno_ = portno;
@@ -211,7 +220,7 @@ void Nav2Robot::set_port(int portno) {
 std::string Nav2Robot::send_recv(std::string msg, int buffer_size) {
   // const int buffer_size = ;
 
-  if(sendstr(msg) < 0)
+  if (sendstr(msg) < 0)
     throw std::runtime_error(
       "Failed to write to Nav2 machine during send_recv. msg: " + msg
     );
@@ -219,15 +228,17 @@ std::string Nav2Robot::send_recv(std::string msg, int buffer_size) {
   std::vector<char> buffer(buffer_size);
   std::string recieved_message;
   int bytes_received{0};
+
   do {
     bytes_received = recv(sockfd_, buffer.data(), buffer.size(), 0);
-    if(bytes_received < 0)
+
+    if (bytes_received < 0)
       throw std::runtime_error(
         "Failed to read from Nav2 machine during pose update. msg: " + msg
       );
     else
       recieved_message.append(buffer.cbegin(), buffer.cend());
-  } while(bytes_received == buffer_size);
+  } while (bytes_received == buffer_size);
 
   return recieved_message;
 
@@ -470,3 +481,7 @@ int Nav2Robot::avv(float v, float theta) {
                     + std::to_string(std::sin(rads) * v) + '\n';
   return sendstr(msg);
 }
+
+// TODO(TT): A struct that takes a string (cmd) and a vector of arguments and
+// formats them into a command; This replaces the functionality of the python
+// version's command() member.

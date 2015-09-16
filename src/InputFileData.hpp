@@ -1,7 +1,7 @@
 /*
- * vme-nmpc/src/CLopts.hpp
+ * vme-nmpc/src/InputFileData.hpp
  * Author : Timothy A.V. Teatro
- * Date   : 2015-08-22
+ * Date   : 2015-08-24
  *
  * This file is part of vme-nmpc.
  *
@@ -21,20 +21,24 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VME_NMPC_SRC_CLOPTS_HPP__
-#define VME_NMPC_SRC_CLOPTS_HPP__
+#ifndef VME_NMPC_SRC_INPUTFILEDATA_HPP__
+#define VME_NMPC_SRC_INPUTFILEDATA_HPP__
 
 #include <string>
 
-struct CLopts {
-
-  std::string infile;
-  std::string host;
-  int port;
-  bool verbose;
-  bool quiet;
-
-  CLopts(int, char**);
+struct InputFileData {
+  int N;
+  int m;
+  int n;
+  float T;
+  float tgttol;
+  float dg;
+  float cruising_speed;
+  float Q;
+  float Q0;
+  float R;
+  void load(const std::string &);
+  // void save(const std::string &);
 };
 
-#endif // VME_NMPC_SRC_CLOPTS_HPP__
+#endif // VME_NMPC_SRC_INPUTFILEDATA_HPP__

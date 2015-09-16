@@ -1,5 +1,5 @@
 /*
- * vme-nmpc/src/Nav2Robot.h
+ * vme-nmpc/src/Nav2Robot.hpp
  * Author : Timothy A.V. Teatro
  * Date   : 2015-08-17
  *

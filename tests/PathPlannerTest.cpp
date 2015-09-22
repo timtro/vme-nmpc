@@ -29,7 +29,7 @@ TEST_CASE("A newly minted NmpcEngine should have an empty stack of targets") {
     REQUIRE(e.finalTarget().y == 5.);
   }
 
-  SECTION("Target's x,y members should be references to the pointR2 locus") {
+  SECTION("Target's x,y members should be references to the Point2R locus") {
     Target a {1, 2, 3};
     a.x = 99.f;
     REQUIRE(a.locus.x == 99.f);

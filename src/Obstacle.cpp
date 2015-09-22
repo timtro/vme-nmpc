@@ -24,9 +24,9 @@
 #include "linear.hpp"
 #include "Obstacle.hpp"
 
-pointR2 ObstacleContainer::gradPhi(pointR2 refPoint) {
+Point2R ObstacleContainer::gradPhi(Point2R refPoint) {
 
-  auto sum = pointR2 {0.f, 0.f};
+  auto sum = Point2R {0.f, 0.f};
 
   for (auto each : obstacles)
     sum += each->gradPhi(refPoint);

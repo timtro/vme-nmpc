@@ -12,3 +12,13 @@ a.out
 #Emacs backups
 *~
 
+build
+build/*
+.*
+*.bak
+*.user
+gitignore
+research/rough work.wxm
+*.sublime-project
+*.sublime-workspace
+

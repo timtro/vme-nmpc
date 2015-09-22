@@ -29,7 +29,36 @@
 
 #include "CrossWing/linear.h"
 
-typedef Point<float,2> pointR2;
+typedef Point<float,2> Point2R;
+typedef Point<float,3> Point3D;
+typedef Point<float,4> Point4D;
+
+template <typename R>
+class XYVTh {
+ public:
+  static const unsigned size = 4;
+  R x,y,v,th;
+  XYVTh() {}
+  explicit XYVTh(R val) : x(val), y(val), v(val), th(val) {};
+  template <typename R2>
+  explicit XYVTh(const Point<R2,4>& p) {
+    for ( unsigned i=0; i<size; ++i) (*this)[i] = R(p[i]);
+  }
+  XYVTh(R x, R y, R v, R th) :
+    x(std::move(x)),y(std::move(y)),v(std::move(v)),th(std::move(th)) {};
+  R& operator[](int i) {
+    return ((R*)this)[i];
+  }
+  const R& operator[](int i) const {
+    return ((R*)this)[i];
+  }
+  typedef R value_type;
+  template <typename R2> XYVTh<R>& operator=( const Point<R2,4>& b) {
+    for ( unsigned i=0; i < size; ++i) (*this)[i] = R(b[i]);
+
+    return *this;
+  }
+};
 
 // Dot product/
 template <typename R,int n>

@@ -22,6 +22,7 @@
  */
 
 #include "Nav2Robot.hpp"
+#include "trig.h"
 
 #include <cmath>
 #include <cstdio>
@@ -35,12 +36,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-template <typename T>
-constexpr T pi{std::acos(T(-1.0))};
-
-template<typename T>
-constexpr T pi_180{T(pi<T>/180)};
 
 Nav2Robot::Nav2Robot()   : hostname_{"localhost"}, portno_{5010}, sockfd_{},
   pose_{}, is_connected_{false} {}
@@ -476,7 +471,7 @@ int Nav2Robot::v(float theta, float v, float Dth) {
  * @return       Forwards the return value from write().
  */
 int Nav2Robot::avv(float v, float theta) {
-  float rads = theta * pi<float>/180;
+  float rads = degToRad(theta);
   std::string msg = "AV " + std::to_string(std::cos(rads) * v) + ' '
                     + std::to_string(std::sin(rads) * v) + '\n';
   return sendstr(msg);

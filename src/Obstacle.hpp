@@ -40,11 +40,11 @@
  */
 struct Obstacle {
 
-  pointR2 position;
+  Point2R position;
 
-  virtual float dist(pointR2) = 0;
-  virtual float phi(pointR2) = 0;
-  virtual pointR2 gradPhi(pointR2) = 0;
+  virtual float dist(Point2R) = 0;
+  virtual float phi(Point2R) = 0;
+  virtual Point2R gradPhi(Point2R) = 0;
 
 };
 
@@ -52,7 +52,7 @@ class ObstacleContainer {
   std::vector<Obstacle*> obstacles;
 
  public:
-  pointR2 gradPhi(pointR2);
+  Point2R gradPhi(Point2R);
 
 };
 

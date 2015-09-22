@@ -1,6 +1,6 @@
 
 struct Target {
-  pointR2 locus;
+  Point2R locus;
   float tolerance;
   decltype(locus.x)& x;
   decltype(locus.x)& y;

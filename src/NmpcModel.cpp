@@ -27,10 +27,8 @@
 // s/qu\[([^\]]*)\]\.([a-zA-Z0-9]*)/\2\[\1\]/g
 
 #include "NmpcModel.hpp"
-#include "Obstacle.hpp"
+#include "trig.hpp"
 
-#include <vector>
-#include <valarray>
 
 /*
 Make state space styff accessible through agetters. Lagrange portion doesent
@@ -40,22 +38,42 @@ need utesting and can be fkushed out through gradient.
 NmpcModel::NmpcModel(NmpcInitPkg& ini) :
   N{ini.N}, m{ini.m}, n{ini.n}, T{ini.T}, dg{ini.dg},
   cruising_speed{ini.cruising_speed}, Q{ini.Q}, Q0{ini.Q0}, R{ini.R} {
-  x = std::valarray<float>(0.f, N);
-  Dx = std::valarray<float>(0.f, N);
-  y = std::valarray<float>(0.f, N);
-  Dy = std::valarray<float>(0.f, N);
-  th = std::valarray<float>(0.f, N);
-  Dth = std::valarray<float>(0.f, N);
-  v = std::valarray<float>(0.f, N);
-  ex = std::valarray<float>(0.f, N);
-  ey = std::valarray<float>(0.f, N);
-  px = std::valarray<float>(0.f, N);
-  pDx = std::valarray<float>(0.f, N);
-  py = std::valarray<float>(0.f, N);
-  pDy = std::valarray<float>(0.f, N);
-  pth = std::valarray<float>(0.f, N);
-  grad = std::valarray<float>(0.f, N);
-  last_grad = std::valarray<float>(0.f, N);
+  size_t size = static_cast<size_t>(N);
+
+  // State Vector:
+  x = std::valarray<float>(0.f, size);
+  Dx = std::valarray<float>(0.f, size);
+  y = std::valarray<float>(0.f, size);
+  Dy = std::valarray<float>(0.f, size);
+  th = std::valarray<float>(0.f, size);
+  // Control vector:
+  Dth = std::valarray<float>(0.f, size);
+  // Other:
+  v = std::valarray<float>(cruising_speed, size);
+  ex = std::valarray<float>(0.f, size);
+  ey = std::valarray<float>(0.f, size);
+  // Lagrange Multipliers:
+  px = std::valarray<float>(0.f, size);
+  pDx = std::valarray<float>(0.f, size);
+  py = std::valarray<float>(0.f, size);
+  pDy = std::valarray<float>(0.f, size);
+  pth = std::valarray<float>(0.f, size);
+  // Gradients:
+  grad = std::valarray<float>(0.f, size);
+  last_grad = std::valarray<float>(0.f, size);
+}
+
+void NmpcModel::seed() {
+  Dx[0] = v[0] * std::cos(th[0]);
+  Dy[0] = v[0] * std::sin(th[0]);
+}
+
+void NmpcModel::seed(XYVTh<float> seed) {
+  x[0] = seed.x;
+  y[0] = seed.y;
+  v[0] = seed.v;
+  th[0] = degToRad(seed.th);
+  this->seed();
 }
 
 void NmpcModel::forecast() {
@@ -68,10 +86,9 @@ void NmpcModel::forecast() {
   }
 }
 
-
 // /*!
 //  * This function sets the tracking error. This function is overloaded,
-//  * and in other flavours, will take clobal paths.
+//  * and in other flavours, will take global paths.
 //  *
 //  * This is vanilla, and just tracks the straight line at the cruising speed.
 //  */

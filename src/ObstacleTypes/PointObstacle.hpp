@@ -43,17 +43,17 @@
   */
 class PointObstacle : public Obstacle {
 
-  pointR2 position; // Why is this not inherited?
+  Point2R position; // Why is this not inherited?
 
  public:
 
   float pwr, eps;
 
-  PointObstacle(pointR2, float, float);
+  PointObstacle(Point2R, float, float);
 
-  virtual float dist(pointR2);
-  virtual float phi(pointR2);
-  virtual pointR2 gradPhi(pointR2);
+  virtual float dist(Point2R);
+  virtual float phi(Point2R);
+  virtual Point2R gradPhi(Point2R);
 
 
 };

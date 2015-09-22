@@ -25,10 +25,10 @@
 #define VME_NMPC_SRC_NMPCMODEL_HPP__
 
 #include "Obstacle.hpp"
+#include "linear.hpp"
 #include <deque>
 #include <vector>
 #include <valarray>
-
 
 struct NmpcInitPkg {
   int N;
@@ -41,7 +41,6 @@ struct NmpcInitPkg {
   float Q0;
   float R;
 };
-
 
 class NmpcModel {
 
@@ -88,6 +87,8 @@ class NmpcModel {
 
   NmpcModel(NmpcInitPkg&);
 
+  void seed();
+  void seed(XYVTh<float>);
   void forecast();
 };
 

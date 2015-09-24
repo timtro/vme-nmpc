@@ -26,20 +26,16 @@
 
 #include "Obstacle.hpp"
 #include "linear.hpp"
-#include <deque>
-#include <vector>
-#include <valarray>
 
 struct NmpcInitPkg {
   unsigned int N;
   unsigned int m;
   unsigned int n;
-  float T;
-  float dg;
-  float cruising_speed;
-  float Q;
-  float Q0;
-  float R;
+  fptype T;
+  fptype cruiseSpeed;
+  fptype Q;
+  fptype Q0;
+  fptype R;
 };
 
 class NmpcModel {
@@ -49,48 +45,54 @@ class NmpcModel {
   unsigned int N;
   unsigned int m;
   unsigned int n;
-  float T;
-  float dg;
-  float cruising_speed;
-  float Q;
-  float Q0;
-  float R;
+  fptype T;
+  fptype cruiseSpeed;
+  fptype Q;
+  fptype Q0;
+  fptype R;
 
   //! The x-coordinate.
-  std::valarray<float> x;
+  fpArray x;
   //! The time rate-of-change of x.
-  std::valarray<float> Dx;
+  fpArray Dx;
   //! The y-coordinate.
-  std::valarray<float> y;
+  fpArray y;
   //! The time rate-of-change of y.
-  std::valarray<float> Dy;
+  fpArray Dy;
   //! The angle from the x-axis of the direction of travel.
-  std::valarray<float> th;
+  fpArray th;
   //! The steering rate. That is, the time rate-of-change of th.
-  std::valarray<float> Dth;
+  fpArray Dth;
   //! The radial component of speed.
-  std::valarray<float> v;
+  fpArray v;
   //! The error of the x-coordinate.
-  std::valarray<float> ex;
+  fpArray ex;
   //! The error of the y-coordinate.
-  std::valarray<float> ey;
+  fpArray ey;
+  // Potential gradient at each point in path.
+  fpArray DPhiX;
+  fpArray DPhiY;
   // The Lagrange multipliers
 
-  std::valarray<float> px;
-  std::valarray<float> pDx;
-  std::valarray<float> py;
-  std::valarray<float> pDy;
-  std::valarray<float> pth;
+  fpArray px;
+  fpArray pDx;
+  fpArray py;
+  fpArray pDy;
+  fpArray pth;
 
-  std::valarray<float> grad;
-  std::valarray<float> last_grad;
+  fptype gradNorm = 0.f;
+  fpArray grad;
+  fpArray prevGrad;
 
   NmpcModel(NmpcInitPkg &);
 
   void seed();
-  void seed(XYVTh<float>);
+  void seed(XYVTh<fptype>);
   void forecast();
   void setTrackingErrors(Point2R target);
+  void computeLagrageMultipliers();
+  void computePathPotentialGradient(ObstacleContainer &obstacles);
+  void computeGradient();
 };
 
 #endif // VME_NMPC_SRC_NMPCMODEL_HPP__

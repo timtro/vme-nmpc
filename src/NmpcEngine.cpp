@@ -40,21 +40,21 @@ need utesting and can be fkushed out through gradient.
 NmpcEngine::NmpcEngine(NmpcInitPkg& ini) :
   N{ini.N}, m{ini.m}, n{ini.n}, T{ini.T}, dg{ini.dg},
   cruising_speed{ini.cruising_speed}, Q{ini.Q}, Q0{ini.Q0}, R{ini.R} {
-  x = std::valarray<float>(0.f, N);
-  Dx = std::valarray<float>(0.f, N);
-  y = std::valarray<float>(0.f, N);
-  Dy = std::valarray<float>(0.f, N);
-  th = std::valarray<float>(0.f, N);
-  Dth = std::valarray<float>(0.f, N);
-  v = std::valarray<float>(0.f, N);
-  ex = std::valarray<float>(0.f, N);
-  ey = std::valarray<float>(0.f, N);
-  px = std::valarray<float>(0.f, N);
-  pDx = std::valarray<float>(0.f, N);
-  py = std::valarray<float>(0.f, N);
-  pDy = std::valarray<float>(0.f, N);
-  pth = std::valarray<float>(0.f, N);
-  grad = std::valarray<float>(0.f, N);
-  last_grad = std::valarray<float>(0.f, N);
+  x = fpArray(0.f, N);
+  Dx = fpArray(0.f, N);
+  y = fpArray(0.f, N);
+  Dy = fpArray(0.f, N);
+  th = fpArray(0.f, N);
+  Dth = fpArray(0.f, N);
+  v = fpArray(0.f, N);
+  ex = fpArray(0.f, N);
+  ey = fpArray(0.f, N);
+  px = fpArray(0.f, N);
+  pDx = fpArray(0.f, N);
+  py = fpArray(0.f, N);
+  pDy = fpArray(0.f, N);
+  pth = fpArray(0.f, N);
+  grad = fpArray(0.f, N);
+  last_grad = fpArray(0.f, N);
   targets = std::deque<Target>();
 }

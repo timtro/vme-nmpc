@@ -33,7 +33,7 @@
 
 #include <cstdio>
 
-PointObstacle::PointObstacle(Point2R position, float pwr, float eps) :
+PointObstacle::PointObstacle(Point2R position, fptype pwr, fptype eps) :
   position{position}, pwr{pwr}, eps{eps} {}
 
 /**

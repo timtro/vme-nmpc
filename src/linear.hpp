@@ -28,10 +28,9 @@
 
 
 #include "CrossWing/linear.h"
+#include "typedefs.h"
 
-typedef Point<float,2> Point2R;
-typedef Point<float,3> Point3D;
-typedef Point<float,4> Point4D;
+typedef Point<fptype,2> Point2R;
 
 template <typename R>
 class XYVTh {

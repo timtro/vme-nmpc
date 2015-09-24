@@ -24,19 +24,20 @@
 #ifndef VME_NMPC_SRC_INPUTFILEDATA_HPP__
 #define VME_NMPC_SRC_INPUTFILEDATA_HPP__
 
+#include "typedefs.h"
 #include <string>
 
 struct InputFileData {
   int N;
   int m;
   int n;
-  float T;
-  float tgttol;
-  float dg;
-  float cruising_speed;
-  float Q;
-  float Q0;
-  float R;
+  fptype T;
+  fptype tgttol;
+  fptype dg;
+  fptype cruising_speed;
+  fptype Q;
+  fptype Q0;
+  fptype R;
   void load(const std::string &);
   // void save(const std::string &);
 };

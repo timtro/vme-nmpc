@@ -12,7 +12,7 @@ NmpcModel stationaryTestModel() {
   NmpcInitPkg init_a;
   init_a.N = num_of_intervals;
   init_a.T = time_interval;
-  init_a.cruising_speed = speed;
+  init_a.cruiseSpeed = speed;
   return NmpcModel(init_a);
 }
 
@@ -20,7 +20,7 @@ NmpcModel standardTestModel() {
   float speed = 0.1f;
   auto m = stationaryTestModel();
   m.v = speed;
-  m.cruising_speed = speed;
+  m.cruiseSpeed = speed;
   m.seed();
   return m;
 }
@@ -52,7 +52,7 @@ TEST_CASE("A machine posed at the origin pointing in +x with a constant speed"
 TEST_CASE("A machine posed at the origin pointing in +y with a constant speed"
               " should drive a stright line along the +y-axis") {
   auto m = standardTestModel();
-  m.seed(XYVTh<float>{0, 0, m.cruising_speed, 90.f});
+  m.seed(XYVTh<float>{0, 0, m.cruiseSpeed, 90.f});
   m.forecast();
   REQUIRE(m.y[m.N - 1] == Approx(
       linearTravelDistance(m.v[0], m.T, m.N)

@@ -47,12 +47,12 @@ class PointObstacle : public Obstacle {
 
  public:
 
-  float pwr, eps;
+  fptype pwr, eps;
 
-  PointObstacle(Point2R, float, float);
+  PointObstacle(Point2R, fptype, fptype);
 
-  virtual float dist(Point2R);
-  virtual float phi(Point2R);
+  virtual fptype dist(Point2R);
+  virtual fptype phi(Point2R);
   virtual Point2R gradPhi(Point2R);
 
 

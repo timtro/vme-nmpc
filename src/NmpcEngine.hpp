@@ -34,12 +34,12 @@ struct NmpcInitPkg {
   int N;
   int m;
   int n;
-  float T;
-  float dg;
-  float cruising_speed;
-  float Q;
-  float Q0;
-  float R;
+  fptype T;
+  fptype dg;
+  fptype cruising_speed;
+  fptype Q;
+  fptype Q0;
+  fptype R;
 };
 
 

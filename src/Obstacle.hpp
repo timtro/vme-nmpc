@@ -42,8 +42,8 @@ struct Obstacle {
 
   Point2R position;
 
-  virtual float dist(Point2R) = 0;
-  virtual float phi(Point2R) = 0;
+  virtual fptype dist(Point2R) = 0;
+  virtual fptype phi(Point2R) = 0;
   virtual Point2R gradPhi(Point2R) = 0;
 
 };

@@ -30,31 +30,33 @@
 #include "trig.hpp"
 
 NmpcModel::NmpcModel(NmpcInitPkg &ini) :
-    N{ini.N}, m{ini.m}, n{ini.n}, T{ini.T}, dg{ini.dg},
-    cruising_speed{ini.cruising_speed}, Q{ini.Q}, Q0{ini.Q0}, R{ini.R} {
-  size_t size = static_cast<size_t>(N);
+    N{ini.N}, m{ini.m}, n{ini.n}, T{ini.T}, cruiseSpeed{ini.cruiseSpeed},
+    Q{ini.Q}, Q0{ini.Q0}, R{ini.R} {
+  size_t horizonSize = static_cast<size_t>(N);
 
   // State Vector:
-  x = std::valarray<float>(0.f, size);
-  Dx = std::valarray<float>(0.f, size);
-  y = std::valarray<float>(0.f, size);
-  Dy = std::valarray<float>(0.f, size);
-  th = std::valarray<float>(0.f, size);
+  x = fpArray(0.f, horizonSize);
+  Dx = fpArray(0.f, horizonSize);
+  y = fpArray(0.f, horizonSize);
+  Dy = fpArray(0.f, horizonSize);
+  th = fpArray(0.f, horizonSize);
   // Control vector:
-  Dth = std::valarray<float>(0.f, size);
+  Dth = fpArray(0.f, horizonSize);
   // Other:
-  v = std::valarray<float>(cruising_speed, size);
-  ex = std::valarray<float>(0.f, size);
-  ey = std::valarray<float>(0.f, size);
+  v = fpArray(cruiseSpeed, horizonSize);
+  ex = fpArray(0.f, horizonSize);
+  ey = fpArray(0.f, horizonSize);
+  DPhiX = fpArray(0.f, horizonSize);
+  DPhiY = fpArray(0.f, horizonSize);
   // Lagrange Multipliers:
-  px = std::valarray<float>(0.f, size);
-  pDx = std::valarray<float>(0.f, size);
-  py = std::valarray<float>(0.f, size);
-  pDy = std::valarray<float>(0.f, size);
-  pth = std::valarray<float>(0.f, size);
+  px = fpArray(0.f, horizonSize);
+  pDx = fpArray(0.f, horizonSize);
+  py = fpArray(0.f, horizonSize);
+  pDy = fpArray(0.f, horizonSize);
+  pth = fpArray(0.f, horizonSize);
   // Gradients:
-  grad = std::valarray<float>(0.f, size);
-  last_grad = std::valarray<float>(0.f, size);
+  grad = fpArray(0.f, horizonSize);
+  prevGrad = fpArray(0.f, horizonSize);
 }
 
 void NmpcModel::seed() {
@@ -87,58 +89,50 @@ void NmpcModel::setTrackingErrors(Point2R target) {
   float dirx = target.x - x[0];
   float diry = target.y - y[0];
   // TODO: Store dist this to use in loop terminator.
-  float dist = sqrt(dirx * dirx + diry * diry);
+  float dist = std::sqrt(dirx * dirx + diry * diry);
   dirx /= dist;
   diry /= dist;
 
   for (unsigned int k = 1; k < N; ++k) {
-    ex[k] = x[k] - (x[0] + cruising_speed * dirx * k * T);
-    ey[k] = y[k] - (y[0] + cruising_speed * diry * k * T);
+    ex[k] = x[k] - (x[0] + cruiseSpeed * dirx * k * T);
+    ey[k] = y[k] - (y[0] + cruiseSpeed * diry * k * T);
   }
 }
 
-// /*!
-//  * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
-//  * are computed. The norm of the gradient vector is also sotred in the N+1th
-//  * element of the gradient array.
-//  */
-// void NmpcEngine::computeGradient() {
+void NmpcModel::computePathPotentialGradient(ObstacleContainer &obstacles) {
+  for (unsigned int k = 0; k < N; ++k) {
+    Point2R gradVec = obstacles.gradPhi(Point2R{x[k], y[k]});
+    DPhiX[k] = gradVec.x;
+    DPhiY[k] = gradVec.y;
+  }
+}
 
-//   int k;
-//   unsigned int j;
-//   float denom, difx, dify, gDth;
+void NmpcModel::computeLagrageMultipliers() {
+  px[N - 1] = Q0 * ex[N - 1];
+  py[N - 1] = Q0 * ey[N - 1];
 
-//   grad[N] = 0.;
+  for (unsigned int k = N - 2; k == 0; --k) {
+    // Compute the Lagrange multipliers:
+    px[k] = Q * ex[k] - DPhiX[k] + px[k + 1];
+    pDx[k] = px[k + 1] * T;
+    py[k] = Q * ey[k] - DPhiY[k] + py[k + 1];
+    pDy[k] = py[k + 1] * T;
+    pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k])
+        - pDx[k + 1] * v[k] * std::sin(th[k]);
+  }
+}
 
-//   px[N - 1] = Q0 * ex[N - 1];
-//   py[N - 1] = Q0 * ey[N - 1];
-//   Dth[N - 2] -= dg * R * Dth[N - 2];
-
-
-//   //TODO(TT): Try auto here:
-//   // std::tie(std::valarray<float> DPhi_x, std::valarray<float> DPhi_y) =
-//   // obstacles.grad_phi(x, y);
-//   std::valarray<float> gphi_x;
-//   std::valarray<float> gphi_y;
-//   std::tie(gphi_x, gphi_y) = obstacles.grad_phi(x, y);
-
-//   /*!
-//    * Get the gradient ∂H/∂u_k, for each step, k in the horizon, loop
-//    * through each k in N. This involves computing the obstacle potential
-//    * and Lagrange multipliers. Then, the control plan is updated by
-//    * stepping against the direction of the gradient.
-//    */
-//   for(k = N - 2; k >= 0; --k) {
-
-//     // Compute the Lagrange multipliers:
-//     px[k] = Q * ex[k] - gphi_x[k] + px[k + 1];
-//     pDx[k] = px[k + 1] * T;
-//     py[k] = Q * ey[k] - gphi_y[k] + py[k + 1];
-//     pDy[k] = py[k + 1] * T;
-//     pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k])
-//              - pDx[k + 1] * v[k] * std::sin(th[k]);
-//     grad[k] = R * Dth[k] + pth[k + 1] * T;
-//     grad[N] += grad[k] * grad[k];
-//   }
-//   grad[N] = sqrt(grad[N]);
-// }
+/*!
+ * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
+ * are computed.
+ */
+void NmpcModel::computeGradient() {
+  grad[N-1] = R * Dth[N-2] + pth[N-1] * T;
+  computeLagrageMultipliers();
+  gradNorm = 0.f;
+  for (unsigned int k = N - 2; k == 0; --k) {
+    grad[k] = R * Dth[k] + pth[k + 1] * T;
+    gradNorm += grad[k] * grad[k];
+  }
+  gradNorm = std::sqrt(gradNorm);
+}

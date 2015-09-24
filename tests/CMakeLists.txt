@@ -9,5 +9,5 @@ create_test(${testname})
 
 set(testname NmpcModelTest)
 add_executable (${testname} ${testname}.cpp)
-target_link_libraries (${testname} NmpcModel)
+target_link_libraries (${testname} NmpcModel Obstacle)
 create_test(${testname})

@@ -21,4 +21,4 @@ gitignore
 research/rough work.wxm
 *.sublime-project
 *.sublime-workspace
-
+.idea

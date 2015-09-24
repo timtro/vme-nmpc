@@ -31,9 +31,9 @@
 #include <valarray>
 
 struct NmpcInitPkg {
-  int N;
-  int m;
-  int n;
+  unsigned int N;
+  unsigned int m;
+  unsigned int n;
   float T;
   float dg;
   float cruising_speed;
@@ -46,9 +46,9 @@ class NmpcModel {
 
  public:
 
-  int N;
-  int m;
-  int n;
+  unsigned int N;
+  unsigned int m;
+  unsigned int n;
   float T;
   float dg;
   float cruising_speed;
@@ -85,11 +85,12 @@ class NmpcModel {
   std::valarray<float> grad;
   std::valarray<float> last_grad;
 
-  NmpcModel(NmpcInitPkg&);
+  NmpcModel(NmpcInitPkg &);
 
   void seed();
   void seed(XYVTh<float>);
   void forecast();
+  void setTrackingErrors(Point2R target);
 };
 
 #endif // VME_NMPC_SRC_NMPCMODEL_HPP__

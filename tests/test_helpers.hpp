@@ -14,3 +14,16 @@ bool eachInArrayIsApprox(T array, V expectedValue, V absoluteError) {
                                                                   expectedValue+absoluteError;
   });
 }
+
+bool eachIsTrue(const std::valarray<bool>& comparison)
+{
+  bool equals = true;
+  for ( auto item : comparison )
+    equals &= item;
+  return equals;
+}
+
+template <typename T>
+bool arraysAreAbsEqual(const T& a, const T& b, decltype(a[0]+b[0]) absoluteError) {
+  return eachIsTrue(std::abs(std::abs(a) - std::abs(b)) < absoluteError);
+}

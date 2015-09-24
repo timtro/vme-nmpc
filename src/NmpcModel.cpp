@@ -29,15 +29,9 @@
 #include "NmpcModel.hpp"
 #include "trig.hpp"
 
-
-/*
-Make state space styff accessible through agetters. Lagrange portion doesent
-need utesting and can be fkushed out through gradient.
- */
-
-NmpcModel::NmpcModel(NmpcInitPkg& ini) :
-  N{ini.N}, m{ini.m}, n{ini.n}, T{ini.T}, dg{ini.dg},
-  cruising_speed{ini.cruising_speed}, Q{ini.Q}, Q0{ini.Q0}, R{ini.R} {
+NmpcModel::NmpcModel(NmpcInitPkg &ini) :
+    N{ini.N}, m{ini.m}, n{ini.n}, T{ini.T}, dg{ini.dg},
+    cruising_speed{ini.cruising_speed}, Q{ini.Q}, Q0{ini.Q0}, R{ini.R} {
   size_t size = static_cast<size_t>(N);
 
   // State Vector:
@@ -77,7 +71,7 @@ void NmpcModel::seed(XYVTh<float> seed) {
 }
 
 void NmpcModel::forecast() {
-  for (int k = 1; k < N; ++k) {
+  for (unsigned int k = 1; k < N; ++k) {
     th[k] = th[k - 1] + Dth[k - 1] * T;
     x[k] = x[k - 1] + Dx[k - 1] * T;
     Dx[k] = v[k] * std::cos(th[k]);
@@ -86,32 +80,29 @@ void NmpcModel::forecast() {
   }
 }
 
-// /*!
-//  * This function sets the tracking error. This function is overloaded,
-//  * and in other flavours, will take global paths.
-//  *
-//  * This is vanilla, and just tracks the straight line at the cruising speed.
-//  */
-// void NmpcEngine::set_tracking_errors(qnu* qu, Lagr* p, const nmpc& C) {
-//   float dirx = targets.top().x - x[0];
-//   float diry = targets.top().y - y[0];
-//   // TODO: Store dist this to use in loop terminator.
-//   float dist = sqrt(dirx * dirx + diry * diry);
-//   dirx /= dist;
-//   diry /= dist;
+/*!
+ * This is vanilla, and just tracks the straight line at the cruising speed.
+ */
+void NmpcModel::setTrackingErrors(Point2R target) {
+  float dirx = target.x - x[0];
+  float diry = target.y - y[0];
+  // TODO: Store dist this to use in loop terminator.
+  float dist = sqrt(dirx * dirx + diry * diry);
+  dirx /= dist;
+  diry /= dist;
 
-//   for(unsigned int k = 1; k < N; ++k) {
-//     ex[k] = x[k] - (x[0] + cruising_speed * dirx * k * T);
-//     ey[k] = y[k] - (y[0] + cruising_speed * diry * k * T);
-//   }
-// }
+  for (unsigned int k = 1; k < N; ++k) {
+    ex[k] = x[k] - (x[0] + cruising_speed * dirx * k * T);
+    ey[k] = y[k] - (y[0] + cruising_speed * diry * k * T);
+  }
+}
 
 // /*!
 //  * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
 //  * are computed. The norm of the gradient vector is also sotred in the N+1th
 //  * element of the gradient array.
 //  */
-// void NmpcEngine::get_gradient() {
+// void NmpcEngine::computeGradient() {
 
 //   int k;
 //   unsigned int j;

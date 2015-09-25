@@ -8,7 +8,7 @@ set(bld_dir ${CMAKE_CURRENT_SOURCE_DIR}/build)
 set(EXECUTABLE_OUTPUT_PATH ${bld_dir} CACHE PATH "Build directory" FORCE)
 set(LIBRARY_OUTPUT_PATH ${bld_dir} CACHE PATH "Build directory" FORCE)
 
-set(warnings "-Wall -Wextra -Werror -pedantic")
+set(warnings "-Wall -Wextra -pedantic")
 set(optimizations "-flto")
 set(debug "-ggdb")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -std=c++14 ${warnings} ${optimizations} ${debug}")

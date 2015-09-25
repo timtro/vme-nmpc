@@ -91,7 +91,7 @@ class NmpcModel {
   void forecast();
   void setTrackingErrors(Point2R target);
   void computeLagrageMultipliers();
-  void computePathPotentialGradient(ObstacleContainer &obstacles);
+  void computePathPotentialGradient(ObstacleStack &obstacles);
   void computeGradient();
 };
 

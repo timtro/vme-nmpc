@@ -41,7 +41,7 @@ NmpcModel::NmpcModel(NmpcInitPkg &ini) :
   Dy = fpArray(0.f, horizonSize);
   th = fpArray(0.f, horizonSize);
   // Control vector:
-  Dth = fpArray(0.f, horizonSize);
+  Dth = fpArray(0.f, horizonSize-1);
   // Other:
   v = fpArray(cruiseSpeed, horizonSize);
   ex = fpArray(0.f, horizonSize);
@@ -55,8 +55,8 @@ NmpcModel::NmpcModel(NmpcInitPkg &ini) :
   pDy = fpArray(0.f, horizonSize);
   pth = fpArray(0.f, horizonSize);
   // Gradients:
-  grad = fpArray(0.f, horizonSize);
-  prevGrad = fpArray(0.f, horizonSize);
+  grad = fpArray(0.f, horizonSize-1);
+  prevGrad = fpArray(0.f, horizonSize-1);
 }
 
 void NmpcModel::seed() {
@@ -93,13 +93,13 @@ void NmpcModel::setTrackingErrors(Point2R target) {
   dirx /= dist;
   diry /= dist;
 
-  for (unsigned int k = 1; k < N; ++k) {
+  for (unsigned k = 1; k < N; ++k) {
     ex[k] = x[k] - (x[0] + cruiseSpeed * dirx * k * T);
     ey[k] = y[k] - (y[0] + cruiseSpeed * diry * k * T);
   }
 }
 
-void NmpcModel::computePathPotentialGradient(ObstacleContainer &obstacles) {
+void NmpcModel::computePathPotentialGradient(ObstacleStack &obstacles) {
   for (unsigned int k = 0; k < N; ++k) {
     Point2R gradVec = obstacles.gradPhi(Point2R{x[k], y[k]});
     DPhiX[k] = gradVec.x;
@@ -111,7 +111,7 @@ void NmpcModel::computeLagrageMultipliers() {
   px[N - 1] = Q0 * ex[N - 1];
   py[N - 1] = Q0 * ey[N - 1];
 
-  for (unsigned int k = N - 2; k == 0; --k) {
+  for (unsigned k = N - 2; k == 0; --k) {
     // Compute the Lagrange multipliers:
     px[k] = Q * ex[k] - DPhiX[k] + px[k + 1];
     pDx[k] = px[k + 1] * T;
@@ -127,7 +127,7 @@ void NmpcModel::computeLagrageMultipliers() {
  * are computed.
  */
 void NmpcModel::computeGradient() {
-  grad[N-1] = R * Dth[N-2] + pth[N-1] * T;
+  grad[N-1] = R * Dth[N-2] + pth[N-1] * T; //segfault?
   computeLagrageMultipliers();
   gradNorm = 0.f;
   for (unsigned int k = N - 2; k == 0; --k) {

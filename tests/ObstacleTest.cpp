@@ -5,9 +5,6 @@
 #include "../src/Obstacle.hpp"
 #include "../src/ObstacleTypes/PointObstacle.hpp"
 
-#include <random>
-#include <limits>
-
 
 std::random_device rd;
 std::default_random_engine e1(rd());
@@ -20,7 +17,7 @@ TEST_CASE("Distances are computed correctly") {
   SECTION("For pointObstacles, we expect a Pythagorean relationship") {
     REQUIRE(PointObstacle(Point2R{0, 0}, 0, 0).dist(Point2R{1, 1})
                 == Approx(std::sqrt(2)));
-    // Some pythagorean tripples
+    // Some pythagorean tripplets
     REQUIRE(PointObstacle(Point2R{0, 1}, 0, 0).dist(Point2R{1, 1})
                 == Approx(1));
     REQUIRE(PointObstacle(Point2R{-20, 0}, 0, 0).dist(Point2R{0, -99})
@@ -46,9 +43,8 @@ TEST_CASE("Potential values are computed correctly") {
 
     //since the maximum exponent size we'll test for is 10, do 10th root of max
     //float _less the max offset) to be the biggest number we can get here.
-    std::uniform_real_distribution<float> bigr(0,
-                                               pow(std::numeric_limits<float>::max()
-                                                       - 10, 0.1));
+    std::uniform_real_distribution<float>
+        bigr(0, pow(std::numeric_limits<float>::max() - 10, 0.1));
 
     for (int k = 0; k < 10; ++k) {
       float pwr = zero_to_ten(e1), eps = zero_to_one(e1);
@@ -69,24 +65,51 @@ TEST_CASE("Potential values are computed correctly") {
 }
 
 TEST_CASE("Gradients are computed correctly... a though one.") {
-  /*
-   * The best way I can think of testing this is just to use some hard numbers
-   * computed from wxMaxima
-   *
-   * Phi(x,y) := 1/(sqrt(x^2 + y^2)^pwr + eps); [diff(Phi(x,y), x),
-   * diff(Phi(x,y), y)]; G(x,y) :=
-   * [-(pwr*x*(y^2+x^2)^(pwr/2-1))/((y^2+x^2)^(pwr/2)+eps)^2,-(pwr*y*(y^2+x^2)^(pwr/2-1))/((y^2+x^2)^(pwr/2)+eps)^2];
-   */
-  {
-    // float(ev(G(3, 4), pwr=2, eps=.2));
-    // > [-0.00944822373393802,-0.01259763164525069]
-    auto tc = PointObstacle(Point2R{0, 0}, 2, .2);
-    REQUIRE(tc.gradPhi(Point2R(3, 4)).x == Approx(-0.00944822373393802));
-    REQUIRE(tc.gradPhi(Point2R(3, 4)).y == Approx(-0.01259763164525069));
-    // float(ev(G(5, -2), pwr=4, eps=.12));
-    // > [-8.198078531413808*10^-4,3.279231412565523*10^-4]
-    tc = PointObstacle(Point2R{0, 0}, 4, .12);
-    REQUIRE(tc.gradPhi(Point2R(5, -2)).x == Approx(-8.198078531413808E-4));
-    REQUIRE(tc.gradPhi(Point2R(5, -2)).y == Approx(3.279231412565523E-4));
-  }
+ /*
+  * The best way I can think of testing this is just to use some hard numbers
+  * computed from wxMaxima
+  *
+  * Phi(x,y) := 1/(sqrt(x^2 + y^2)^pwr + eps); [diff(Phi(x,y), x),
+  * diff(Phi(x,y), y)]; G(x,y) :=
+  * [-(pwr*x*(y^2+x^2)^(pwr/2-1))/((y^2+x^2)^(pwr/2)+eps)^2,-(pwr*y*(y^2+x^2)^(pwr/2-1))/((y^2+x^2)^(pwr/2)+eps)^2];
+  */
+  // float(ev(G(3, 4), pwr=2, eps=.2));
+  // > [-0.00944822373393802,-0.01259763164525069]
+  auto tc = PointObstacle(Point2R{0, 0}, 2, .2);
+  REQUIRE(tc.gradPhi(Point2R(3, 4)).x == Approx(-0.00944822373393802));
+  REQUIRE(tc.gradPhi(Point2R(3, 4)).y == Approx(-0.01259763164525069));
+  // float(ev(G(5, -2), pwr=4, eps=.12));
+  // > [-8.198078531413808*10^-4,3.279231412565523*10^-4]
+  tc = PointObstacle(Point2R{0, 0}, 4, .12);
+  REQUIRE(tc.gradPhi(Point2R(5, -2)).x == Approx(-8.198078531413808E-4));
+  REQUIRE(tc.gradPhi(Point2R(5, -2)).y == Approx(3.279231412565523E-4));
+}
+
+TEST_CASE("Create a stack of obstacles, fill and empty it") {
+  ObstacleStack obs;
+  REQUIRE(obs.hasObstacles() == false);
+  REQUIRE(obs.numberOfObstacles() == 0);
+  // The long way:
+  obs.pushObstacleUniquePtr(
+      std::unique_ptr<Obstacle>{new PointObstacle{Point2R{10, 10}, 2, .12}});
+  REQUIRE(obs.numberOfObstacles() == 1);
+  REQUIRE(obs.hasObstacles() == true);
+  // The short(er) way:
+  obs.pushObstacle(new PointObstacle{Point2R{5, 5}, 2, .12});
+  REQUIRE(obs.numberOfObstacles() == 2);
+  obs.popObstacle();
+  REQUIRE(obs.numberOfObstacles() == 1);
+  obs.clearObstacleStack();
+  REQUIRE(obs.hasObstacles() == false);
+}
+
+TEST_CASE("Given two point obstacles at the origin, the gradient at the origin"
+              " should be zero (i.e., we are on the peak).") {
+  ObstacleStack obs;
+  obs.pushObstacle(new PointObstacle{Point2R{0, 0}, 2, 2});
+  obs.pushObstacle(new PointObstacle{Point2R{0, 0}, 2, 2});
+  Point2R a{0, 0};
+  Point2R grad = obs.gradPhi(a);
+  REQUIRE(grad.x == Approx(0));
+  REQUIRE(grad.y == Approx(0));
 }

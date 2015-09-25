@@ -24,8 +24,10 @@
 #ifndef VME_NMPC_SRC_OBSTACLE_H__
 #define VME_NMPC_SRC_OBSTACLE_H__
 
+#include <bits/unique_ptr.h>
 #include "linear.hpp"
 
+#include <memory>
 #include <utility> // for std::pair
 
 /**
@@ -48,12 +50,18 @@ struct Obstacle {
 
 };
 
-class ObstacleContainer {
-  std::vector<Obstacle*> obstacles;
+class ObstacleStack {
+  std::vector<std::unique_ptr<Obstacle>> obstacles;
 
  public:
   Point2R gradPhi(Point2R);
-
+  void pushObstacle(Obstacle *obs);
+  void pushObstacleUniquePtr(std::unique_ptr<Obstacle>);
+  void popObstacle();
+  size_t numberOfObstacles();
+  void clearObstacleStack();
+  bool hasObstacles();
+  std::unique_ptr<Obstacle> &operator[](const int i);
 };
 
 

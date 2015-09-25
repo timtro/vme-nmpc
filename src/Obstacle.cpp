@@ -24,11 +24,39 @@
 #include "linear.hpp"
 #include "Obstacle.hpp"
 
-Point2R ObstacleContainer::gradPhi(Point2R refPoint) {
+Point2R ObstacleStack::gradPhi(Point2R refPoint) {
   auto sum = Point2R {0.f, 0.f};
 
-  for (auto each : obstacles)
+  for (auto const& each : obstacles)
     sum += each->gradPhi(refPoint);
 
   return sum;
+}
+
+void ObstacleStack::pushObstacleUniquePtr(std::unique_ptr<Obstacle> obs) {
+  obstacles.push_back(std::move(obs));
+}
+
+void ObstacleStack::pushObstacle(Obstacle* obs) {
+  obstacles.push_back(std::move( std::unique_ptr<Obstacle>{obs} ));
+}
+
+void ObstacleStack::popObstacle() {
+  obstacles.pop_back();
+}
+
+size_t ObstacleStack::numberOfObstacles() {
+  return obstacles.size();
+}
+
+void ObstacleStack::clearObstacleStack() {
+  obstacles.clear();
+}
+
+bool ObstacleStack::hasObstacles() {
+  return !obstacles.empty();
+}
+
+std::unique_ptr<Obstacle>& ObstacleStack::operator[](const int i) {
+  return obstacles[i];
 }

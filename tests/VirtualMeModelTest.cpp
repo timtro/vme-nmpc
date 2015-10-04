@@ -1,23 +1,23 @@
 #define CATCH_CONFIG_MAIN
 
 #include "catch.hpp"
-#include "../src/NmpcModel.hpp"
-#include "test_helpers.hpp"
+#include "../src/NmpcModels/VirtualMeModel.hpp"
 #include "../src/ObstacleTypes/PointObstacle.hpp"
+#include "test_helpers.hpp"
 
-NmpcModel stationaryTestModel() {
-  int num_of_intervals = 50;
+auto stationaryTestModel() {
+  unsigned int num_of_intervals = 50;
   float time_interval = 0.1f;
   float speed = 0;
 
-  NmpcInitPkg init_a;
-  init_a.N = num_of_intervals;
-  init_a.T = time_interval;
-  init_a.cruiseSpeed = speed;
-  return NmpcModel(init_a);
+  NmpcInitPkg init;
+  init.N = num_of_intervals;
+  init.T = time_interval;
+  init.cruiseSpeed = speed;
+  return VirtualMeModel(init);
 }
 
-NmpcModel standardTestModel() {
+auto standardTestModel() {
   float speed = 0.1f;
   auto m = stationaryTestModel();
   m.v = speed;

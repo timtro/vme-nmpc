@@ -16,12 +16,15 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VME_NMPC_TYPEDEFS_H
-#define VME_NMPC_TYPEDEFS_H
 
-#include <valarray>
+#ifndef __VME_NMPC_VIRTUALMESDMINIMIZER_HPP__
+#define __VME_NMPC_VIRTUALMESDMINIMIZER_HPP__
 
-typedef float fptype;
-typedef std::valarray<fptype> fpArray;
+#include "../NmpcMinimizer.hpp"
 
-#endif //VME_NMPC_TYPEDEFS_H
+class VirtualMeSDMinimizer : public NmpcMinimizer {
+
+};
+
+
+#endif //__VME_NMPC_VIRTUALMESDMINIMIZER_HPP__

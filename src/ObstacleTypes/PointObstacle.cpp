@@ -84,7 +84,7 @@ auto PointObstacle::phi(Point2R refPoint) -> decltype(refPoint.x) {
 decltype(PointObstacle::position) PointObstacle::gradPhi(Point2R refPoint) {
   auto disp = position - refPoint; // = - (refPoint - position)
   auto d = disp.x*disp.x + disp.y*disp.y;
-  auto num = pwr*disp*std::pow(d, pwr/2-1);
+  auto num = pwr*disp*std::pow(d, pwr/2 - 1);
   auto den = std::pow( std::pow(d, pwr/2) + eps , 2);
   return num/den;
 }

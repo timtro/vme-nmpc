@@ -103,12 +103,12 @@ TEST_CASE("Create a stack of obstacles, fill and empty it") {
   REQUIRE(obs.hasObstacles() == false);
 }
 
-TEST_CASE("Given two point obstacles at the origin, the gradient at the origin"
-              " should be zero (i.e., we are on the peak).") {
+TEST_CASE("Given two point obstacles at a, the gradient at a should be"
+              " zero (i.e., we are on the peak).") {
   ObstacleStack obs;
-  obs.pushObstacle(new PointObstacle{Point2R{0, 0}, 2, 2});
-  obs.pushObstacle(new PointObstacle{Point2R{0, 0}, 2, 2});
-  Point2R a{0, 0};
+  obs.pushObstacle(new PointObstacle{Point2R{1, 1}, 2, 2});
+  obs.pushObstacle(new PointObstacle{Point2R{1, 1}, 2, 2});
+  Point2R a{1, 1};
   Point2R grad = obs.gradPhi(a);
   REQUIRE(grad.x == Approx(0));
   REQUIRE(grad.y == Approx(0));

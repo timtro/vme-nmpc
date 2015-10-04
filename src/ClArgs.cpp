@@ -1,11 +1,6 @@
-/*
- * vme-nmpc/src/ClArgs.cpp
- * Author : Timothy A.V. Teatro
- * Date   : 2015-08-21
+/* This file is part of vme-nmpc.
  *
- * This file is part of vme-nmpc.
- *
- * Copyright (C) 2015 - Timothy A.V. Teatro
+ * Copyright (C) 2015 Timothy A.V. Teatro - All rights Reserved
  *
  * vme-nmpc is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by the
@@ -20,6 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 #include "ClArgs.hpp"
 

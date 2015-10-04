@@ -21,17 +21,8 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* NOTE (T.T.):
- * Include order:
- *  1. dir2/foo2.h.
- *  2. C system files.
- *  3. C++ system files.
- *  4. Other libraries' .h files.
- *  5. Your project's .h files.
- */
-
-#ifndef VME_NMPC_VME_NMPC_H_
-#define VME_NMPC_VME_NMPC_H_
+#ifndef __VME_NMPC_VME_NMPC_H__
+#define __VME_NMPC_VME_NMPC_H__
 
 
-#endif // VME_NMPC_VME_NMPC_H_
+#endif // __VME_NMPC_VME_NMPC_H__

@@ -1,11 +1,6 @@
-/*
- * vme-nmpc/src/NmpcModel.cpp
- * Author : Timothy A.V. Teatro
- * Date   : 2015-09-15
+/* This file is part of vme-nmpc.
  *
- * This file is part of vme-nmpc.
- *
- * Copyright (C) 2015 - Timothy A.V. Teatro
+ * Copyright (C) 2015 Timothy A.V. Teatro - All rights Reserved
  *
  * vme-nmpc is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by the
@@ -21,15 +16,17 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 // TODO(TT): Test speed of storing sintk vs letting the compiler optimize it.
 
 // NB(TT to TT): to convert from old notation:
 // s/qu\[([^\]]*)\]\.([a-zA-Z0-9]*)/\2\[\1\]/g
 
-#include "NmpcModel.hpp"
-#include "trig.hpp"
+#include "VirtualMeModel.hpp"
+#include "../trig.hpp"
+#include "../NmpcInitPkg.hpp"
 
-NmpcModel::NmpcModel(NmpcInitPkg &ini) :
+VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini) :
     N{ini.N}, m{ini.m}, n{ini.n}, T{ini.T}, cruiseSpeed{ini.cruiseSpeed},
     Q{ini.Q}, Q0{ini.Q0}, R{ini.R} {
   size_t horizonSize = static_cast<size_t>(N);
@@ -41,7 +38,7 @@ NmpcModel::NmpcModel(NmpcInitPkg &ini) :
   Dy = fpArray(0.f, horizonSize);
   th = fpArray(0.f, horizonSize);
   // Control vector:
-  Dth = fpArray(0.f, horizonSize-1);
+  Dth = fpArray(0.f, horizonSize - 1);
   // Other:
   v = fpArray(cruiseSpeed, horizonSize);
   ex = fpArray(0.f, horizonSize);
@@ -55,16 +52,16 @@ NmpcModel::NmpcModel(NmpcInitPkg &ini) :
   pDy = fpArray(0.f, horizonSize);
   pth = fpArray(0.f, horizonSize);
   // Gradients:
-  grad = fpArray(0.f, horizonSize-1);
-  prevGrad = fpArray(0.f, horizonSize-1);
+  grad = fpArray(0.f, horizonSize - 1);
+  prevGrad = fpArray(0.f, horizonSize - 1);
 }
 
-void NmpcModel::seed() {
+void VirtualMeModel::seed() {
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
 }
 
-void NmpcModel::seed(XYVTh<float> seed) {
+void VirtualMeModel::seed(XYVTh<float> seed) {
   x[0] = seed.x;
   y[0] = seed.y;
   v[0] = seed.v;
@@ -72,8 +69,8 @@ void NmpcModel::seed(XYVTh<float> seed) {
   this->seed();
 }
 
-void NmpcModel::forecast() {
-  for (unsigned int k = 1; k < N; ++k) {
+void VirtualMeModel::forecast() {
+  for (unsigned k = 1; k < N; ++k) {
     th[k] = th[k - 1] + Dth[k - 1] * T;
     x[k] = x[k - 1] + Dx[k - 1] * T;
     Dx[k] = v[k] * std::cos(th[k]);
@@ -85,7 +82,7 @@ void NmpcModel::forecast() {
 /*!
  * This is vanilla, and just tracks the straight line at the cruising speed.
  */
-void NmpcModel::setTrackingErrors(Point2R target) {
+void VirtualMeModel::setTrackingErrors(Point2R target) {
   float dirx = target.x - x[0];
   float diry = target.y - y[0];
   // TODO: Store dist this to use in loop terminator.
@@ -99,15 +96,15 @@ void NmpcModel::setTrackingErrors(Point2R target) {
   }
 }
 
-void NmpcModel::computePathPotentialGradient(ObstacleStack &obstacles) {
-  for (unsigned int k = 0; k < N; ++k) {
+void VirtualMeModel::computePathPotentialGradient(ObstacleStack &obstacles) {
+  for (unsigned k = 0; k < N; ++k) {
     Point2R gradVec = obstacles.gradPhi(Point2R{x[k], y[k]});
     DPhiX[k] = gradVec.x;
     DPhiY[k] = gradVec.y;
   }
 }
 
-void NmpcModel::computeLagrageMultipliers() {
+void VirtualMeModel::computeLagrageMultipliers() {
   px[N - 1] = Q0 * ex[N - 1];
   py[N - 1] = Q0 * ey[N - 1];
 
@@ -126,11 +123,11 @@ void NmpcModel::computeLagrageMultipliers() {
  * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
  * are computed.
  */
-void NmpcModel::computeGradient() {
-  grad[N-1] = R * Dth[N-2] + pth[N-1] * T; //segfault?
+void VirtualMeModel::computeGradient() {
+  grad[N - 1] = R * Dth[N - 2] + pth[N - 1] * T; //segfault?
   computeLagrageMultipliers();
   gradNorm = 0.f;
-  for (unsigned int k = N - 2; k == 0; --k) {
+  for (unsigned k = N - 2; k == 0; --k) {
     grad[k] = R * Dth[k] + pth[k + 1] * T;
     gradNorm += grad[k] * grad[k];
   }

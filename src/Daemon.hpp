@@ -1,11 +1,6 @@
-/*
- * vme-nmpc/src/Daemon.hpp
- * Author : Timothy A.V. Teatro and John-Paul Gignac
- * Date   : 2015-07-29
+/* This file is part of vme-nmpc.
  *
- * This file is part of vme-nmpc.
- *
- * Copyright (C) 2015 - Timothy A.V. Teatro
+ * Copyright (C) 2015 Timothy A.V. Teatro - All rights Reserved
  *
  * vme-nmpc is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by the
@@ -21,15 +16,14 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Derived works note (T.T.):
- *
- * This file is based on the work of J-P Gignac. It is basically a rewrite of
+
+/* This file is based on the work of J-P Gignac. It is basically a rewrite of
  * his daemon class from the telep-head source tree, found in
  * 	telep-head/unwarp/Daemon.cpp
  */
 
-#ifndef VME_NMPC_SRC_DAEMON_HPP_
-#define VME_NMPC_SRC_DAEMON_HPP_
+#ifndef __VME_NMPC_SRC_DAEMON_HPP__
+#define __VME_NMPC_SRC_DAEMON_HPP__
 
 /**
  * For historical AND practical reasons, I use the name daemon instead of
@@ -117,4 +111,4 @@ struct blocked_socket : std::exception {
   };
 };
 
-#endif // VME_NMPC_SRC_DAEMON_HPP_
+#endif // __VME_NMPC_SRC_DAEMON_HPP__

@@ -1,11 +1,6 @@
-/*
- * vme-nmpc/src/Daemon.cpp
- * Author : Timothy A.V. Teatro
- * Date   : 2015-07-29
+/* This file is part of vme-nmpc.
  *
- * This file is part of vme-nmpc.
- *
- * Copyright (C) 2015 - Timothy A.V. Teatro
+ * Copyright (C) 2015 Timothy A.V. Teatro - All rights Reserved
  *
  * vme-nmpc is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by the
@@ -21,8 +16,8 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Derived works note (TT):
- * This file is based on the work of J.P. Gignac. It is basically a rewrite of
+
+/* This file is based on the work of J.P. Gignac. It is basically a rewrite of
  * his daemon class from the telep-head source tree, found in
  * telep-head/unwarp/Daemon.cpp
  */

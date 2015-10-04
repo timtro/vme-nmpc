@@ -1,28 +1,21 @@
-/*
- * vme-nmpc/src/Nav2Robot.hpp
- * Author : Timothy A.V. Teatro
- * Date   : 2015-08-17
- *
- * This file is part of vme-nmpc.
- *
- * Copyright (C) 2015 by Timothy A.V. Teatro
- *
- * vme-nmpc is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * vme-nmpc is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
+/* Copyright (C) 2015 by Timothy A.V. Teatro
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VME_NMPC_SRC_ROBOT_H__
-#define VME_NMPC_SRC_ROBOT_H__
+#ifndef __VME_NMPC_SRC_NAV2ROBOT_HPP__
+#define __VME_NMPC_SRC_NAV2ROBOT_HPP__
 
 #include <string>
 #include <tuple>
@@ -71,4 +64,4 @@ class Nav2Robot {
   int avv(float, float);
 };
 
-#endif // VME_NMPC_SRC_ROBOT_H__
+#endif // __VME_NMPC_SRC_NAV2ROBOT_HPP__

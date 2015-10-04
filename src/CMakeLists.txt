@@ -5,8 +5,7 @@
 
 file(GLOB Obstacle_sources Obstacle.cpp ObstacleTypes/*.cpp)
 add_library (Obstacle ${Obstacle_sources})
-
-add_library (NmpcModel NmpcModel.cpp)
+add_library (NmpcEngine NmpcEngine.cpp NmpcModels/VirtualMeModel.cpp NmpcMinimizer.hpp NmpcMinimizers/VirtualMeSDMinimizer.cpp NmpcMinimizers/VirtualMeSDMinimizer.hpp)
 
 # add_executable (vme-nmpc vme-nmpc.cpp)
 # target_link_libraries (vme-nmpc Obstacle)

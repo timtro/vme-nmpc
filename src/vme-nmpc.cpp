@@ -1,11 +1,6 @@
-/*
- * vme-nmpc/vme-nmpc.cpp
- * Author : Timothy A.V. Teatro
- * Date   : 2015-07-28
+/* This file is part of vme-nmpc.
  *
- * This file is part of vme-nmpc.
- *
- * Copyright (C) 2015 - Timothy A.V. Teatro
+ * Copyright (C) 2015 Timothy A.V. Teatro - All rights Reserved
  *
  * vme-nmpc is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by the
@@ -40,10 +35,6 @@
 // TODO(T.T.): Use Boost property_tree and JSON as input files.
 // TODO(T.T.): Use Boost scoped threads that assure that all paths out of a
 //             make the thread unjoinable. (As per the advice of Scott Mayers)
-
-/* NOTES(T.T.):
- *
- */
 
 
 void request_handler(int sockfd) {

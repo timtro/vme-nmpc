@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 by Timothy A.V. Teatro
+/*  Copyright (C) 2015 Timothy A.V. Teatro - All rights Reserved
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  */
 
 #include "Nav2Robot.hpp"
-#include "trig.h"
+#include "trig.hpp"
 
 #include <cmath>
 #include <cstdio>

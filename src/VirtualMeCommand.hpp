@@ -16,15 +16,30 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_NMPCMINIMIZER_HPP__
-#define __VME_NMPC_NMPCMINIMIZER_HPP__
+#ifndef VME_NMPC_VIRTUALMECOMMAND_HPP
+#define VME_NMPC_VIRTUALMECOMMAND_HPP
 
+#include "Nav2Robot.hpp"
 #include <memory>
 
-class NmpcMinimizer {
-
+struct VirtualMeCommand {
+  virtual int execute(Nav2Robot &) = 0;
 };
 
-using UPNmpcMinimizer = std::unique_ptr<NmpcMinimizer>;
+struct VMeStop: public VirtualMeCommand {
+  virtual int execute(Nav2Robot &rob);
+};
 
-#endif //__VME_NMPC_NMPCMINIMIZER_HPP__
+struct VMeV: public VirtualMeCommand {
+  float v = 0;
+  float th = 0;
+  float Dth = 0;
+
+  VMeV(float th, float v, float Dth) : v{v}, th{th}, Dth{Dth} { }
+
+  virtual int execute(Nav2Robot &rob);
+};
+
+using CmdUP = std::unique_ptr<VirtualMeCommand>;
+
+#endif //VME_NMPC_VIRTUALMECOMMAND_HPP

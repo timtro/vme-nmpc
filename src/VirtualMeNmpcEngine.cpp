@@ -16,10 +16,16 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "NmpcEngine.hpp"
-#include "Obstacle.hpp"
+#include "VirtualMeNmpcEngine.hpp"
 
-NmpcEngine::NmpcEngine(NmpcInitPkg &ini,
-                       std::unique_ptr<NmpcModel> model,
-                       std::unique_ptr<NmpcMinimizer> minimizer)
-    : model(std::move(model)), minimizer(std::move(minimizer)) { }
+VirtualMeNmpcEngine::VirtualMeNmpcEngine(NmpcModel &model,
+                                         NmpcMinimizer &minimizer)
+    : model(model), minimizer(minimizer) { }
+
+void VirtualMeNmpcEngine::setTarget(Point2R point) {
+  currentTarget = point;
+}
+
+CmdUP VirtualMeNmpcEngine::nextCommand() {
+  return CmdUP(new VMeStop());
+}

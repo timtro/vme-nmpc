@@ -21,15 +21,17 @@
 
 #include "NmpcModel.hpp"
 #include "NmpcMinimizer.hpp"
-
 #include "typedefs.h"
+#include "VirtualMeCommand.hpp"
 
-class NmpcEngine {
-  std::unique_ptr<NmpcModel> model;
-  std::unique_ptr<NmpcMinimizer> minimizer;
+class VirtualMeNmpcEngine {
+  NmpcModel& model;
+  NmpcMinimizer& minimizer;
  public:
-  NmpcEngine(NmpcInitPkg &ini, std::unique_ptr<NmpcModel> model,
-             std::unique_ptr<NmpcMinimizer> minimizer);
+  VirtualMeNmpcEngine(NmpcModel&, NmpcMinimizer&);
+  void setTarget(Point2R point);
+  Point2R currentTarget;
+  CmdUP nextCommand();
 };
 
 #endif // __VME_NMPC_SRC_NMPCENGINE_HPP__

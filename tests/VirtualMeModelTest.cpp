@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
-
 #include "catch.hpp"
+
 #include "../src/NmpcModels/VirtualMeModel.hpp"
 #include "../src/ObstacleTypes/PointObstacle.hpp"
 #include "test_helpers.hpp"

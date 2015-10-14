@@ -16,15 +16,12 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_NMPCMINIMIZER_HPP__
-#define __VME_NMPC_NMPCMINIMIZER_HPP__
+#include "VirtualMeCommand.hpp"
 
-#include <memory>
+int VMeStop::execute(Nav2Robot &rob) {
+  return rob.stop();
+}
 
-class NmpcMinimizer {
-
-};
-
-using UPNmpcMinimizer = std::unique_ptr<NmpcMinimizer>;
-
-#endif //__VME_NMPC_NMPCMINIMIZER_HPP__
+int VMeV::execute(Nav2Robot &rob) {
+  return rob.v(th, v, Dth);
+}

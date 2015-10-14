@@ -58,8 +58,8 @@ class VirtualMeModel: public NmpcModel {
   // Potential gradient at each point in path.
   fpArray DPhiX;
   fpArray DPhiY;
-  // The Lagrange multipliers
 
+  // The Lagrange multipliers
   fpArray px;
   fpArray pDx;
   fpArray py;

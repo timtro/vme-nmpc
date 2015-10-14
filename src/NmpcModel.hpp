@@ -34,4 +34,6 @@ class NmpcModel {
   virtual void computeGradient() = 0;
 };
 
+using UPNmpcModel = std::unique_ptr<NmpcModel>;
+
 #endif // __VME_NMPC_SRC_NMPCMODEL_HPP__

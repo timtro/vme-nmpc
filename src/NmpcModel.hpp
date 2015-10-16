@@ -27,7 +27,6 @@ class NmpcModel {
  public:
   virtual ~NmpcModel() {}
   virtual void seed() = 0;
-  virtual void seed(XYVTh<fptype>) = 0;
   virtual void forecast() = 0;
   virtual void setTrackingErrors(Point2R target) = 0;
   virtual void computePathPotentialGradient(ObstacleStack &obstacles) = 0;

@@ -6,6 +6,23 @@
 #include "../src/NmpcMinimizers/VirtualMeSDMinimizer.hpp"
 #include "../src/VirtualMeCommand.hpp"
 
+class FakeVirtualMeNmpcModel : public NmpcModel {
+ public:
+  unsigned N = 0;
+
+  FakeVirtualMeNmpcModel(unsigned N) : N{N} {}
+  virtual ~FakeVirtualMeNmpcModel() = default;
+  virtual void seed(){};
+  virtual void forecast(){};
+  virtual void setTrackingErrors(Point2R target){};
+  virtual void computePathPotentialGradient(ObstacleStack& obstacles){};
+  virtual void computeGradient(){};
+};
+
+class FakeVirtualMeMinimizer : public NmpcMinimizer {
+
+};
+
 struct standardTestSetup {
   NmpcModel* mod{nullptr};
   NmpcMinimizer* min{nullptr};
@@ -13,11 +30,9 @@ struct standardTestSetup {
 
   standardTestSetup() {
     unsigned num_of_intervals{5};
-    NmpcInitPkg init;
-    init.N = num_of_intervals;
 
-    mod = new VirtualMeModel{init};
-    min = new VirtualMeSDMinimizer{};
+    mod = new FakeVirtualMeNmpcModel{num_of_intervals};
+    min = new FakeVirtualMeMinimizer{};
     eng = new VirtualMeNmpcEngine{*mod, *min};
   }
   ~standardTestSetup() {
@@ -44,4 +59,6 @@ TEST_CASE(
 
 TEST_CASE(
     "Given a non-originated target, the controller should try to"
-    " iterate on the min mock, and get convergence in iterations.") {}
+    " iterate on the min mock, and get convergence in iterations.") {
+  standardTestSetup test;
+}

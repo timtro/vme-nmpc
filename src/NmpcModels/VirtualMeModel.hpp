@@ -72,11 +72,13 @@ class VirtualMeModel : public NmpcModel {
   void computeLagrageMultipliers();
 
   virtual void seed();
-  virtual void seed(XYVTh<fptype>);
   virtual void forecast();
   virtual void setTrackingErrors(Point2R target);
   virtual void computePathPotentialGradient(ObstacleStack &obstacles);
   virtual void computeGradient();
+
+  void seed(XYVTh<fptype>);
+
 };
 
 #endif  // __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__

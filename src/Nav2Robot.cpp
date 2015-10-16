@@ -34,7 +34,7 @@ Nav2Robot::Nav2Robot()   : hostname_{"localhost"}, portno_{5010}, sockfd_{},
   pose_{}, is_connected_{false} {}
 
 Nav2Robot::Nav2Robot(std::string host, unsigned int portno)
-  : hostname_{host}, portno_{portno}, sockfd_{}, pose_{}, is_connected_{false} {}
+  : hostname_{std::move(host)}, portno_{portno}, sockfd_{}, pose_{}, is_connected_{false} {}
 
 Nav2Robot::~Nav2Robot() {
   close(sockfd_);

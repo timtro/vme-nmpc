@@ -16,7 +16,6 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 // TODO(TT): Test speed of storing sintk vs letting the compiler optimize it.
 
 // NB(TT to TT): to convert from old notation:
@@ -26,9 +25,15 @@
 #include "../trig.hpp"
 #include "../NmpcInitPkg.hpp"
 
-VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini) :
-    N{ini.N}, m{ini.m}, n{ini.n}, T{ini.T}, cruiseSpeed{ini.cruiseSpeed},
-    Q{ini.Q}, Q0{ini.Q0}, R{ini.R} {
+VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini)
+    : N{ini.N},
+      m{ini.m},
+      n{ini.n},
+      T{ini.T},
+      cruiseSpeed{ini.cruiseSpeed},
+      Q{ini.Q},
+      Q0{ini.Q0},
+      R{ini.R} {
   size_t horizonSize = static_cast<size_t>(N);
 
   // State Vector:
@@ -61,14 +66,6 @@ void VirtualMeModel::seed() {
   Dy[0] = v[0] * std::sin(th[0]);
 }
 
-void VirtualMeModel::seed(XYVTh<float> seed) {
-  x[0] = seed.x;
-  y[0] = seed.y;
-  v[0] = seed.v;
-  th[0] = degToRad(seed.th);
-  this->seed();
-}
-
 void VirtualMeModel::forecast() {
   for (unsigned k = 1; k < N; ++k) {
     th[k] = th[k - 1] + Dth[k - 1] * T;
@@ -96,7 +93,7 @@ void VirtualMeModel::setTrackingErrors(Point2R target) {
   }
 }
 
-void VirtualMeModel::computePathPotentialGradient(ObstacleStack &obstacles) {
+void VirtualMeModel::computePathPotentialGradient(ObstacleStack& obstacles) {
   for (unsigned k = 0; k < N; ++k) {
     Point2R gradVec = obstacles.gradPhi(Point2R{x[k], y[k]});
     DPhiX[k] = gradVec.x;
@@ -114,8 +111,8 @@ void VirtualMeModel::computeLagrageMultipliers() {
     pDx[k] = px[k + 1] * T;
     py[k] = Q * ey[k] - DPhiY[k] + py[k + 1];
     pDy[k] = py[k + 1] * T;
-    pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k])
-        - pDx[k + 1] * v[k] * std::sin(th[k]);
+    pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k]) -
+             pDx[k + 1] * v[k] * std::sin(th[k]);
   }
 }
 
@@ -124,7 +121,7 @@ void VirtualMeModel::computeLagrageMultipliers() {
  * are computed.
  */
 void VirtualMeModel::computeGradient() {
-  grad[N - 1] = R * Dth[N - 2] + pth[N - 1] * T; //segfault?
+  grad[N - 1] = R * Dth[N - 2] + pth[N - 1] * T;  // segfault?
   computeLagrageMultipliers();
   gradNorm = 0.f;
   for (unsigned k = N - 2; k == 0; --k) {
@@ -132,4 +129,12 @@ void VirtualMeModel::computeGradient() {
     gradNorm += grad[k] * grad[k];
   }
   gradNorm = std::sqrt(gradNorm);
+}
+
+void VirtualMeModel::seed(XYVTh<float> seed) {
+  x[0] = seed.x;
+  y[0] = seed.y;
+  v[0] = seed.v;
+  th[0] = degToRad(seed.th);
+  this->seed();
 }

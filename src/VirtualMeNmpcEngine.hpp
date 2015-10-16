@@ -27,6 +27,7 @@
 class VirtualMeNmpcEngine {
   NmpcModel& model;
   NmpcMinimizer& minimizer;
+
  public:
   VirtualMeNmpcEngine(NmpcModel&, NmpcMinimizer&);
   void setTarget(Point2R point);
@@ -34,4 +35,4 @@ class VirtualMeNmpcEngine {
   CmdUP nextCommand();
 };
 
-#endif // __VME_NMPC_SRC_NMPCENGINE_HPP__
+#endif  // __VME_NMPC_SRC_NMPCENGINE_HPP__

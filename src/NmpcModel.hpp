@@ -24,8 +24,8 @@
 #include "NmpcInitPkg.hpp"
 
 class NmpcModel {
-
  public:
+  virtual ~NmpcModel() {}
   virtual void seed() = 0;
   virtual void seed(XYVTh<fptype>) = 0;
   virtual void forecast() = 0;
@@ -36,4 +36,4 @@ class NmpcModel {
 
 using UPNmpcModel = std::unique_ptr<NmpcModel>;
 
-#endif // __VME_NMPC_SRC_NMPCMODEL_HPP__
+#endif  // __VME_NMPC_SRC_NMPCMODEL_HPP__

@@ -16,7 +16,6 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__
 #define __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__
 
@@ -24,10 +23,8 @@
 #include "../Obstacle.hpp"
 #include "../NmpcInitPkg.hpp"
 
-class VirtualMeModel: public NmpcModel {
-
+class VirtualMeModel : public NmpcModel {
  public:
-
   unsigned N;
   unsigned m;
   unsigned n;
@@ -70,7 +67,8 @@ class VirtualMeModel: public NmpcModel {
   fpArray grad;
   fpArray prevGrad;
 
-  VirtualMeModel(NmpcInitPkg&);
+  VirtualMeModel(NmpcInitPkg &);
+  virtual ~VirtualMeModel() = default;
   void computeLagrageMultipliers();
 
   virtual void seed();
@@ -81,4 +79,4 @@ class VirtualMeModel: public NmpcModel {
   virtual void computeGradient();
 };
 
-#endif // __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__
+#endif  // __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__

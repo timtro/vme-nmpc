@@ -6,26 +6,42 @@
 #include "../src/NmpcMinimizers/VirtualMeSDMinimizer.hpp"
 #include "../src/VirtualMeCommand.hpp"
 
-bool isStop(VirtualMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
+struct standardTestSetup {
+  NmpcModel* mod{nullptr};
+  NmpcMinimizer* min{nullptr};
+  VirtualMeNmpcEngine* eng{nullptr};
 
-TEST_CASE("A system with no target should be stationary") {
+  standardTestSetup() {
+    unsigned num_of_intervals{5};
+    NmpcInitPkg init;
+    init.N = num_of_intervals;
 
-  unsigned num_of_intervals{50};
-  float time_interval{0.1f};
-  float speed{0.0f};
-  NmpcInitPkg init;
+    mod = new VirtualMeModel{init};
+    min = new VirtualMeSDMinimizer{};
+    eng = new VirtualMeNmpcEngine{*mod, *min};
+  }
+  ~standardTestSetup() {
+    delete eng;
+    delete min;
+    delete mod;
+  }
+};
 
-  init.N = num_of_intervals;
-  init.T = time_interval;
-  init.cruiseSpeed = speed;
+bool isStopCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
 
-  VirtualMeModel mod{init};
-  VirtualMeSDMinimizer sdm{};
-  VirtualMeNmpcEngine e(mod, sdm);
-
-  e.setTarget(Point2R{0, 0});
-
-  bool last = false;
-  auto cmd = e.nextCommand();
-  REQUIRE( isStop(cmd.get()) );
+TEST_CASE(
+    "When the robot is on the target the controller shold return"
+    " the command to stop.") {
+  standardTestSetup test;
+  test.eng->setTarget(Point2R{0, 0});
+  auto cmd = test.eng->nextCommand();
+  REQUIRE(isStopCmd(cmd.get()));
 }
+
+TEST_CASE(
+    "If I ask for more commands than are available from the current"
+    " calculation, then start returning stop commanda.") {}
+
+TEST_CASE(
+    "Given a non-originated target, the controller should try to"
+    " iterate on the min mock, and get convergence in iterations.") {}

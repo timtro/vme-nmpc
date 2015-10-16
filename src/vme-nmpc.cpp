@@ -36,9 +36,7 @@
 // TODO(T.T.): Use Boost scoped threads that assure that all paths out of a
 //             make the thread unjoinable. (As per the advice of Scott Mayers)
 
-
 void request_handler(int sockfd) {
-
   char buff[80];
 
   if (read(sockfd, &buff, 80) < 1) return;
@@ -50,7 +48,6 @@ void request_handler(int sockfd) {
 }
 
 int main(int argc, char** argv) {
-
   ClArgs cmdln_args(argc, argv);
 
   InputFileData input_data;
@@ -68,14 +65,13 @@ int main(int argc, char** argv) {
 
   // Daemon command_server(5111, request_handler);
 
-
   vme.originate();
   vme.fd(1);
 
   float x, y, n;
   int q;
-  std::tie(x,y,n,q) = vme.q();
-  printf("%f %f %f %d\n", x,y,n,q);
+  std::tie(x, y, n, q) = vme.q();
+  printf("%f %f %f %d\n", x, y, n, q);
   // for(;;) {
   //   std::this_thread::sleep_for(std::chrono::seconds(10));
   // }
@@ -83,5 +79,4 @@ int main(int argc, char** argv) {
   printf("Shutting down!\n");
   fflush(stdout);
   return 0;
-
 }

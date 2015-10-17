@@ -16,26 +16,27 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_NMPCENGINE_HPP__
-#define __VME_NMPC_SRC_NMPCENGINE_HPP__
+#ifndef __VME_NMPC_SRC_SUBJECT_HPP__
+#define __VME_NMPC_SRC_SUBJECT_HPP__
 
-#include "NmpcModel.hpp"
-#include "NmpcMinimizer.hpp"
-#include "typedefs.h"
-#include "VirtualMeCommand.hpp"
-#include "Subject.hpp"
+#include "Observer.hpp"
 
-class VirtualMeNmpcEngine : public Subject {
-  NmpcModel& model;
-  NmpcMinimizer& minimizer;
+#include <vector>
+#include <algorithm>
 
-  std::vector<Observer*> observerList;
-
+class Subject {
  public:
-  VirtualMeNmpcEngine(NmpcModel&, NmpcMinimizer&);
-  void setTarget(Point2R point);
-  Point2R currentTarget;
-  CmdUP nextCommand();
+  virtual ~Subject() = default;
+
+  virtual void attachObserver(Observer*);
+  virtual void detachObserver(Observer*);
+  virtual void notify();
+
+ protected:
+  Subject() = default;
+
+ private:
+  std::vector<Observer*> observers_{};
 };
 
-#endif  // __VME_NMPC_SRC_NMPCENGINE_HPP__
+#endif  // __VME_NMPC_SRC_SUBJECT_HPP__

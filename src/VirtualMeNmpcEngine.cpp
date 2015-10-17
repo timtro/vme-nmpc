@@ -20,12 +20,8 @@
 
 VirtualMeNmpcEngine::VirtualMeNmpcEngine(NmpcModel &model,
                                          NmpcMinimizer &minimizer)
-    : model(model), minimizer(minimizer) { }
+    : model(model), minimizer(minimizer) {}
 
-void VirtualMeNmpcEngine::setTarget(Point2R point) {
-  currentTarget = point;
-}
+void VirtualMeNmpcEngine::setTarget(Point2R point) { currentTarget = point; }
 
-CmdUP VirtualMeNmpcEngine::nextCommand() {
-  return CmdUP(new VMeStop());
-}
+CmdUP VirtualMeNmpcEngine::nextCommand() { return CmdUP(new VMeStop()); }

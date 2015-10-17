@@ -7,25 +7,43 @@
 #include "../src/VirtualMeCommand.hpp"
 
 class FakeVirtualMeNmpcModel : public NmpcModel {
+  int seedCount_;
+  int forecastCount_;
+  int setTrackingErrorsCount_;
+  int computePathPotentialGradientCount_;
+  int computeGradientCount_;
+  std::string eventHistory_{};
+
+  void recordEvent(char eventCode) { eventHistory_ += eventCode; }
+
  public:
   unsigned N = 0;
 
   FakeVirtualMeNmpcModel(unsigned N) : N{N} {}
   virtual ~FakeVirtualMeNmpcModel() = default;
-  virtual void seed(){};
-  virtual void forecast(){};
-  virtual void setTrackingErrors(Point2R target){};
-  virtual void computePathPotentialGradient(ObstacleStack& obstacles){};
-  virtual void computeGradient(){};
+  virtual void seed() { recordEvent('S'); }
+  virtual void forecast() { recordEvent('F'); }
+  virtual void setTrackingErrors(Point2R target) { recordEvent('E'); }
+  virtual void computePathPotentialGradient(ObstacleStack& obstacles) {
+    recordEvent('P');
+  }
+  virtual void computeGradient() { recordEvent('G'); }
+
+  std::string eventHistory() { return eventHistory_; }
 };
+class FakeVirtualMeMinimizer : public NmpcMinimizer {};
+class FakeExecutor : public Observer {
+  VirtualMeNmpcEngine* observed_;
 
-class FakeVirtualMeMinimizer : public NmpcMinimizer {
-
+ public:
+  CmdUP recievedCmd_;
+  void update(Subject* sub) {
+    if (sub == observed_) recievedCmd_ = observed_->nextCommand();
+  }
 };
-
 struct standardTestSetup {
-  NmpcModel* mod{nullptr};
-  NmpcMinimizer* min{nullptr};
+  FakeVirtualMeNmpcModel* mod{nullptr};
+  FakeVirtualMeMinimizer* min{nullptr};
   VirtualMeNmpcEngine* eng{nullptr};
 
   standardTestSetup() {
@@ -53,12 +71,17 @@ TEST_CASE(
   REQUIRE(isStopCmd(cmd.get()));
 }
 
-TEST_CASE(
-    "If I ask for more commands than are available from the current"
-    " calculation, then start returning stop commanda.") {}
+TEST_CASE("Same as previous test, but now with an observer") {
+  standardTestSetup test;
+  FakeExecutor exec;
+  test.eng->attachObserver(&exec);
+  test.eng->setTarget(Point2R{0, 0});
+}
 
 TEST_CASE(
     "Given a non-originated target, the controller should try to"
-    " iterate on the min mock, and get convergence in iterations.") {
-  standardTestSetup test;
-}
+    " iterate on the min mock, and get convergence in iterations.") {}
+
+TEST_CASE(
+    "If I ask for more commands than are available from the current"
+    " calculation, then start returning stop commanda.") {}

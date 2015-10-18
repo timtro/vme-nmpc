@@ -17,3 +17,15 @@
  */
 
 #include "VirtualMeSDMinimizer.hpp"
+
+    // /*   SD loop.  */
+    // opt.teeup();
+    // do {
+    //   /*
+    //    * The core of the gradient decent is in the next few lines:
+    //    */
+    //   model->forecast();
+    //   model->setTrackingErrors(currentTarget);
+    //   model->computeGradient();
+
+    // } while (opt.iterate(qu, p, C));

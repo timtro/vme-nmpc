@@ -61,7 +61,23 @@ VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini)
   prevGrad = fpArray(0.f, horizonSize - 1);
 }
 
-void VirtualMeModel::seed() {
+void VirtualMeModel::seed(xyvth pose, Point2R target) {
+  x[0] = pose.x;
+  y[0] = pose.y;
+  th[0] = pose.th;
+  Dx[0] = v[0] * std::cos(th[0]);
+  Dy[0] = v[0] * std::sin(th[0]);
+
+  targetVector_.x = target.x - x[0];
+  targetVector_.y = target.y - y[0];
+  distanceToTarget_ = std::sqrt(dot(targetVector_, targetVector_));
+  targetVector_ /= distanceToTarget_;
+}
+
+void VirtualMeModel::seed(xyvth pose) {
+  x[0] = pose.x;
+  y[0] = pose.y;
+  th[0] = degToRad(pose.th);
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
 }
@@ -79,17 +95,10 @@ void VirtualMeModel::forecast() {
 /*!
  * This is vanilla, and just tracks the straight line at the cruising speed.
  */
-void VirtualMeModel::setTrackingErrors(Point2R target) {
-  float dirx = target.x - x[0];
-  float diry = target.y - y[0];
-  // TODO: Store dist this to use in loop terminator.
-  float dist = std::sqrt(dirx * dirx + diry * diry);
-  dirx /= dist;
-  diry /= dist;
-
+void VirtualMeModel::setTrackingErrors() {
   for (unsigned k = 1; k < N; ++k) {
-    ex[k] = x[k] - (x[0] + cruiseSpeed * dirx * k * T);
-    ey[k] = y[k] - (y[0] + cruiseSpeed * diry * k * T);
+    ex[k] = x[k] - (x[0] + cruiseSpeed * targetVector_.x * k * T);
+    ey[k] = y[k] - (y[0] + cruiseSpeed * targetVector_.y * k * T);
   }
 }
 
@@ -131,10 +140,4 @@ void VirtualMeModel::computeGradient() {
   gradNorm = std::sqrt(gradNorm);
 }
 
-void VirtualMeModel::seed(XYVTh<float> seed) {
-  x[0] = seed.x;
-  y[0] = seed.y;
-  v[0] = seed.v;
-  th[0] = degToRad(seed.th);
-  this->seed();
-}
+fptype VirtualMeModel::distanceToTarget() { return distanceToTarget_; }

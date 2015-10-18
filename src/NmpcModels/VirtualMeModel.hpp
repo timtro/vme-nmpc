@@ -24,6 +24,9 @@
 #include "../NmpcInitPkg.hpp"
 
 class VirtualMeModel : public NmpcModel {
+  fptype distanceToTarget_;
+  Point2R targetVector_;
+
  public:
   unsigned N;
   unsigned m;
@@ -33,7 +36,6 @@ class VirtualMeModel : public NmpcModel {
   fptype Q;
   fptype Q0;
   fptype R;
-
   //! The x-coordinate.
   fpArray x;
   //! The time rate-of-change of x.
@@ -71,14 +73,13 @@ class VirtualMeModel : public NmpcModel {
   virtual ~VirtualMeModel() = default;
   void computeLagrageMultipliers();
 
-  virtual void seed();
+  virtual void seed(xyvth, Point2R);
+  virtual void seed(xyvth);
   virtual void forecast();
-  virtual void setTrackingErrors(Point2R target);
+  virtual void setTrackingErrors();
   virtual void computePathPotentialGradient(ObstacleStack &obstacles);
   virtual void computeGradient();
-
-  void seed(XYVTh<fptype>);
-
+  virtual fptype distanceToTarget();
 };
 
 #endif  // __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__

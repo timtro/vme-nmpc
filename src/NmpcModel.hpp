@@ -26,11 +26,13 @@
 class NmpcModel {
  public:
   virtual ~NmpcModel() {}
-  virtual void seed() = 0;
+  virtual void seed(xyvth, Point2R) = 0;
+  virtual void seed(xyvth) = 0;
   virtual void forecast() = 0;
-  virtual void setTrackingErrors(Point2R target) = 0;
+  virtual void setTrackingErrors() = 0;
   virtual void computePathPotentialGradient(ObstacleStack &obstacles) = 0;
   virtual void computeGradient() = 0;
+  virtual fptype distanceToTarget() = 0;
 };
 
 using UPNmpcModel = std::unique_ptr<NmpcModel>;

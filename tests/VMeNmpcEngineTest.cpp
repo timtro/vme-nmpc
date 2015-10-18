@@ -7,11 +7,6 @@
 #include "../src/VirtualMeCommand.hpp"
 
 class FakeVirtualMeNmpcModel : public NmpcModel {
-  int seedCount_;
-  int forecastCount_;
-  int setTrackingErrorsCount_;
-  int computePathPotentialGradientCount_;
-  int computeGradientCount_;
   std::string eventHistory_{};
 
   void recordEvent(char eventCode) { eventHistory_ += eventCode; }
@@ -21,26 +16,34 @@ class FakeVirtualMeNmpcModel : public NmpcModel {
 
   FakeVirtualMeNmpcModel(unsigned N) : N{N} {}
   virtual ~FakeVirtualMeNmpcModel() = default;
-  virtual void seed() { recordEvent('S'); }
+  virtual void seed(xyvth position) { recordEvent('S'); }
+  virtual void seed(xyvth position, Point2R target) { recordEvent('S'); }
   virtual void forecast() { recordEvent('F'); }
-  virtual void setTrackingErrors(Point2R target) { recordEvent('E'); }
+  virtual void setTrackingErrors() { recordEvent('E'); }
   virtual void computePathPotentialGradient(ObstacleStack& obstacles) {
     recordEvent('P');
   }
   virtual void computeGradient() { recordEvent('G'); }
+  virtual fptype distanceToTarget() {
+    recordEvent('D');
+    return 0;
+  }
 
   std::string eventHistory() { return eventHistory_; }
 };
+
 class FakeVirtualMeMinimizer : public NmpcMinimizer {};
+
 class FakeExecutor : public Observer {
   VirtualMeNmpcEngine* observed_;
 
  public:
-  CmdUP recievedCmd_;
+  upVirtualMeCommand recievedCmd_;
   void update(Subject* sub) {
     if (sub == observed_) recievedCmd_ = observed_->nextCommand();
   }
 };
+
 struct standardTestSetup {
   FakeVirtualMeNmpcModel* mod{nullptr};
   FakeVirtualMeMinimizer* min{nullptr};

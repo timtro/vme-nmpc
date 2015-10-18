@@ -19,11 +19,12 @@
 #ifndef __VME_NMPC_SRC_NMPCENGINE_HPP__
 #define __VME_NMPC_SRC_NMPCENGINE_HPP__
 
-#include "NmpcModel.hpp"
-#include "NmpcMinimizer.hpp"
-#include "typedefs.h"
-#include "VirtualMeCommand.hpp"
 #include "Subject.hpp"
+#include "VirtualMeCommand.hpp"
+#include "linear.hpp"
+#include "NmpcModel.hpp"
+
+class NmpcMinimizer;
 
 class VirtualMeNmpcEngine : public Subject {
   NmpcModel& model;
@@ -35,7 +36,9 @@ class VirtualMeNmpcEngine : public Subject {
   VirtualMeNmpcEngine(NmpcModel&, NmpcMinimizer&);
   void setTarget(Point2R point);
   Point2R currentTarget;
-  CmdUP nextCommand();
-};
+  upVirtualMeCommand nextCommand();
+  void solveHorizon(xyvth);
+
+  };
 
 #endif  // __VME_NMPC_SRC_NMPCENGINE_HPP__

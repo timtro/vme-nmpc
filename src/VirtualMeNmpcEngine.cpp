@@ -24,4 +24,13 @@ VirtualMeNmpcEngine::VirtualMeNmpcEngine(NmpcModel &model,
 
 void VirtualMeNmpcEngine::setTarget(Point2R point) { currentTarget = point; }
 
-CmdUP VirtualMeNmpcEngine::nextCommand() { return CmdUP(new VMeStop()); }
+upVirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
+  return upVirtualMeCommand{new VMeStop()};
+}
+
+void VirtualMeNmpcEngine::solveHorizon(xyvth origin) {
+  model.seed(origin);
+
+  while (model.distanceToTarget() > .1) {
+  }
+}

@@ -1,10 +1,9 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
+#include "../src/NmpcModel.hpp"
+#include "../src/NmpcMinimizer.hpp"
 #include "../src/VirtualMeNmpcEngine.hpp"
-#include "../src/NmpcModels/VirtualMeModel.hpp"
-#include "../src/NmpcMinimizers/VirtualMeSDMinimizer.hpp"
-#include "../src/VirtualMeCommand.hpp"
 
 class FakeVirtualMeNmpcModel : public NmpcModel {
   std::string eventHistory_{};
@@ -35,12 +34,19 @@ class FakeVirtualMeNmpcModel : public NmpcModel {
 class FakeVirtualMeMinimizer : public NmpcMinimizer {};
 
 class FakeExecutor : public Observer {
-  VirtualMeNmpcEngine* observed_;
+  VirtualMeNmpcEngine* subject_ = nullptr;
 
  public:
+  FakeExecutor(VirtualMeNmpcEngine* s) {
+    subject_ = s;
+    s->attachObserver(this);
+  }
+  // ~FakeExecutor()
+  // {subject_->detachObserver(dynamic_cast<Subject*>(subject_))}
   upVirtualMeCommand recievedCmd_;
   void update(Subject* sub) {
-    if (sub == observed_) recievedCmd_ = observed_->nextCommand();
+    if (sub == dynamic_cast<Subject*>(subject_))
+      recievedCmd_ = subject_->nextCommand();
   }
 };
 
@@ -65,26 +71,24 @@ struct standardTestSetup {
 
 bool isStopCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
 
-TEST_CASE(
-    "When the robot is on the target the controller shold return"
-    " the command to stop.") {
+TEST_CASE("Throw appropriately if we try to attach the same observer twice.") {
   standardTestSetup test;
-  test.eng->setTarget(Point2R{0, 0});
-  auto cmd = test.eng->nextCommand();
-  REQUIRE(isStopCmd(cmd.get()));
-}
-
-TEST_CASE("Same as previous test, but now with an observer") {
-  standardTestSetup test;
-  FakeExecutor exec;
-  test.eng->attachObserver(&exec);
-  test.eng->setTarget(Point2R{0, 0});
+  FakeExecutor exec(test.eng);
+  //NB: the FakeExecutor's constructor does the first attach.
+  REQUIRE_THROWS_AS(test.eng->attachObserver(&exec),
+                    AttemptToAttachAlreadyAttachedObserver);
 }
 
 TEST_CASE(
-    "Given a non-originated target, the controller should try to"
-    " iterate on the min mock, and get convergence in iterations.") {}
+    "When the robot is on the target the controller should return the command "
+    "to stop.") {
+  standardTestSetup test;
+  FakeExecutor exec(test.eng);
+  REQUIRE(exec.recievedCmd_.get() == nullptr);
+  test.eng->seed(xyvth{1, 1, 0, 0}, Point2R{1, 1});
+  REQUIRE(isStopCmd(exec.recievedCmd_.get()));
+}
 
-TEST_CASE(
-    "If I ask for more commands than are available from the current"
-    " calculation, then start returning stop commanda.") {}
+// TEST_CASE(
+//     "If I ask for more commands than are available from the current "
+//     "calculation, then start returning stop commanda.") {}

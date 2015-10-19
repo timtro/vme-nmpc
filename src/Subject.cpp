@@ -19,12 +19,15 @@
 #include "Subject.hpp"
 
 void Subject::attachObserver(Observer* o) {
-  observers_.push_back(o);
+  if (std::find(observers_.begin(), observers_.end(), o) == observers_.end())
+    observers_.push_back(o);
+  else
+    throw AttemptToAttachAlreadyAttachedObserver();
 }
 
 void Subject::detachObserver(Observer* o) {
   observers_.erase(std::remove(observers_.begin(), observers_.end(), o),
-                    observers_.end());
+                   observers_.end());
 }
 
 void Subject::notify() {

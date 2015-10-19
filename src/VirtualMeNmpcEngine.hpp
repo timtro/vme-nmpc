@@ -19,11 +19,11 @@
 #ifndef __VME_NMPC_SRC_NMPCENGINE_HPP__
 #define __VME_NMPC_SRC_NMPCENGINE_HPP__
 
+#include "linear.hpp"
 #include "Subject.hpp"
 #include "VirtualMeCommand.hpp"
-#include "linear.hpp"
-#include "NmpcModel.hpp"
 
+class NmpcModel;
 class NmpcMinimizer;
 
 class VirtualMeNmpcEngine : public Subject {
@@ -31,14 +31,14 @@ class VirtualMeNmpcEngine : public Subject {
   NmpcMinimizer& minimizer;
 
   std::vector<Observer*> observerList;
+  fptype targetDistanceTolerance_ = 0.1;
 
  public:
   VirtualMeNmpcEngine(NmpcModel&, NmpcMinimizer&);
   void setTarget(Point2R point);
   Point2R currentTarget;
   upVirtualMeCommand nextCommand();
-  void solveHorizon(xyvth);
-
-  };
+  void seed(xyvth, Point2R);
+};
 
 #endif  // __VME_NMPC_SRC_NMPCENGINE_HPP__

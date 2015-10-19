@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 
 class Subject {
  public:
@@ -38,5 +39,7 @@ class Subject {
  private:
   std::vector<Observer*> observers_{};
 };
+
+class AttemptToAttachAlreadyAttachedObserver :  public std::exception {};
 
 #endif  // __VME_NMPC_SRC_SUBJECT_HPP__

@@ -17,6 +17,7 @@
  */
 
 #include "VirtualMeNmpcEngine.hpp"
+#include "NmpcModel.hpp"
 
 VirtualMeNmpcEngine::VirtualMeNmpcEngine(NmpcModel &model,
                                          NmpcMinimizer &minimizer)
@@ -28,9 +29,14 @@ upVirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
   return upVirtualMeCommand{new VMeStop()};
 }
 
-void VirtualMeNmpcEngine::solveHorizon(xyvth origin) {
-  model.seed(origin);
-
-  while (model.distanceToTarget() > .1) {
-  }
+void VirtualMeNmpcEngine::seed(xyvth pose, Point2R target) {
+  model.seed(pose, target);
+  notify();
 }
+
+// void VirtualMeNmpcEngine::solveHorizon(xyvth origin) {
+//   model.seed(origin);
+
+//   while (model.distanceToTarget() > targetDistanceTolerance_) {
+//   }
+// }

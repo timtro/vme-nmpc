@@ -33,6 +33,7 @@ class NmpcModel {
   virtual void computePathPotentialGradient(ObstacleStack &obstacles) = 0;
   virtual void computeGradient() = 0;
   virtual fptype distanceToTarget() = 0;
+  virtual void halt() = 0;
 };
 
 using UPNmpcModel = std::unique_ptr<NmpcModel>;

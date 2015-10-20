@@ -80,6 +80,7 @@ class VirtualMeModel : public NmpcModel {
   virtual void computePathPotentialGradient(ObstacleStack &obstacles);
   virtual void computeGradient();
   virtual fptype distanceToTarget();
+  virtual void halt();
 };
 
 #endif  // __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__

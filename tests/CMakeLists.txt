@@ -13,7 +13,9 @@ endmacro (create_test)
 # create_test(${testname})
 
 set(testname VirtualMeNmpcEngineTest)
-add_executable (${testname} ${testname}.cpp ../src/Nav2Robot.cpp ../src/NmpcMinimizers/VirtualMeSDMinimizer.cpp)
+add_executable (${testname} ${testname}.cpp FakeVirtualMeModel.cpp
+                                            FakeVirtualMeMinimizer.cpp
+                                            ../src/Nav2Robot.cpp)
 target_link_libraries (${testname} VirtualMeNmpcEngine Obstacle)
 create_test(${testname})
 

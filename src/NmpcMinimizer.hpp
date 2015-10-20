@@ -23,8 +23,9 @@
 
 class NmpcMinimizer {
 
+public:
+  virtual ~NmpcMinimizer() = default;
+  virtual bool solveOptimalControlPlan() = 0;
 };
-
-using UPNmpcMinimizer = std::unique_ptr<NmpcMinimizer>;
 
 #endif //__VME_NMPC_NMPCMINIMIZER_HPP__

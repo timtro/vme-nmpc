@@ -16,24 +16,30 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "VirtualMeNmpcEngine.hpp"
-#include "NmpcModel.hpp"
+#ifndef __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__
+#define __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__
 
-VirtualMeNmpcEngine::VirtualMeNmpcEngine(NmpcModel &model,
-                                         NmpcMinimizer &minimizer)
-    : model(model), minimizer(minimizer) {}
+#include "../src/NmpcModel.hpp"
 
-void VirtualMeNmpcEngine::setTarget(Point2R point) { currentTarget = point; }
+class FakeVirtualMeModel : public NmpcModel {
+  std::string eventHistory_{};
+  fptype distanceToTarget_;
+  void recordEvent(char);
 
-upVirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
-  return upVirtualMeCommand{new VMeStop()};
-}
+ public:
+  unsigned N = 0;
 
-void VirtualMeNmpcEngine::seed(xyvth pose, Point2R target) {
-  model.seed(pose, target);
-  if (model.distanceToTarget() > targetDistanceTolerance_)
-    minimizer.solveOptimalControlPlan();
-  else
-    model.halt();
-  notify();
-}
+  FakeVirtualMeModel(unsigned);
+  virtual ~FakeVirtualMeModel() = default;
+  virtual void seed(xyvth);
+  virtual void seed(xyvth, Point2R);
+  virtual void forecast();
+  virtual void setTrackingErrors();
+  virtual void computePathPotentialGradient(ObstacleStack&);
+  virtual void computeGradient();
+  virtual fptype distanceToTarget();
+  virtual void halt();
+  std::string eventHistory();
+};
+
+#endif // __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__

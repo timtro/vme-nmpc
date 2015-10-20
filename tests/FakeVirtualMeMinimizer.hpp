@@ -16,24 +16,20 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "VirtualMeNmpcEngine.hpp"
-#include "NmpcModel.hpp"
+#ifndef __VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP__
+#define __VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP__
 
-VirtualMeNmpcEngine::VirtualMeNmpcEngine(NmpcModel &model,
-                                         NmpcMinimizer &minimizer)
-    : model(model), minimizer(minimizer) {}
+#include "../src/NmpcMinimizer.hpp"
 
-void VirtualMeNmpcEngine::setTarget(Point2R point) { currentTarget = point; }
+class FakeVirtualMeMinimizer : public NmpcMinimizer {
+  std::string eventHistory_{};
+  void recordEvent(char);
+public:
+  FakeVirtualMeMinimizer() = default;
+  ~FakeVirtualMeMinimizer() = default;
+  bool solveOptimalControlPlan();
+  std::string eventHistory();
+};
 
-upVirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
-  return upVirtualMeCommand{new VMeStop()};
-}
 
-void VirtualMeNmpcEngine::seed(xyvth pose, Point2R target) {
-  model.seed(pose, target);
-  if (model.distanceToTarget() > targetDistanceTolerance_)
-    minimizer.solveOptimalControlPlan();
-  else
-    model.halt();
-  notify();
-}
+#endif // __VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP__

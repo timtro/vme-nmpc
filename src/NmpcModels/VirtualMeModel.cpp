@@ -141,3 +141,13 @@ void VirtualMeModel::computeGradient() {
 }
 
 fptype VirtualMeModel::distanceToTarget() { return distanceToTarget_; }
+
+void VirtualMeModel::halt() {
+  x = x[0];
+  y = y[0];
+  th = th[0];
+  Dx = 0;
+  Dy = 0;
+  v = 0;
+  Dth = 0;
+}

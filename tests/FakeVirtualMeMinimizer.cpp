@@ -16,24 +16,15 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "VirtualMeNmpcEngine.hpp"
-#include "NmpcModel.hpp"
+#include "FakeVirtualMeMinimizer.hpp"
 
-VirtualMeNmpcEngine::VirtualMeNmpcEngine(NmpcModel &model,
-                                         NmpcMinimizer &minimizer)
-    : model(model), minimizer(minimizer) {}
-
-void VirtualMeNmpcEngine::setTarget(Point2R point) { currentTarget = point; }
-
-upVirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
-  return upVirtualMeCommand{new VMeStop()};
+void FakeVirtualMeMinimizer::recordEvent(char eventCode) {
+  eventHistory_ += eventCode;
 }
 
-void VirtualMeNmpcEngine::seed(xyvth pose, Point2R target) {
-  model.seed(pose, target);
-  if (model.distanceToTarget() > targetDistanceTolerance_)
-    minimizer.solveOptimalControlPlan();
-  else
-    model.halt();
-  notify();
+std::string FakeVirtualMeMinimizer::eventHistory() { return eventHistory_; }
+
+bool FakeVirtualMeMinimizer::solveOptimalControlPlan() {
+  recordEvent('O');
+  return 1;
 }

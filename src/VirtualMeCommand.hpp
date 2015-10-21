@@ -40,6 +40,10 @@ struct VMeV: public VirtualMeCommand {
   virtual int execute(Nav2Robot &rob);
 };
 
+struct VMeNullCmd: public VirtualMeCommand {
+  virtual int execute(Nav2Robot &rob);
+};
+
 using upVirtualMeCommand = std::unique_ptr<VirtualMeCommand>;
 
 #endif //VME_NMPC_VIRTUALMECOMMAND_HPP

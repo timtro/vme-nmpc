@@ -25,7 +25,7 @@ class NmpcMinimizer {
 
 public:
   virtual ~NmpcMinimizer() = default;
-  virtual bool solveOptimalControlPlan() = 0;
+  virtual bool solveOptimalControlHorizon() = 0;
 };
 
 #endif //__VME_NMPC_NMPCMINIMIZER_HPP__

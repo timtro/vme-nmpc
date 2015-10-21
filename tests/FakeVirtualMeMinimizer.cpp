@@ -24,7 +24,7 @@ void FakeVirtualMeMinimizer::recordEvent(char eventCode) {
 
 std::string FakeVirtualMeMinimizer::eventHistory() { return eventHistory_; }
 
-bool FakeVirtualMeMinimizer::solveOptimalControlPlan() {
+bool FakeVirtualMeMinimizer::solveOptimalControlHorizon() {
   recordEvent('O');
   return 1;
 }

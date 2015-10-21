@@ -27,7 +27,7 @@ class FakeVirtualMeMinimizer : public NmpcMinimizer {
 public:
   FakeVirtualMeMinimizer() = default;
   ~FakeVirtualMeMinimizer() = default;
-  bool solveOptimalControlPlan();
+  bool solveOptimalControlHorizon();
   std::string eventHistory();
 };
 

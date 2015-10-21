@@ -23,19 +23,19 @@
 #include "linear.hpp"
 #include "NmpcInitPkg.hpp"
 
+template <typename seedType, typename tgtType, typename cmdType>
 class NmpcModel {
  public:
-  virtual ~NmpcModel() {}
-  virtual void seed(xyvth, Point2R) = 0;
-  virtual void seed(xyvth) = 0;
+  virtual ~NmpcModel() = default;
+  virtual void seed(seedType, tgtType) = 0;
+  virtual void seed(seedType) = 0;
   virtual void forecast() = 0;
   virtual void setTrackingErrors() = 0;
   virtual void computePathPotentialGradient(ObstacleStack &obstacles) = 0;
   virtual void computeGradient() = 0;
   virtual fptype distanceToTarget() = 0;
   virtual void halt() = 0;
+  virtual cmdType getCommand(int) = 0;
 };
-
-using UPNmpcModel = std::unique_ptr<NmpcModel>;
 
 #endif  // __VME_NMPC_SRC_NMPCMODEL_HPP__

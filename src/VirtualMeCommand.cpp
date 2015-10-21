@@ -25,3 +25,7 @@ int VMeStop::execute(Nav2Robot &rob) {
 int VMeV::execute(Nav2Robot &rob) {
   return rob.v(th, v, Dth);
 }
+
+int VMeNullCmd::execute(Nav2Robot&) {
+  return 0;
+}

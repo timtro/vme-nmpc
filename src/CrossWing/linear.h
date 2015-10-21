@@ -15,6 +15,24 @@
  * (point2d, point3d, Color, etc.)
  */
 
+/* (T.T.)
+ *
+ * Minor changes. Omitted unusaed named parameters to avoid the following
+ * warnings:
+ * home/timtro/workspace/vme-nmpc/tests/../src/CrossWing/linear.h:109:23: warning: unused parameter 'i' [-Wunused-parameter]
+ *     R& operator[](int i) { return v; }
+ *                       ^
+ * /home/timtro/workspace/vme-nmpc/tests/../src/CrossWing/linear.h:110:29: warning: unused parameter 'i' [-Wunused-parameter]
+ *     const R& operator[](int i) const { return v; }
+ *                             ^
+ * /home/timtro/workspace/vme-nmpc/tests/../src/CrossWing/linear.h:370:40: warning: unused parameter 'a' [-Wunused-parameter]
+ * inline R operator *( const Point<R,0>& a, const Point<R,0>& b) { return R(0); }
+ *                                        ^
+ * /home/timtro/workspace/vme-nmpc/tests/../src/CrossWing/linear.h:370:61: warning: unused parameter 'b' [-Wunused-parameter]
+ * inline R operator *( const Point<R,0>& a, const Point<R,0>& b) { return R(0); }
+ *
+ */
+
 template <typename R,int n>
 class Point {
     R v[n];
@@ -106,8 +124,8 @@ public:
     template <typename R2>
     explicit Point(const Point<R2,1>& p) : v(R(p[0])) {}
     Point(R val) : v(std::move(val)) {};
-    R& operator[](int i) { return v; }
-    const R& operator[](int i) const { return v; }
+    R& operator[](int) { return v; }
+    const R& operator[](int) const { return v; }
     operator R() { return v; }
     typedef R value_type;
     template <typename R2> Point<R,1>& operator=( const Point<R2,1>& b) {
@@ -367,7 +385,7 @@ inline auto operator *( const Point<R,n>& a, const Point<S,n>& b)
 }
 
 template <typename R>
-inline R operator *( const Point<R,0>& a, const Point<R,0>& b) { return R(0); }
+inline R operator *( const Point<R,0>&, const Point<R,0>&) { return R(0); }
 
 // -- This operator is the CROSS-PRODUCT of "a" and "b"
 template <typename R>

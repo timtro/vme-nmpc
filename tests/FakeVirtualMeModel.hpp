@@ -20,11 +20,14 @@
 #define __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__
 
 #include "../src/NmpcModel.hpp"
+#include "../src/VirtualMeCommand.hpp"
 
-class FakeVirtualMeModel : public NmpcModel {
+class FakeVirtualMeModel
+    : public NmpcModel<xyvth, Point2R, upVirtualMeCommand> {
   std::string eventHistory_{};
   fptype distanceToTarget_;
   void recordEvent(char);
+  bool machineIsHalted = true;
 
  public:
   unsigned N = 0;
@@ -39,7 +42,8 @@ class FakeVirtualMeModel : public NmpcModel {
   virtual void computeGradient();
   virtual fptype distanceToTarget();
   virtual void halt();
+  virtual upVirtualMeCommand getCommand(int);
   std::string eventHistory();
 };
 
-#endif // __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__
+#endif  // __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__

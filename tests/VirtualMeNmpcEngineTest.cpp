@@ -8,19 +8,19 @@
 #include "FakeVirtualMeMinimizer.hpp"
 
 class FakeExecutor : public Observer {
-  VirtualMeNmpcEngine* subject_ = nullptr;
+  VirtualMeNmpcEngine* subjectEngine = nullptr;
 
  public:
+  upVirtualMeCommand commandFromLastNotify;
+
   FakeExecutor(VirtualMeNmpcEngine* s) {
-    subject_ = s;
+    subjectEngine = s;
     s->attachObserver(this);
   }
-  // ~FakeExecutor()
-  // {subject_->detachObserver(dynamic_cast<Subject*>(subject_))}
-  upVirtualMeCommand recievedCmd_;
-  void update(Subject* sub) {
-    if (sub == dynamic_cast<Subject*>(subject_))
-      recievedCmd_ = subject_->nextCommand();
+  ~FakeExecutor() { subjectEngine->detachObserver(this); }
+  void update(Subject* s) {
+    if (s == dynamic_cast<Subject*>(subjectEngine))
+      commandFromLastNotify = subjectEngine->nextCommand();
   }
 };
 
@@ -44,6 +44,7 @@ struct standardTestSetup {
 };
 
 bool isStopCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
+bool isNullCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
 bool isMoveCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
 TEST_CASE("Throw appropriately if we try to attach the same observer twice.") {
@@ -59,11 +60,11 @@ TEST_CASE(
     "to stop, and should have halted the model.") {
   standardTestSetup test;
   FakeExecutor exec(test.eng);
-  REQUIRE(exec.recievedCmd_.get() == nullptr);
+  REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyvth{1, 1, 0, 0}, Point2R{1, 1});
   // Should have called (S)eed (D)istanceToTarget and (H)alt:
-  REQUIRE(test.mod->eventHistory() == "SDH");
-  REQUIRE(isStopCmd(exec.recievedCmd_.get()));
+  REQUIRE(test.mod->eventHistory() == "SDHC");
+  REQUIRE(isNullCmd(exec.commandFromLastNotify.get()));
 }
 
 TEST_CASE(
@@ -72,11 +73,11 @@ TEST_CASE(
     "and notify observers of success.") {
   standardTestSetup test;
   FakeExecutor exec(test.eng);
-  REQUIRE(exec.recievedCmd_.get() == nullptr);
-  test.eng->seed(xyvth{0, 0, 0, 0}, Point2R{5,5});
-  REQUIRE(test.mod->eventHistory() == "SD");
+  REQUIRE(exec.commandFromLastNotify.get() == nullptr);
+  test.eng->seed(xyvth{0, 0, 0, 0}, Point2R{5, 5});
+  REQUIRE(test.mod->eventHistory() == "SDC");
   REQUIRE(test.min->eventHistory() == "O");
-  // REQUIRE(isMoveCmd(exec.recievedCmd_.get()));
+  REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
 }
 
 // TEST_CASE(

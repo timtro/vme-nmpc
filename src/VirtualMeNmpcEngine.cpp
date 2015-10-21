@@ -19,20 +19,21 @@
 #include "VirtualMeNmpcEngine.hpp"
 #include "NmpcModel.hpp"
 
-VirtualMeNmpcEngine::VirtualMeNmpcEngine(NmpcModel &model,
-                                         NmpcMinimizer &minimizer)
+VirtualMeNmpcEngine::VirtualMeNmpcEngine(
+    NmpcModel<xyvth, Point2R, upVirtualMeCommand> &model,
+    NmpcMinimizer &minimizer)
     : model(model), minimizer(minimizer) {}
 
 void VirtualMeNmpcEngine::setTarget(Point2R point) { currentTarget = point; }
 
 upVirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
-  return upVirtualMeCommand{new VMeStop()};
+  return model.getCommand(0);
 }
 
 void VirtualMeNmpcEngine::seed(xyvth pose, Point2R target) {
   model.seed(pose, target);
-  if (model.distanceToTarget() > targetDistanceTolerance_)
-    minimizer.solveOptimalControlPlan();
+  if (model.distanceToTarget() > targetDistanceTolerance)
+    minimizer.solveOptimalControlHorizon();
   else
     model.halt();
   notify();

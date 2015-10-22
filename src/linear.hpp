@@ -19,8 +19,8 @@
 #ifndef __VME_NMPC_SRC_LINEAR_HPP__
 #define __VME_NMPC_SRC_LINEAR_HPP__
 
-#include "CrossWing/linear.h"
 #include "typedefs.h"
+#include "CrossWing/linear.h"
 
 typedef Point<fptype, 2> Point2R;
 

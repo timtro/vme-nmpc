@@ -20,6 +20,7 @@
 #define __VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP__
 
 #include "../src/NmpcMinimizer.hpp"
+#include <string>
 
 class FakeVirtualMeMinimizer : public NmpcMinimizer {
   std::string eventHistory{};
@@ -27,7 +28,7 @@ class FakeVirtualMeMinimizer : public NmpcMinimizer {
 public:
   FakeVirtualMeMinimizer() = default;
   ~FakeVirtualMeMinimizer() = default;
-  bool solveOptimalControlHorizon();
+  MinimizerCode solveOptimalControlHorizon();
   std::string getEventHistory();
 };
 

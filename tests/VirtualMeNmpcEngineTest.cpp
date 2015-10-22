@@ -64,6 +64,7 @@ TEST_CASE(
   // Should have called (S)eed (D)istanceToTarget and (H)alt:
   REQUIRE(test.mod->getEventHistory() == "SD");
   REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
+  REQUIRE(test.eng->isHalted());
 }
 
 TEST_CASE(
@@ -81,20 +82,20 @@ TEST_CASE(
 
 TEST_CASE(
     "If I ask for more commands than are available from the current horizon, "
-    "then start returning stop commanda.") {
+    "then start returning null commands.") {
   standardTestSetup test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyvth{0, 0, 0, 0}, Point2R{5, 5});
-  unsigned k = 0;
+  unsigned countReturnedMotionCommands = 0;
   auto command = std::move(exec.commandFromLastNotify);
   for (;;) {
     if (isNullCmd(command.get()))
       break;
     else if (isMoveCmd(command.get())) {
-      ++k;
+      ++countReturnedMotionCommands;
       command = test.eng->nextCommand();
     }
   }
-  REQUIRE(k == standardTestHorizon);
+  REQUIRE(countReturnedMotionCommands == standardTestHorizon);
 }

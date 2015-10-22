@@ -30,10 +30,9 @@ class NmpcMinimizer;
 class VirtualMeNmpcEngine : public Subject {
   NmpcModel<xyvth, Point2R, upVirtualMeCommand>& model;
   NmpcMinimizer& minimizer;
-  std::vector<Observer*> observerList;
   fptype targetDistanceTolerance{0.1};
   unsigned cmdsExecutedFromCurrentHorizon{0};
-  bool machineIsHalted = true;
+  bool machineIsHalted{true};
 
  public:
   Point2R currentTarget;
@@ -43,6 +42,7 @@ class VirtualMeNmpcEngine : public Subject {
   void setTarget(Point2R point);
   upVirtualMeCommand nextCommand();
   void seed(xyvth, Point2R);
+  bool isHalted();
 };
 
 #endif  // __VME_NMPC_SRC_NMPCENGINE_HPP__

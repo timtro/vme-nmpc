@@ -45,3 +45,5 @@ void VirtualMeNmpcEngine::seed(xyvth pose, Point2R target) {
     machineIsHalted = true;
   notify();
 }
+
+bool VirtualMeNmpcEngine::isHalted() { return machineIsHalted; }

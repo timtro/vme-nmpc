@@ -24,10 +24,9 @@
 
 class FakeVirtualMeModel
     : public NmpcModel<xyvth, Point2R, upVirtualMeCommand> {
-  std::string eventHistory_{};
-  fptype distanceToTarget_;
+  std::string eventHistory{};
+  fptype distanceToTarget;
   void recordEvent(char);
-  bool machineIsHalted = true;
 
  public:
   unsigned N = 0;
@@ -40,10 +39,10 @@ class FakeVirtualMeModel
   virtual void setTrackingErrors();
   virtual void computePathPotentialGradient(ObstacleStack&);
   virtual void computeGradient();
-  virtual fptype distanceToTarget();
-  virtual void halt();
+  virtual fptype getTargetDistance();
   virtual upVirtualMeCommand getCommand(int);
-  std::string eventHistory();
+  std::string getEventHistory();
+  virtual unsigned getHorizonSize() const;
 };
 
 #endif  // __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__

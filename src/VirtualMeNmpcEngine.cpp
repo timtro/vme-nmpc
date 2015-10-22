@@ -27,14 +27,21 @@ VirtualMeNmpcEngine::VirtualMeNmpcEngine(
 void VirtualMeNmpcEngine::setTarget(Point2R point) { currentTarget = point; }
 
 upVirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
-  return model.getCommand(0);
+  if (machineIsHalted)
+    return upVirtualMeCommand{new VMeStop()};
+  else if (cmdsExecutedFromCurrentHorizon++ >= model.getHorizonSize())
+    return upVirtualMeCommand{new VMeNullCmd()};
+  else
+    return model.getCommand(cmdsExecutedFromCurrentHorizon);
 }
 
 void VirtualMeNmpcEngine::seed(xyvth pose, Point2R target) {
   model.seed(pose, target);
-  if (model.distanceToTarget() > targetDistanceTolerance)
+  cmdsExecutedFromCurrentHorizon = 0;
+  if (model.getTargetDistance() > targetDistanceTolerance) {
+    machineIsHalted = false;
     minimizer.solveOptimalControlHorizon();
-  else
-    model.halt();
+  } else
+    machineIsHalted = true;
   notify();
 }

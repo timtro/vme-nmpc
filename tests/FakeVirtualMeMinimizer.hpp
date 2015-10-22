@@ -22,13 +22,13 @@
 #include "../src/NmpcMinimizer.hpp"
 
 class FakeVirtualMeMinimizer : public NmpcMinimizer {
-  std::string eventHistory_{};
+  std::string eventHistory{};
   void recordEvent(char);
 public:
   FakeVirtualMeMinimizer() = default;
   ~FakeVirtualMeMinimizer() = default;
   bool solveOptimalControlHorizon();
-  std::string eventHistory();
+  std::string getEventHistory();
 };
 
 

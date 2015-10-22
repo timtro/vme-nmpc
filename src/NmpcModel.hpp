@@ -33,9 +33,9 @@ class NmpcModel {
   virtual void setTrackingErrors() = 0;
   virtual void computePathPotentialGradient(ObstacleStack &obstacles) = 0;
   virtual void computeGradient() = 0;
-  virtual fptype distanceToTarget() = 0;
-  virtual void halt() = 0;
+  virtual fptype getTargetDistance() = 0;
   virtual cmdType getCommand(int) = 0;
+  virtual unsigned getHorizonSize() const = 0;
 };
 
 #endif  // __VME_NMPC_SRC_NMPCMODEL_HPP__

@@ -24,15 +24,14 @@ class FakeExecutor : public Observer {
   }
 };
 
+const int standardTestHorizon = 10;
 struct standardTestSetup {
   FakeVirtualMeModel* mod{nullptr};
   FakeVirtualMeMinimizer* min{nullptr};
   VirtualMeNmpcEngine* eng{nullptr};
 
   standardTestSetup() {
-    unsigned num_of_intervals{5};
-
-    mod = new FakeVirtualMeModel{num_of_intervals};
+    mod = new FakeVirtualMeModel{standardTestHorizon};
     min = new FakeVirtualMeMinimizer{};
     eng = new VirtualMeNmpcEngine{*mod, *min};
   }
@@ -63,8 +62,8 @@ TEST_CASE(
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyvth{1, 1, 0, 0}, Point2R{1, 1});
   // Should have called (S)eed (D)istanceToTarget and (H)alt:
-  REQUIRE(test.mod->eventHistory() == "SDHC");
-  REQUIRE(isNullCmd(exec.commandFromLastNotify.get()));
+  REQUIRE(test.mod->getEventHistory() == "SD");
+  REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
 }
 
 TEST_CASE(
@@ -75,11 +74,27 @@ TEST_CASE(
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyvth{0, 0, 0, 0}, Point2R{5, 5});
-  REQUIRE(test.mod->eventHistory() == "SDC");
-  REQUIRE(test.min->eventHistory() == "O");
+  REQUIRE(test.mod->getEventHistory() == "SDC");
+  REQUIRE(test.min->getEventHistory() == "O");
   REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
 }
 
-// TEST_CASE(
-//     "If I ask for more commands than are available from the current "
-//     "calculation, then start returning stop commanda.") {}
+TEST_CASE(
+    "If I ask for more commands than are available from the current horizon, "
+    "then start returning stop commanda.") {
+  standardTestSetup test;
+  FakeExecutor exec(test.eng);
+  REQUIRE(exec.commandFromLastNotify.get() == nullptr);
+  test.eng->seed(xyvth{0, 0, 0, 0}, Point2R{5, 5});
+  unsigned k = 0;
+  auto command = std::move(exec.commandFromLastNotify);
+  for (;;) {
+    if (isNullCmd(command.get()))
+      break;
+    else if (isMoveCmd(command.get())) {
+      ++k;
+      command = test.eng->nextCommand();
+    }
+  }
+  REQUIRE(k == standardTestHorizon);
+}

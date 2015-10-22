@@ -19,10 +19,10 @@
 #include "FakeVirtualMeMinimizer.hpp"
 
 void FakeVirtualMeMinimizer::recordEvent(char eventCode) {
-  eventHistory_ += eventCode;
+  eventHistory += eventCode;
 }
 
-std::string FakeVirtualMeMinimizer::eventHistory() { return eventHistory_; }
+std::string FakeVirtualMeMinimizer::getEventHistory() { return eventHistory; }
 
 bool FakeVirtualMeMinimizer::solveOptimalControlHorizon() {
   recordEvent('O');

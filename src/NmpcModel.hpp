@@ -28,13 +28,14 @@ class NmpcModel {
  public:
   virtual ~NmpcModel() = default;
   virtual unsigned getHorizonSize() const = 0;
+  virtual fptype getTargetDistance() = 0;
   virtual void seed(seedType, tgtType) = 0;
   virtual void seed(seedType) = 0;
-  virtual void computeForecast() = 0;
-  virtual void computeTrackingErrors() = 0;
-  virtual void computePathPotentialGradient(ObstacleContainer &obstacles) = 0;
-  virtual void computeGradient() = 0;
-  virtual fptype getTargetDistance() = 0;
+  virtual void computeForecast() noexcept = 0;
+  virtual void computeTrackingErrors() noexcept = 0;
+  virtual void computePathPotentialGradient(
+      ObstacleContainer &obstacles) noexcept = 0;
+  virtual void computeGradient() noexcept = 0;
   virtual cmdType getCommand(int) = 0;
 };
 

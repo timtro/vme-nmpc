@@ -16,15 +16,24 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#ifndef __VME_NMPC_VIRTUALMESDMINIMIZER_HPP__
-#define __VME_NMPC_VIRTUALMESDMINIMIZER_HPP__
+#ifndef VME_NMPC_VIRTUALMESDMINIMIZER_HPP_
+#define VME_NMPC_VIRTUALMESDMINIMIZER_HPP_
 
 #include "../NmpcMinimizer.hpp"
+#include "../NmpcModels/VirtualMeModel.hpp"
 
 class VirtualMeSDMinimizer : public NmpcMinimizer {
+  VirtualMeModel& model;
+  unsigned countSdLoop{0};
+  unsigned maxSteps{1000};
+  fptype gradNorm{0};
+  fptype sdStepFactor{.3};
+  decltype(model.grad) prevGrad;
 
+  bool iterate();
+ public:
+  VirtualMeSDMinimizer(VirtualMeModel* model) : model{*model} {}
+  virtual MinimizerCode solveOptimalControlHorizon();
 };
 
-
-#endif //__VME_NMPC_VIRTUALMESDMINIMIZER_HPP__
+#endif  // VME_NMPC_VIRTUALMESDMINIMIZER_HPP_

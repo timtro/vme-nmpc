@@ -16,16 +16,18 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__
-#define __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__
+#ifndef VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP_
+#define VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP_
 
 #include "../NmpcModel.hpp"
 #include "../Obstacle.hpp"
+#include "../VirtualMeCommand.hpp"
 #include "../NmpcInitPkg.hpp"
 
-class VirtualMeModel : public NmpcModel {
-  fptype distanceToTarget_;
-  fp_point2d targetVector_;
+class VirtualMeModel
+    : public NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand> {
+  fptype distanceToTarget;
+  fp_point2d targetVector;
 
  public:
   unsigned N;
@@ -67,20 +69,21 @@ class VirtualMeModel : public NmpcModel {
 
   fptype gradNorm = 0.f;
   fp_array grad;
-  fp_array prevGrad;
 
   VirtualMeModel(NmpcInitPkg &);
   virtual ~VirtualMeModel() = default;
-  void computeLagrageMultipliers();
 
+  virtual unsigned getHorizonSize() const;
+  virtual fptype getTargetDistance();
   virtual void seed(xyvth, fp_point2d);
   virtual void seed(xyvth);
-  virtual void forecast();
-  virtual void setTrackingErrors();
-  virtual void computePathPotentialGradient(ObstacleContainer &obstacles);
-  virtual void computeGradient();
-  virtual fptype distanceToTarget();
-  virtual void halt();
+  virtual void computeForecast() noexcept;
+  virtual void computeTrackingErrors() noexcept;
+  virtual void computePathPotentialGradient(
+      ObstacleContainer &obstacles) noexcept;
+  void computeLagrageMultipliers() noexcept;
+  virtual void computeGradient() noexcept;
+  virtual up_VirtualMeCommand getCommand(int);
 };
 
-#endif  // __VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP__
+#endif  // VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP_

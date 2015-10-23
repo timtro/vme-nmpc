@@ -27,8 +27,8 @@ auto standardTestModel() {
 }
 
 TEST_CASE(
-    "A machine starting at the origin with no control input and no"
-    " velocity should be stationary") {
+    "A machine starting at the origin with no control input and velocity "
+    "should remain stationary throught the forecast horizon.") {
   auto m = stationaryTestModel();
   m.computeForecast();
   REQUIRE(eachInArrayIsApprox(m.x, 0.0f, 1e-5f));
@@ -41,8 +41,8 @@ T linearTravelDistance(T speed, T time_interval, int num_of_intervals) {
 }
 
 TEST_CASE(
-    "A machine posed at the origin pointing in +x with a constant speed"
-    " should drive a stright line along the +x-axis") {
+    "A machine posed at the origin pointing in +x with a constant speed should "
+    "drive a stright line along the +x-axis in a forecast horizon.") {
   auto m = standardTestModel();
   REQUIRE(eachInArrayIsApprox(m.v, m.v[0], 1e-5f));
   m.computeForecast();
@@ -51,8 +51,8 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "A machine posed at the origin pointing in +y with a constant speed"
-    " should drive a stright line along the +y-axis") {
+    "A machine posed at the origin pointing in +y with a constant speed should "
+    "drive a stright line along the +y-axis in a forecast horizon") {
   auto m = standardTestModel();
   m.th[0] = degToRad(90);
   m.seed(xyvth{0, 0, m.cruiseSpeed, 90});
@@ -85,8 +85,8 @@ TEST_CASE("Path length should not depend on steering rate") {
 }
 
 TEST_CASE(
-    "Tracking errors when the robot is along +x and target is on +y"
-    " should form isosceles right triangles") {
+    "Tracking errors when the robot travels along +x and target lies on +y "
+    "should form isosceles right triangles") {
   auto m = standardTestModel();
   m.computeForecast();
   fp_point2d tgt{0, m.x[m.N - 1]};
@@ -98,8 +98,8 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "Should be able to compute potential gradient along path without"
-    " trowing or faulting") {
+    "Should be able to compute potential gradient along path without trowing "
+    "or faulting") {
   auto m = standardTestModel();
   m.computeForecast();
   ObstacleContainer obs;
@@ -111,8 +111,8 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "Should be able to compute Lagrange multipliers without"
-    " trowing or faulting") {
+    "Should be able to compute Lagrange multipliers without trowing or "
+    "faulting") {
   auto m = standardTestModel();
   m.computeForecast();
   ObstacleContainer obs;

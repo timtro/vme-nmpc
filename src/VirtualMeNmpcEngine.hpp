@@ -27,9 +27,11 @@
 
 class NmpcMinimizer;
 
+using VMeModel = NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>;
+
 class VirtualMeNmpcEngine : public Subject {
-  NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>& model;
-  NmpcMinimizer& minimizer;
+  std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>> model;
+  std::unique_ptr<NmpcMinimizer> minimizer;
   fptype targetDistanceTolerance{0.1};
   unsigned cmdsExecutedFromCurrentHorizon{0};
   bool machineIsHalted{true};
@@ -37,12 +39,15 @@ class VirtualMeNmpcEngine : public Subject {
  public:
   fp_point2d currentTarget;
 
-  VirtualMeNmpcEngine(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>&,
-                      NmpcMinimizer&);
+  VirtualMeNmpcEngine(
+      std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>>,
+      std::unique_ptr<NmpcMinimizer>);
   void setTarget(fp_point2d point);
   up_VirtualMeCommand nextCommand();
   void seed(xyvth, fp_point2d);
   bool isHalted();
+  VMeModel* getModelPointer();
+  NmpcMinimizer* getMinimizerPointer();
 };
 
 #endif  // VME_NMPC_SRC_NMPCENGINE_HPP_

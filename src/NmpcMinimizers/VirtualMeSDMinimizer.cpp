@@ -18,14 +18,22 @@
 
 #include "VirtualMeSDMinimizer.hpp"
 
-    // /*   SD loop.  */
-    // opt.teeup();
-    // do {
-    //   /*
-    //    * The core of the gradient decent is in the next few lines:
-    //    */
-    //   model->forecast();
-    //   model->setTrackingErrors(currentTarget);
-    //   model->computeGradient();
+MinimizerCode VirtualMeSDMinimizer::solveOptimalControlHorizon() {
+  /*   SD loop.  */
+  countSdLoop = 0;
+  do {
+    model.computeForecast();
+    model.computeTrackingErrors();
+    model.computeGradient();
+    ++countSdLoop;
+    // Get grad . last_grad
+    // if gradDotGrad > 0 stepFactor *=2;
+    // Dth -=...
+  } while (iterate());
 
-    // } while (opt.iterate(qu, p, C));
+  return MinimizerCode::success;
+}
+
+bool VirtualMeSDMinimizer::iterate() {
+    return true;
+}

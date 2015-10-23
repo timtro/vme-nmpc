@@ -20,30 +20,36 @@
 #include "NmpcModel.hpp"
 
 VirtualMeNmpcEngine::VirtualMeNmpcEngine(
-    NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand> &model,
-    NmpcMinimizer &minimizer)
-    : model(model), minimizer(minimizer) {}
+    std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>> model,
+    std::unique_ptr<NmpcMinimizer> minimizer)
+    : model{std::move(model)}, minimizer{std::move(minimizer)} {}
 
 void VirtualMeNmpcEngine::setTarget(fp_point2d point) { currentTarget = point; }
 
 up_VirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
   if (machineIsHalted)
     return up_VirtualMeCommand{new VMeStop()};
-  else if (cmdsExecutedFromCurrentHorizon++ >= model.getHorizonSize())
+  else if (cmdsExecutedFromCurrentHorizon++ >= model->getHorizonSize())
     return up_VirtualMeCommand{new VMeNullCmd()};
   else
-    return model.getCommand(cmdsExecutedFromCurrentHorizon);
+    return model->getCommand(cmdsExecutedFromCurrentHorizon);
 }
 
 void VirtualMeNmpcEngine::seed(xyvth pose, fp_point2d target) {
-  model.seed(pose, target);
+  model->seed(pose, target);
   cmdsExecutedFromCurrentHorizon = 0;
-  if (model.getTargetDistance() > targetDistanceTolerance) {
+  if (model->getTargetDistance() > targetDistanceTolerance) {
     machineIsHalted = false;
-    minimizer.solveOptimalControlHorizon();
+    minimizer->solveOptimalControlHorizon();
   } else
     machineIsHalted = true;
   notify();
 }
 
 bool VirtualMeNmpcEngine::isHalted() { return machineIsHalted; }
+
+VMeModel* VirtualMeNmpcEngine::getModelPointer() { return model.get(); }
+
+NmpcMinimizer* VirtualMeNmpcEngine::getMinimizerPointer() {
+  return minimizer.get();
+}

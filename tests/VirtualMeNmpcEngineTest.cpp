@@ -23,19 +23,22 @@ class FakeExecutor : public Observer {
 
 const int standardTestHorizon = 10;
 struct standardTestSetup {
-  FakeVirtualMeModel* mod{nullptr};
-  FakeMinimizer* min{nullptr};
   VirtualMeNmpcEngine* eng{nullptr};
 
   standardTestSetup() {
-    mod = new FakeVirtualMeModel{standardTestHorizon};
-    min = new FakeMinimizer{};
-    eng = new VirtualMeNmpcEngine{*mod, *min};
+    std::unique_ptr<VMeModel> mod{
+        new FakeVirtualMeModel{standardTestHorizon}};
+    std::unique_ptr<NmpcMinimizer> min{new FakeMinimizer{}};
+    eng = new VirtualMeNmpcEngine{std::move(mod), std::move(min)};
   }
   ~standardTestSetup() {
     delete eng;
-    delete min;
-    delete mod;
+  }
+  auto* model() {
+    return dynamic_cast<FakeVirtualMeModel*>(eng->getModelPointer());
+  }
+  auto* minimizer() {
+    return dynamic_cast<FakeMinimizer*>(eng->getMinimizerPointer());
   }
 };
 
@@ -59,7 +62,7 @@ TEST_CASE(
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyvth{1, 1, 0, 0}, fp_point2d{1, 1});
   // Should have called (S)eed (D)istanceToTarget and (H)alt:
-  REQUIRE(test.mod->getEventHistory() == "SD");
+  REQUIRE(test.model()->getEventHistory() == "SD");
   REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
   REQUIRE(test.eng->isHalted());
 }
@@ -72,8 +75,8 @@ TEST_CASE(
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyvth{0, 0, 0, 0}, fp_point2d{5, 5});
-  REQUIRE(test.mod->getEventHistory() == "SDC");
-  REQUIRE(test.min->getEventHistory() == "O");
+  REQUIRE(test.model()->getEventHistory() == "SDC");
+  REQUIRE(test.minimizer()->getEventHistory() == "O");
   REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
 }
 

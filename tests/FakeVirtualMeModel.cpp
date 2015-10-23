@@ -24,6 +24,13 @@ void FakeVirtualMeModel::recordEvent(char eventCode) {
 
 FakeVirtualMeModel::FakeVirtualMeModel(unsigned N) : N{N} {}
 
+unsigned FakeVirtualMeModel::getHorizonSize() const { return N; }
+
+fptype FakeVirtualMeModel::getTargetDistance() {
+  recordEvent('D');
+  return distanceToTarget;
+}
+
 void FakeVirtualMeModel::seed(xyvth) { recordEvent('S'); }
 
 void FakeVirtualMeModel::seed(xyvth position, fp_point2d target) {
@@ -32,20 +39,16 @@ void FakeVirtualMeModel::seed(xyvth position, fp_point2d target) {
   recordEvent('S');
 }
 
-void FakeVirtualMeModel::computeForecast() { recordEvent('F'); }
+void FakeVirtualMeModel::computeForecast() noexcept { recordEvent('F'); }
 
-void FakeVirtualMeModel::computeTrackingErrors() { recordEvent('E'); }
+void FakeVirtualMeModel::computeTrackingErrors() noexcept { recordEvent('E'); }
 
-void FakeVirtualMeModel::computePathPotentialGradient(ObstacleContainer&) {
+void FakeVirtualMeModel::computePathPotentialGradient(
+    ObstacleContainer&) noexcept {
   recordEvent('P');
 }
 
-void FakeVirtualMeModel::computeGradient() { recordEvent('G'); }
-
-fptype FakeVirtualMeModel::getTargetDistance() {
-  recordEvent('D');
-  return distanceToTarget;
-}
+void FakeVirtualMeModel::computeGradient() noexcept { recordEvent('G'); }
 
 up_VirtualMeCommand FakeVirtualMeModel::getCommand(int) {
   recordEvent('C');
@@ -53,5 +56,3 @@ up_VirtualMeCommand FakeVirtualMeModel::getCommand(int) {
 }
 
 std::string FakeVirtualMeModel::getEventHistory() { return eventHistory; }
-
-unsigned FakeVirtualMeModel::getHorizonSize() const { return N; }

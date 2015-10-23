@@ -24,6 +24,7 @@
 #include "VirtualMeModel.hpp"
 #include "../trig.hpp"
 #include "../NmpcInitPkg.hpp"
+#include "../VirtualMeCommand.hpp"
 
 VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini)
     : N{ini.N},
@@ -58,8 +59,11 @@ VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini)
   pth = fp_array(0.f, horizonSize);
   // Gradients:
   grad = fp_array(0.f, horizonSize - 1);
-  prevGrad = fp_array(0.f, horizonSize - 1);
 }
+
+unsigned VirtualMeModel::getHorizonSize() const { return N; }
+
+fptype VirtualMeModel::getTargetDistance() { return distanceToTarget; }
 
 void VirtualMeModel::seed(xyvth pose, fp_point2d target) {
   x[0] = pose.x;
@@ -68,10 +72,10 @@ void VirtualMeModel::seed(xyvth pose, fp_point2d target) {
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
 
-  targetVector_.x = target.x - x[0];
-  targetVector_.y = target.y - y[0];
-  distanceToTarget_ = std::sqrt(dot(targetVector_, targetVector_));
-  targetVector_ /= distanceToTarget_;
+  targetVector.x = target.x - x[0];
+  targetVector.y = target.y - y[0];
+  distanceToTarget = std::sqrt(dot(targetVector, targetVector));
+  targetVector /= distanceToTarget;
 }
 
 void VirtualMeModel::seed(xyvth pose) {
@@ -82,7 +86,7 @@ void VirtualMeModel::seed(xyvth pose) {
   Dy[0] = v[0] * std::sin(th[0]);
 }
 
-void VirtualMeModel::forecast() {
+void VirtualMeModel::computeForecast() noexcept {
   for (unsigned k = 1; k < N; ++k) {
     th[k] = th[k - 1] + Dth[k - 1] * T;
     x[k] = x[k - 1] + Dx[k - 1] * T;
@@ -95,14 +99,15 @@ void VirtualMeModel::forecast() {
 /*!
  * This is vanilla, and just tracks the straight line at the cruising speed.
  */
-void VirtualMeModel::setTrackingErrors() {
+void VirtualMeModel::computeTrackingErrors() noexcept {
   for (unsigned k = 1; k < N; ++k) {
-    ex[k] = x[k] - (x[0] + cruiseSpeed * targetVector_.x * k * T);
-    ey[k] = y[k] - (y[0] + cruiseSpeed * targetVector_.y * k * T);
+    ex[k] = x[k] - (x[0] + cruiseSpeed * targetVector.x * k * T);
+    ey[k] = y[k] - (y[0] + cruiseSpeed * targetVector.y * k * T);
   }
 }
 
-void VirtualMeModel::computePathPotentialGradient(ObstacleContainer& obstacles) {
+void VirtualMeModel::computePathPotentialGradient(
+    ObstacleContainer& obstacles) noexcept {
   for (unsigned k = 0; k < N; ++k) {
     fp_point2d gradVec = obstacles.gradPhi(fp_point2d{x[k], y[k]});
     DPhiX[k] = gradVec.x;
@@ -110,7 +115,7 @@ void VirtualMeModel::computePathPotentialGradient(ObstacleContainer& obstacles) 
   }
 }
 
-void VirtualMeModel::computeLagrageMultipliers() {
+void VirtualMeModel::computeLagrageMultipliers() noexcept {
   px[N - 1] = Q0 * ex[N - 1];
   py[N - 1] = Q0 * ey[N - 1];
 
@@ -129,7 +134,7 @@ void VirtualMeModel::computeLagrageMultipliers() {
  * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
  * are computed.
  */
-void VirtualMeModel::computeGradient() {
+void VirtualMeModel::computeGradient() noexcept {
   grad[N - 1] = R * Dth[N - 2] + pth[N - 1] * T;  // segfault?
   computeLagrageMultipliers();
   gradNorm = 0.f;
@@ -140,14 +145,6 @@ void VirtualMeModel::computeGradient() {
   gradNorm = std::sqrt(gradNorm);
 }
 
-fptype VirtualMeModel::distanceToTarget() { return distanceToTarget_; }
-
-void VirtualMeModel::halt() {
-  x = x[0];
-  y = y[0];
-  th = th[0];
-  Dx = 0;
-  Dy = 0;
-  v = 0;
-  Dth = 0;
+up_VirtualMeCommand VirtualMeModel::getCommand(int n) {
+  return up_VirtualMeCommand{new VMeV{0, v[n], Dth[n]}};
 }

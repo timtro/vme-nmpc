@@ -33,16 +33,16 @@ class FakeVirtualMeModel
 
   FakeVirtualMeModel(unsigned);
   virtual ~FakeVirtualMeModel() = default;
+  virtual unsigned getHorizonSize() const;
+  virtual fptype getTargetDistance();
   virtual void seed(xyvth);
   virtual void seed(xyvth, fp_point2d);
-  virtual void computeForecast();
-  virtual void computeTrackingErrors();
-  virtual void computePathPotentialGradient(ObstacleContainer&);
-  virtual void computeGradient();
-  virtual fptype getTargetDistance();
+  virtual void computeForecast() noexcept;
+  virtual void computeTrackingErrors() noexcept;
+  virtual void computePathPotentialGradient(ObstacleContainer&) noexcept;
+  virtual void computeGradient() noexcept;
   virtual up_VirtualMeCommand getCommand(int);
   std::string getEventHistory();
-  virtual unsigned getHorizonSize() const;
 };
 
 #endif  // VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP_

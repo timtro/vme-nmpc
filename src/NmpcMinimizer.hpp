@@ -16,16 +16,15 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_NMPCMINIMIZER_HPP__
-#define __VME_NMPC_NMPCMINIMIZER_HPP__
+#ifndef VME_NMPC_NMPCMINIMIZER_HPP_
+#define VME_NMPC_NMPCMINIMIZER_HPP_
 
-enum class MinimizerCode {success, exceededIterationLimit};
+enum class MinimizerCode { success, exceededIterationLimit };
 
 class NmpcMinimizer {
-
-public:
+ public:
   virtual ~NmpcMinimizer() = default;
   virtual MinimizerCode solveOptimalControlHorizon() = 0;
 };
 
-#endif //__VME_NMPC_NMPCMINIMIZER_HPP__
+#endif  // VME_NMPC_NMPCMINIMIZER_HPP_

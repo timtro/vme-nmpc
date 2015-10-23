@@ -16,7 +16,6 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /* This file is based on the work of J.P. Gignac. It is basically a rewrite of
  * his daemon class from the telep-head source tree, found in
  * telep-head/unwarp/Daemon.cpp
@@ -38,33 +37,29 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-
 void daemon_threadfn(const Daemon* parent_daemon) {
   std::list<RequestTicket> ticket_stubs;
-  for(;;) {
+  for (;;) {
     try {
       // NB: RequestTicket constructor calls accept() which blocks until a
       // connection is received.
       ticket_stubs.emplace_back(parent_daemon);
-    } catch(blocked_socket) {
+    } catch (blocked_socket) {
       // blocked_socket indicates that Daemon is shutting down, so exit() the
       // thread.
       // std::exit(1);
       return;
     }
 
-    ticket_stubs.remove_if([](auto& each) {
-      return each.done;
-    });
+    ticket_stubs.remove_if([](auto& each) { return each.done; });
   }
   return;
 }
 
 Daemon::Daemon(int port, void (*server_child)(int))
-  : server_child_{server_child}, shutdown_flag{false}, sockfd_{-1} {
-
+    : server_child_{server_child}, shutdown_flag{false}, sockfd_{-1} {
   char buf[80];
-  struct addrinfo *ai;
+  struct addrinfo* ai;
   struct addrinfo hints;
   int optval = 1;
   memset(&hints, 0, sizeof(hints));
@@ -73,36 +68,34 @@ Daemon::Daemon(int port, void (*server_child)(int))
   snprintf(buf, sizeof(buf), "%d", port);
   getaddrinfo(nullptr, buf, &hints, &ai);
 
-  for(struct addrinfo* rp = ai; rp != nullptr; rp = rp->ai_next) {
+  for (struct addrinfo* rp = ai; rp != nullptr; rp = rp->ai_next) {
     sockfd_ = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-    if(sockfd_ == -1) continue;
+    if (sockfd_ == -1) continue;
     setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-    if(bind(sockfd_, rp->ai_addr, rp->ai_addrlen) == 0) break;
+    if (bind(sockfd_, rp->ai_addr, rp->ai_addrlen) == 0) break;
     close(sockfd_);
   }
 
   freeaddrinfo(ai);
-  if(sockfd_ == -1) {
+  if (sockfd_ == -1) {
     snprintf(buf, sizeof(buf), "Can't bind port %d", port);
     throw std::runtime_error(buf);
   }
 
   int rc = listen(sockfd_, 1);
-  if(rc == -1) {
-    snprintf(buf, sizeof(buf),
-             "Can't listen on port %d: %s",
-             port, strerror(errno));
+  if (rc == -1) {
+    snprintf(buf, sizeof(buf), "Can't listen on port %d: %s", port,
+             strerror(errno));
     close(sockfd_);
     throw std::runtime_error(buf);
   }
 
   try {
     daemon_thread_ = std::thread(daemon_threadfn, this);
-  } catch(...) {
+  } catch (...) {
     close(sockfd_);
     throw;
   }
-
 }
 
 Daemon::~Daemon() {
@@ -126,14 +119,14 @@ void server_child_wrapper(RequestTicket* ticket) {
 
 RequestTicket::RequestTicket(const Daemon* d) : parent_daemon_{d}, done{false} {
   connectionfd_ = accept(parent_daemon_->sockfd_, nullptr, nullptr);
-  if(connectionfd_ == -1) {
+  if (connectionfd_ == -1) {
     /*
      * At this point, the failure of accept could be because the destructor
      * of Daemon has shutdown() the socket, or other reasons. Daemon's
      * destructor also sets its member shutdown_flag to true, so we can
      * distinguish.
      */
-    if(d->shutdown_flag)
+    if (d->shutdown_flag)
       throw blocked_socket();
     else
       throw std::runtime_error("Daemon can't accept connection");
@@ -141,13 +134,11 @@ RequestTicket::RequestTicket(const Daemon* d) : parent_daemon_{d}, done{false} {
 
   try {
     server_thread_ = std::thread(server_child_wrapper, this);
-  } catch(...) {
+  } catch (...) {
     close(connectionfd_);
     throw;
   }
 }
 
-//TODO: Theck if this is what the original does
-RequestTicket::~RequestTicket() {
-  server_thread_.join();
-}
+// TODO: Theck if this is what the original does
+RequestTicket::~RequestTicket() { server_thread_.join(); }

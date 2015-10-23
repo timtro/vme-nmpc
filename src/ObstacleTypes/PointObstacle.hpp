@@ -43,17 +43,17 @@
   */
 class PointObstacle : public Obstacle {
 
-  Point2R position; // Why is this not inherited?
+  fp_point2d position; // Why is this not inherited?
 
  public:
 
   fptype pwr, eps;
 
-  PointObstacle(Point2R, fptype, fptype);
+  PointObstacle(fp_point2d, fptype, fptype);
 
-  virtual fptype dist(Point2R);
-  virtual fptype phi(Point2R);
-  virtual Point2R gradPhi(Point2R);
+  virtual fptype dist(fp_point2d);
+  virtual fptype phi(fp_point2d);
+  virtual fp_point2d gradPhi(fp_point2d);
 
 
 };

@@ -16,15 +16,15 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FakeVirtualMeMinimizer.hpp"
+#include "FakeMinimizer.hpp"
 
-void FakeVirtualMeMinimizer::recordEvent(char eventCode) {
+void FakeMinimizer::recordEvent(char eventCode) {
   eventHistory += eventCode;
 }
 
-std::string FakeVirtualMeMinimizer::getEventHistory() { return eventHistory; }
+std::string FakeMinimizer::getEventHistory() { return eventHistory; }
 
-MinimizerCode FakeVirtualMeMinimizer::solveOptimalControlHorizon() {
+MinimizerCode FakeMinimizer::solveOptimalControlHorizon() {
   recordEvent('O');
   return MinimizerCode::success;
 }

@@ -16,14 +16,14 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__
-#define __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__
+#ifndef VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP_
+#define VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP_
 
 #include "../src/NmpcModel.hpp"
 #include "../src/VirtualMeCommand.hpp"
 
 class FakeVirtualMeModel
-    : public NmpcModel<xyvth, Point2R, upVirtualMeCommand> {
+    : public NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand> {
   std::string eventHistory{};
   fptype distanceToTarget;
   void recordEvent(char);
@@ -34,15 +34,15 @@ class FakeVirtualMeModel
   FakeVirtualMeModel(unsigned);
   virtual ~FakeVirtualMeModel() = default;
   virtual void seed(xyvth);
-  virtual void seed(xyvth, Point2R);
-  virtual void forecast();
-  virtual void setTrackingErrors();
-  virtual void computePathPotentialGradient(ObstacleStack&);
+  virtual void seed(xyvth, fp_point2d);
+  virtual void computeForecast();
+  virtual void computeTrackingErrors();
+  virtual void computePathPotentialGradient(ObstacleContainer&);
   virtual void computeGradient();
   virtual fptype getTargetDistance();
-  virtual upVirtualMeCommand getCommand(int);
+  virtual up_VirtualMeCommand getCommand(int);
   std::string getEventHistory();
   virtual unsigned getHorizonSize() const;
 };
 
-#endif  // __VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP__
+#endif  // VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP_

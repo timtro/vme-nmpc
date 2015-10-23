@@ -20,22 +20,22 @@
 #include "NmpcModel.hpp"
 
 VirtualMeNmpcEngine::VirtualMeNmpcEngine(
-    NmpcModel<xyvth, Point2R, upVirtualMeCommand> &model,
+    NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand> &model,
     NmpcMinimizer &minimizer)
     : model(model), minimizer(minimizer) {}
 
-void VirtualMeNmpcEngine::setTarget(Point2R point) { currentTarget = point; }
+void VirtualMeNmpcEngine::setTarget(fp_point2d point) { currentTarget = point; }
 
-upVirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
+up_VirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
   if (machineIsHalted)
-    return upVirtualMeCommand{new VMeStop()};
+    return up_VirtualMeCommand{new VMeStop()};
   else if (cmdsExecutedFromCurrentHorizon++ >= model.getHorizonSize())
-    return upVirtualMeCommand{new VMeNullCmd()};
+    return up_VirtualMeCommand{new VMeNullCmd()};
   else
     return model.getCommand(cmdsExecutedFromCurrentHorizon);
 }
 
-void VirtualMeNmpcEngine::seed(xyvth pose, Point2R target) {
+void VirtualMeNmpcEngine::seed(xyvth pose, fp_point2d target) {
   model.seed(pose, target);
   cmdsExecutedFromCurrentHorizon = 0;
   if (model.getTargetDistance() > targetDistanceTolerance) {

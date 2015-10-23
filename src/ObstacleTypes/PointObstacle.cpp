@@ -33,7 +33,7 @@
 
 #include <cstdio>
 
-PointObstacle::PointObstacle(Point2R position, fptype pwr, fptype eps) :
+PointObstacle::PointObstacle(fp_point2d position, fptype pwr, fptype eps) :
   position{position}, pwr{pwr}, eps{eps} {}
 
 /**
@@ -43,7 +43,7 @@ PointObstacle::PointObstacle(Point2R position, fptype pwr, fptype eps) :
  * @return    The distance from the centre of the point obstacle to the
  * reference point.
  */
-auto PointObstacle::dist(Point2R xr) -> decltype(xr.x) {
+auto PointObstacle::dist(fp_point2d xr) -> decltype(xr.x) {
   auto disp = xr - position;
   return std::sqrt(dot(disp, disp));
 }
@@ -54,7 +54,7 @@ auto PointObstacle::dist(Point2R xr) -> decltype(xr.x) {
  * @param  ry reference y-coordinate.
  * @return    The scalar field value.
  */
-auto PointObstacle::phi(Point2R refPoint) -> decltype(refPoint.x) {
+auto PointObstacle::phi(fp_point2d refPoint) -> decltype(refPoint.x) {
   return 1/(  std::pow( dist(refPoint), pwr ) + eps  );
 }
 
@@ -81,7 +81,7 @@ auto PointObstacle::phi(Point2R refPoint) -> decltype(refPoint.x) {
  * @param  ry reference y-coordinate.
  * @return    A pair, the x- and y-components of the gradient vector.
  */
-decltype(PointObstacle::position) PointObstacle::gradPhi(Point2R refPoint) {
+decltype(PointObstacle::position) PointObstacle::gradPhi(fp_point2d refPoint) {
   auto disp = position - refPoint; // = - (refPoint - position)
   auto d = disp.x*disp.x + disp.y*disp.y;
   auto num = pwr*disp*std::pow(d, pwr/2 - 1);

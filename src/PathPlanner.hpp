@@ -16,17 +16,19 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_PATHPLANNER_HPP__
-#define __VME_NMPC_SRC_PATHPLANNER_HPP__
+#ifndef VME_NMPC_SRC_PATHPLANNER_HPP_
+#define VME_NMPC_SRC_PATHPLANNER_HPP_
+
+#include "linear.hpp"
 
 struct Target {
-  Point2R locus;
+  fp_point2d locus;
   decltype(locus.x) tolerance;
   decltype(locus.x)& x;
   decltype(locus.x)& y;
 
   Target(float x, float y, float tol)
-    : locus{x,y}, tolerance{tol}, x{locus.x}, y{locus.y} {}
+      : locus{x, y}, tolerance{tol}, x{locus.x}, y{locus.y} {}
 };
 
 class TargetStack {
@@ -39,3 +41,5 @@ class TargetStack {
   void clearTargetList();
   bool areTargetsRemaining();
 };
+
+#endif  // VME_NMPC_SRC_PATHPLANNER_HPP_

@@ -16,8 +16,8 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_NMPCMODEL_HPP__
-#define __VME_NMPC_SRC_NMPCMODEL_HPP__
+#ifndef VME_NMPC_SRC_NMPCMODEL_HPP_
+#define VME_NMPC_SRC_NMPCMODEL_HPP_
 
 #include "Obstacle.hpp"
 #include "linear.hpp"
@@ -27,15 +27,15 @@ template <typename seedType, typename tgtType, typename cmdType>
 class NmpcModel {
  public:
   virtual ~NmpcModel() = default;
+  virtual unsigned getHorizonSize() const = 0;
   virtual void seed(seedType, tgtType) = 0;
   virtual void seed(seedType) = 0;
-  virtual void forecast() = 0;
-  virtual void setTrackingErrors() = 0;
-  virtual void computePathPotentialGradient(ObstacleStack &obstacles) = 0;
+  virtual void computeForecast() = 0;
+  virtual void computeTrackingErrors() = 0;
+  virtual void computePathPotentialGradient(ObstacleContainer &obstacles) = 0;
   virtual void computeGradient() = 0;
   virtual fptype getTargetDistance() = 0;
   virtual cmdType getCommand(int) = 0;
-  virtual unsigned getHorizonSize() const = 0;
 };
 
-#endif  // __VME_NMPC_SRC_NMPCMODEL_HPP__
+#endif  // VME_NMPC_SRC_NMPCMODEL_HPP_

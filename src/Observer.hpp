@@ -16,8 +16,8 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_OBSERVER_HPP__
-#define __VME_NMPC_SRC_OBSERVER_HPP__
+#ifndef VME_NMPC_SRC_OBSERVER_HPP_
+#define VME_NMPC_SRC_OBSERVER_HPP_
 
 class Subject;
 
@@ -30,4 +30,4 @@ class Observer {
   Observer() = default;
 };
 
-#endif  // __VME_NMPC_SRC_OBSERVER_HPP__
+#endif  // VME_NMPC_SRC_OBSERVER_HPP_

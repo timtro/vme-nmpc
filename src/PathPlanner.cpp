@@ -16,34 +16,18 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-void PathPlanner::pushFinalTarget(Target tgt) {
-  targets.push_back(tgt);
-}
+void PathPlanner::pushFinalTarget(Target tgt) { targets.push_back(tgt); }
 
-void PathPlanner::pushCurrentTarget(Target tgt) {
-  targets.push_front(tgt);
-}
+void PathPlanner::pushCurrentTarget(Target tgt) { targets.push_front(tgt); }
 
-void PathPlanner::popFinalTarget() {
-  targets.pop_back();
-}
+void PathPlanner::popFinalTarget() { targets.pop_back(); }
 
-int PathPlanner::numberOfTargets() {
-  return targets.size();
-}
+int PathPlanner::numberOfTargets() { return targets.size(); }
 
-Target& PathPlanner::currentTarget() {
-  return targets.front();
-}
+Target& PathPlanner::currentTarget() { return targets.front(); }
 
-Target& PathPlanner::finalTarget() {
-  return targets.back();
-}
+Target& PathPlanner::finalTarget() { return targets.back(); }
 
-void PathPlanner::clearTargetList() {
-  targets.clear();
-}
+void PathPlanner::clearTargetList() { targets.clear(); }
 
-bool PathPlanner::areTargetsRemaining() {
-  return !targets.empty();
-}
+bool PathPlanner::areTargetsRemaining() { return !targets.empty(); }

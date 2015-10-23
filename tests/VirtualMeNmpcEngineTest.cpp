@@ -1,16 +1,14 @@
 #include "catch.hpp"
 
-#include "../src/NmpcModel.hpp"
-#include "../src/NmpcMinimizer.hpp"
 #include "../src/VirtualMeNmpcEngine.hpp"
 #include "FakeVirtualMeModel.hpp"
-#include "FakeVirtualMeMinimizer.hpp"
+#include "FakeMinimizer.hpp"
 
 class FakeExecutor : public Observer {
   VirtualMeNmpcEngine* subjectEngine = nullptr;
 
  public:
-  upVirtualMeCommand commandFromLastNotify;
+  up_VirtualMeCommand commandFromLastNotify;
 
   FakeExecutor(VirtualMeNmpcEngine* s) {
     subjectEngine = s;
@@ -26,12 +24,12 @@ class FakeExecutor : public Observer {
 const int standardTestHorizon = 10;
 struct standardTestSetup {
   FakeVirtualMeModel* mod{nullptr};
-  FakeVirtualMeMinimizer* min{nullptr};
+  FakeMinimizer* min{nullptr};
   VirtualMeNmpcEngine* eng{nullptr};
 
   standardTestSetup() {
     mod = new FakeVirtualMeModel{standardTestHorizon};
-    min = new FakeVirtualMeMinimizer{};
+    min = new FakeMinimizer{};
     eng = new VirtualMeNmpcEngine{*mod, *min};
   }
   ~standardTestSetup() {
@@ -59,7 +57,7 @@ TEST_CASE(
   standardTestSetup test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.eng->seed(xyvth{1, 1, 0, 0}, Point2R{1, 1});
+  test.eng->seed(xyvth{1, 1, 0, 0}, fp_point2d{1, 1});
   // Should have called (S)eed (D)istanceToTarget and (H)alt:
   REQUIRE(test.mod->getEventHistory() == "SD");
   REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
@@ -73,7 +71,7 @@ TEST_CASE(
   standardTestSetup test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.eng->seed(xyvth{0, 0, 0, 0}, Point2R{5, 5});
+  test.eng->seed(xyvth{0, 0, 0, 0}, fp_point2d{5, 5});
   REQUIRE(test.mod->getEventHistory() == "SDC");
   REQUIRE(test.min->getEventHistory() == "O");
   REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
@@ -85,7 +83,7 @@ TEST_CASE(
   standardTestSetup test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.eng->seed(xyvth{0, 0, 0, 0}, Point2R{5, 5});
+  test.eng->seed(xyvth{0, 0, 0, 0}, fp_point2d{5, 5});
   unsigned countReturnedMotionCommands = 0;
   auto command = std::move(exec.commandFromLastNotify);
   for (;;) {

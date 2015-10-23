@@ -16,8 +16,8 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_SUBJECT_HPP__
-#define __VME_NMPC_SRC_SUBJECT_HPP__
+#ifndef VME_NMPC_SRC_SUBJECT_HPP_
+#define VME_NMPC_SRC_SUBJECT_HPP_
 
 #include "Observer.hpp"
 
@@ -40,6 +40,6 @@ class Subject {
   std::vector<Observer*> observers_{};
 };
 
-class AttemptToAttachAlreadyAttachedObserver :  public std::exception {};
+class AttemptToAttachAlreadyAttachedObserver : public std::exception {};
 
-#endif  // __VME_NMPC_SRC_SUBJECT_HPP__
+#endif  // VME_NMPC_SRC_SUBJECT_HPP_

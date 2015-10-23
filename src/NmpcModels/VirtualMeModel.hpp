@@ -25,7 +25,7 @@
 
 class VirtualMeModel : public NmpcModel {
   fptype distanceToTarget_;
-  Point2R targetVector_;
+  fp_point2d targetVector_;
 
  public:
   unsigned N;
@@ -37,47 +37,47 @@ class VirtualMeModel : public NmpcModel {
   fptype Q0;
   fptype R;
   //! The x-coordinate.
-  fpArray x;
+  fp_array x;
   //! The time rate-of-change of x.
-  fpArray Dx;
+  fp_array Dx;
   //! The y-coordinate.
-  fpArray y;
+  fp_array y;
   //! The time rate-of-change of y.
-  fpArray Dy;
+  fp_array Dy;
   //! The angle from the x-axis of the direction of travel.
-  fpArray th;
+  fp_array th;
   //! The steering rate. That is, the time rate-of-change of th.
-  fpArray Dth;
+  fp_array Dth;
   //! The radial component of speed.
-  fpArray v;
+  fp_array v;
   //! The error of the x-coordinate.
-  fpArray ex;
+  fp_array ex;
   //! The error of the y-coordinate.
-  fpArray ey;
+  fp_array ey;
   // Potential gradient at each point in path.
-  fpArray DPhiX;
-  fpArray DPhiY;
+  fp_array DPhiX;
+  fp_array DPhiY;
 
   // The Lagrange multipliers
-  fpArray px;
-  fpArray pDx;
-  fpArray py;
-  fpArray pDy;
-  fpArray pth;
+  fp_array px;
+  fp_array pDx;
+  fp_array py;
+  fp_array pDy;
+  fp_array pth;
 
   fptype gradNorm = 0.f;
-  fpArray grad;
-  fpArray prevGrad;
+  fp_array grad;
+  fp_array prevGrad;
 
   VirtualMeModel(NmpcInitPkg &);
   virtual ~VirtualMeModel() = default;
   void computeLagrageMultipliers();
 
-  virtual void seed(xyvth, Point2R);
+  virtual void seed(xyvth, fp_point2d);
   virtual void seed(xyvth);
   virtual void forecast();
   virtual void setTrackingErrors();
-  virtual void computePathPotentialGradient(ObstacleStack &obstacles);
+  virtual void computePathPotentialGradient(ObstacleContainer &obstacles);
   virtual void computeGradient();
   virtual fptype distanceToTarget();
   virtual void halt();

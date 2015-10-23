@@ -16,13 +16,13 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_LINEAR_HPP__
-#define __VME_NMPC_SRC_LINEAR_HPP__
+#ifndef VME_NMPC_SRC_LINEAR_HPP_
+#define VME_NMPC_SRC_LINEAR_HPP_
 
 #include "typedefs.h"
 #include "CrossWing/linear.h"
 
-typedef Point<fptype, 2> Point2R;
+typedef Point<fptype, 2> fp_point2d;
 
 template <typename R>
 class XYVTh {
@@ -37,8 +37,6 @@ class XYVTh {
   }
   XYVTh(R x, R y, R v, R th)
       : x(std::move(x)), y(std::move(y)), v(std::move(v)), th(std::move(th)){};
-  R& operator[](int i) { return ((R*)this)[i]; }
-  const R& operator[](int i) const { return ((R*)this)[i]; }
   typedef R value_type;
   template <typename R2>
   XYVTh<R>& operator=(const Point<R2, 4>& b) {
@@ -71,4 +69,4 @@ inline auto unitVector(ANGLE theta) -> Point<decltype(std::cos(theta)), 2> {
   return Point<decltype(std::cos(theta)), 2>(std::cos(theta), std::sin(theta));
 }
 
-#endif  // __VME_NMPC_SRC_LINEAR_HPP__
+#endif  // VME_NMPC_SRC_LINEAR_HPP_

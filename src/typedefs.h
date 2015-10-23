@@ -22,6 +22,6 @@
 #include <valarray>
 
 typedef float fptype;
-typedef std::valarray<fptype> fpArray;
+typedef std::valarray<fptype> fp_array;
 
-#endif //VME_NMPC_TYPEDEFS_H
+#endif  // VME_NMPC_TYPEDEFS_H

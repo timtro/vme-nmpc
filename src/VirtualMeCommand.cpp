@@ -18,14 +18,8 @@
 
 #include "VirtualMeCommand.hpp"
 
-int VMeStop::execute(Nav2Robot &rob) {
-  return rob.stop();
-}
+int VMeStop::execute(Nav2Robot &rob) { return rob.stop(); }
 
-int VMeV::execute(Nav2Robot &rob) {
-  return rob.v(th, v, Dth);
-}
+int VMeV::execute(Nav2Robot &rob) { return rob.v(th, v, Dth); }
 
-int VMeNullCmd::execute(Nav2Robot&) {
-  return 0;
-}
+int VMeNullCmd::execute(Nav2Robot &) { return 0; }

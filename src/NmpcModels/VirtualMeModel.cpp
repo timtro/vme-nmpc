@@ -37,31 +37,31 @@ VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini)
   size_t horizonSize = static_cast<size_t>(N);
 
   // State Vector:
-  x = fpArray(0.f, horizonSize);
-  Dx = fpArray(0.f, horizonSize);
-  y = fpArray(0.f, horizonSize);
-  Dy = fpArray(0.f, horizonSize);
-  th = fpArray(0.f, horizonSize);
+  x = fp_array(0.f, horizonSize);
+  Dx = fp_array(0.f, horizonSize);
+  y = fp_array(0.f, horizonSize);
+  Dy = fp_array(0.f, horizonSize);
+  th = fp_array(0.f, horizonSize);
   // Control vector:
-  Dth = fpArray(0.f, horizonSize - 1);
+  Dth = fp_array(0.f, horizonSize - 1);
   // Other:
-  v = fpArray(cruiseSpeed, horizonSize);
-  ex = fpArray(0.f, horizonSize);
-  ey = fpArray(0.f, horizonSize);
-  DPhiX = fpArray(0.f, horizonSize);
-  DPhiY = fpArray(0.f, horizonSize);
+  v = fp_array(cruiseSpeed, horizonSize);
+  ex = fp_array(0.f, horizonSize);
+  ey = fp_array(0.f, horizonSize);
+  DPhiX = fp_array(0.f, horizonSize);
+  DPhiY = fp_array(0.f, horizonSize);
   // Lagrange Multipliers:
-  px = fpArray(0.f, horizonSize);
-  pDx = fpArray(0.f, horizonSize);
-  py = fpArray(0.f, horizonSize);
-  pDy = fpArray(0.f, horizonSize);
-  pth = fpArray(0.f, horizonSize);
+  px = fp_array(0.f, horizonSize);
+  pDx = fp_array(0.f, horizonSize);
+  py = fp_array(0.f, horizonSize);
+  pDy = fp_array(0.f, horizonSize);
+  pth = fp_array(0.f, horizonSize);
   // Gradients:
-  grad = fpArray(0.f, horizonSize - 1);
-  prevGrad = fpArray(0.f, horizonSize - 1);
+  grad = fp_array(0.f, horizonSize - 1);
+  prevGrad = fp_array(0.f, horizonSize - 1);
 }
 
-void VirtualMeModel::seed(xyvth pose, Point2R target) {
+void VirtualMeModel::seed(xyvth pose, fp_point2d target) {
   x[0] = pose.x;
   y[0] = pose.y;
   th[0] = pose.th;
@@ -102,9 +102,9 @@ void VirtualMeModel::setTrackingErrors() {
   }
 }
 
-void VirtualMeModel::computePathPotentialGradient(ObstacleStack& obstacles) {
+void VirtualMeModel::computePathPotentialGradient(ObstacleContainer& obstacles) {
   for (unsigned k = 0; k < N; ++k) {
-    Point2R gradVec = obstacles.gradPhi(Point2R{x[k], y[k]});
+    fp_point2d gradVec = obstacles.gradPhi(fp_point2d{x[k], y[k]});
     DPhiX[k] = gradVec.x;
     DPhiY[k] = gradVec.y;
   }

@@ -16,14 +16,14 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_OBSTACLE_HPP__
-#define __VME_NMPC_SRC_OBSTACLE_HPP__
+#ifndef VME_NMPC_SRC_OBSTACLE_HPP_
+#define VME_NMPC_SRC_OBSTACLE_HPP_
 
 #include <bits/unique_ptr.h>
 #include "linear.hpp"
 
 #include <memory>
-#include <utility> // for std::pair
+#include <utility>  // for std::pair
 
 /**
  * An abstract base class defining the interface that will be required for the
@@ -36,28 +36,25 @@
  * useful for future add-ons, such as a global path planner.
  */
 struct Obstacle {
+  fp_point2d position;
 
-  Point2R position;
-
-  virtual fptype dist(Point2R) = 0;
-  virtual fptype phi(Point2R) = 0;
-  virtual Point2R gradPhi(Point2R) = 0;
-
+  virtual fptype dist(fp_point2d) = 0;
+  virtual fptype phi(fp_point2d) = 0;
+  virtual fp_point2d gradPhi(fp_point2d) = 0;
 };
 
-class ObstacleStack {
+class ObstacleContainer {
   std::vector<std::unique_ptr<Obstacle>> obstacles;
 
  public:
-  Point2R gradPhi(Point2R);
+  fp_point2d gradPhi(fp_point2d);
   void pushObstacle(Obstacle *obs);
   void pushObstacleUniquePtr(std::unique_ptr<Obstacle>);
   void popObstacle();
   size_t numberOfObstacles();
-  void clearObstacleStack();
+  void clearObstacleContainer();
   bool hasObstacles();
   std::unique_ptr<Obstacle> &operator[](const int i);
 };
 
-
-#endif // __VME_NMPC_SRC_OBSTACLE_HPP__
+#endif  // VME_NMPC_SRC_OBSTACLE_HPP_

@@ -14,14 +14,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_NAV2ROBOT_HPP__
-#define __VME_NMPC_SRC_NAV2ROBOT_HPP__
+#ifndef VME_NMPC_SRC_NAV2ROBOT_HPP_
+#define VME_NMPC_SRC_NAV2ROBOT_HPP_
 
 #include <string>
 #include <tuple>
 
 class Nav2Robot {
-
   std::string hostname_;
   unsigned int portno_;
   int sockfd_;
@@ -32,7 +31,6 @@ class Nav2Robot {
   Nav2Robot(const Nav2Robot&) = delete;
 
  public:
-
   Nav2Robot();
   Nav2Robot(std::string, unsigned int);
   ~Nav2Robot();
@@ -40,7 +38,7 @@ class Nav2Robot {
   void connect();
   void disconnect();
   int sendstr(std::string);
-  int sendline(const char* , int);
+  int sendline(const char*, int);
   int sendline(std::string);
   std::string send_recv(std::string, int = 128);
   void set_host(std::string);
@@ -64,4 +62,4 @@ class Nav2Robot {
   int avv(float, float);
 };
 
-#endif // __VME_NMPC_SRC_NAV2ROBOT_HPP__
+#endif  // VME_NMPC_SRC_NAV2ROBOT_HPP_

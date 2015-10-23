@@ -16,8 +16,10 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_NMPCINITPKG_HPP__
-#define __VME_NMPC_NMPCINITPKG_HPP__
+#ifndef VME_NMPC_NMPCINITPKG_HPP_
+#define VME_NMPC_NMPCINITPKG_HPP_
+
+#include "typedefs.h"
 
 struct NmpcInitPkg {
   unsigned int N;
@@ -30,4 +32,4 @@ struct NmpcInitPkg {
   fptype R;
 };
 
-#endif //__VME_NMPC_NMPCINITPKG_HPP__
+#endif  // VME_NMPC_NMPCINITPKG_HPP_

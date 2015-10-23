@@ -26,24 +26,24 @@ struct VirtualMeCommand {
   virtual int execute(Nav2Robot &) = 0;
 };
 
-struct VMeStop: public VirtualMeCommand {
+struct VMeStop : public VirtualMeCommand {
   virtual int execute(Nav2Robot &rob);
 };
 
-struct VMeV: public VirtualMeCommand {
+struct VMeV : public VirtualMeCommand {
   float v = 0;
   float th = 0;
   float Dth = 0;
 
-  VMeV(float th, float v, float Dth) : v{v}, th{th}, Dth{Dth} { }
+  VMeV(float th, float v, float Dth) : v{v}, th{th}, Dth{Dth} {}
 
   virtual int execute(Nav2Robot &rob);
 };
 
-struct VMeNullCmd: public VirtualMeCommand {
+struct VMeNullCmd : public VirtualMeCommand {
   virtual int execute(Nav2Robot &rob);
 };
 
-using upVirtualMeCommand = std::unique_ptr<VirtualMeCommand>;
+using up_VirtualMeCommand = std::unique_ptr<VirtualMeCommand>;
 
-#endif //VME_NMPC_VIRTUALMECOMMAND_HPP
+#endif  // VME_NMPC_VIRTUALMECOMMAND_HPP

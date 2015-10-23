@@ -16,7 +16,6 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "ClArgs.hpp"
 
 #include <cstdio>
@@ -25,11 +24,12 @@
 #include <string>
 #include <getopt.h>
 
-
 ClArgs::ClArgs(int argc, char** argv)
-  : infile{"null"}, host{"localhost"}, port{5010},
-    verbose{false}, quiet{false} {
-
+    : infile{"null"},
+      host{"localhost"},
+      port{5010},
+      verbose{false},
+      quiet{false} {
   // char *pvalue = nullptr, *hvalue = nullptr, *fvalue = nullptr;
   // int index;
   int c;
@@ -38,56 +38,51 @@ ClArgs::ClArgs(int argc, char** argv)
   char errnote[256];
   opterr = 0;
 
-  for(;;) {
-
+  for (;;) {
     static struct option long_options[] = {
-      {"infile",  required_argument, 0, 'f'},
-      {"host", required_argument, 0, 'h'},
-      {"port", required_argument, 0, 'p'},
-      {"verbose", no_argument, 0, 'v'},
-      {"quiet", no_argument, 0, 'q'},
-      {0, 0, 0, 0}
-    };
+        {"infile", required_argument, 0, 'f'},
+        {"host", required_argument, 0, 'h'},
+        {"port", required_argument, 0, 'p'},
+        {"verbose", no_argument, 0, 'v'},
+        {"quiet", no_argument, 0, 'q'},
+        {0, 0, 0, 0}};
     /* getopt_long stores the option index here. */
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "qvp:h:f:",
-                    long_options, &option_index);
-    if(c == -1)
-      break;
+    c = getopt_long(argc, argv, "qvp:h:f:", long_options, &option_index);
+    if (c == -1) break;
 
-    switch(c) {
-    case 'p':
-      port = std::stoi(optarg);
-      break;
-    case 'h':
-      host = std::string{optarg};
-      break;
-    case 'f':
-      infile = std::string{optarg};
-      break;
-    case 'v':
-      verbose = true;
-      break;
-    case 'q':
-      quiet = true;
-      break;
-    case '?':
-      if(optopt == 'p' || optopt == 'h' || optopt == 'f') {
-        sprintf(errnote, "Option -%c: requires an argument.\n", optopt);
-        throw std::runtime_error(errnote);
-      } else if(isprint(optopt)) {
-        sprintf(errnote, "Unknown option `-%c'.\n", optopt);
-        throw std::runtime_error(errnote);
-      } else {
-        sprintf(errnote, "Unknown option character `\\x%x'.\n", optopt);
-        throw std::runtime_error(errnote);
-        return;
-      }
-      break;
-    default:
-      abort();
+    switch (c) {
+      case 'p':
+        port = std::stoi(optarg);
+        break;
+      case 'h':
+        host = std::string{optarg};
+        break;
+      case 'f':
+        infile = std::string{optarg};
+        break;
+      case 'v':
+        verbose = true;
+        break;
+      case 'q':
+        quiet = true;
+        break;
+      case '?':
+        if (optopt == 'p' || optopt == 'h' || optopt == 'f') {
+          sprintf(errnote, "Option -%c: requires an argument.\n", optopt);
+          throw std::runtime_error(errnote);
+        } else if (isprint(optopt)) {
+          sprintf(errnote, "Unknown option `-%c'.\n", optopt);
+          throw std::runtime_error(errnote);
+        } else {
+          sprintf(errnote, "Unknown option character `\\x%x'.\n", optopt);
+          throw std::runtime_error(errnote);
+          return;
+        }
+        break;
+      default:
+        abort();
     }
   }
 }
-

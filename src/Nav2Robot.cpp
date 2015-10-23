@@ -30,22 +30,29 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-Nav2Robot::Nav2Robot()   : hostname_{"localhost"}, portno_{5010}, sockfd_{},
-  pose_{}, is_connected_{false} {}
+Nav2Robot::Nav2Robot()
+    : hostname_{"localhost"},
+      portno_{5010},
+      sockfd_{},
+      pose_{},
+      is_connected_{false} {}
 
 Nav2Robot::Nav2Robot(std::string host, unsigned int portno)
-  : hostname_{std::move(host)}, portno_{portno}, sockfd_{}, pose_{}, is_connected_{false} {}
+    : hostname_{std::move(host)},
+      portno_{portno},
+      sockfd_{},
+      pose_{},
+      is_connected_{false} {}
 
-Nav2Robot::~Nav2Robot() {
-  close(sockfd_);
-}
+Nav2Robot::~Nav2Robot() { close(sockfd_); }
 
 void Nav2Robot::connect() {
   // TODO(TT): Create a timeout exception. Temporarily set the socket to non-
   // blocking and use select() to implement a timeout.
-  if (is_connected_) throw
-    std::logic_error("Connection attempt while already connected to server."
-                     " Disconnect before attempting a new connection.");
+  if (is_connected_)
+    throw std::logic_error(
+        "Connection attempt while already connected to server."
+        " Disconnect before attempting a new connection.");
 
   struct addrinfo hints;
   memset(&hints, 0, sizeof hints);
@@ -60,8 +67,8 @@ void Nav2Robot::connect() {
 
     if (rv != 0) {
       throw std::runtime_error(
-        std::string{"Function getaddrinfo() returned error: "}
-        + gai_strerror(rv));
+          std::string{"Function getaddrinfo() returned error: "} +
+          gai_strerror(rv));
     }
   }
 
@@ -69,11 +76,10 @@ void Nav2Robot::connect() {
   struct addrinfo* p;
 
   for (p = servinfo; p != nullptr; p = p->ai_next) {
-    if ((sockfd_ = socket(p->ai_family, p->ai_socktype,
-                          p->ai_protocol)) == -1) {
+    if ((sockfd_ = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) ==
+        -1) {
       throw std::runtime_error(
-        std::string{"Function socket() returned error: "} + strerror(errno)
-      );
+          std::string{"Function socket() returned error: "} + strerror(errno));
     }
 
     if (::connect(sockfd_, p->ai_addr, p->ai_addrlen) == -1) {
@@ -81,13 +87,12 @@ void Nav2Robot::connect() {
       continue;
     }
 
-    break; // successfully connected
+    break;  // successfully connected
   }
 
   if (p == nullptr) {
     throw std::runtime_error(
-      std::string{"Function connect() returned error: "} + strerror(errno)
-    );
+        std::string{"Function connect() returned error: "} + strerror(errno));
   }
 
   freeaddrinfo(servinfo);
@@ -126,7 +131,7 @@ int Nav2Robot::sendline(std::string cmd) {
   if (cmd.back() == '\n')
     return sendstr(cmd);
   else
-    return sendstr(cmd+'\n');
+    return sendstr(cmd + '\n');
 }
 
 /**
@@ -145,8 +150,7 @@ int Nav2Robot::sendline(std::string cmd) {
  * @param  size The number of characters in cmd.
  * @return      Returns the result from write().
  */
-[[ deprecated ]]
-int Nav2Robot::sendline(const char* cmd, const int size) {
+[[deprecated]] int Nav2Robot::sendline(const char* cmd, const int size) {
   const char* s = cmd;
   const char* end = cmd + size;
 
@@ -154,13 +158,11 @@ int Nav2Robot::sendline(const char* cmd, const int size) {
     // If cmd already has a newline character read it into a well sized piece of
     // memory and ship it out.
     if (*s == '\n') {
-      char* msg = (char*) calloc(sizeof(char),
-                                 (s - cmd + 1) * sizeof(char));
+      char* msg = (char*)calloc(sizeof(char), (s - cmd + 1) * sizeof(char));
       strncpy(msg, cmd, (s - cmd) / sizeof(char));
       int a = write(sockfd_, msg, strlen(msg));
 
-      if (a < 0)
-        throw std::runtime_error("Could not write to Nav2 device");
+      if (a < 0) throw std::runtime_error("Could not write to Nav2 device");
 
       free(msg);
       return a;
@@ -169,29 +171,27 @@ int Nav2Robot::sendline(const char* cmd, const int size) {
 
   // If we're here, then we've found a \0 and no \n, so create a new array and
   // add a \n and ship it out.
-  char* msg = (char*) calloc(sizeof(char),
-                             (s - cmd + 1) * sizeof(char));
+  char* msg = (char*)calloc(sizeof(char), (s - cmd + 1) * sizeof(char));
   strncpy(msg, cmd, (s - cmd) / sizeof(char));
   strncat(msg, "\n", 1);
   int a = write(sockfd_, msg, strlen(msg));
 
-  if (a < 0)
-    throw std::runtime_error("Could not write to Nav2 device");
+  if (a < 0) throw std::runtime_error("Could not write to Nav2 device");
 
   free(msg);
   return a;
 }
 
 void Nav2Robot::set_host(std::string host) {
-  if (is_connected_) throw
-    std::logic_error("Cannot change Nav2Robot hostname while connected");
+  if (is_connected_)
+    throw std::logic_error("Cannot change Nav2Robot hostname while connected");
   else
-    hostname_= host;
+    hostname_ = host;
 }
 
 void Nav2Robot::set_port(int portno) {
-  if (is_connected_) throw
-    std::logic_error("Cannot change Nav2Robot port while connected");
+  if (is_connected_)
+    throw std::logic_error("Cannot change Nav2Robot port while connected");
   else
     portno_ = portno;
 }
@@ -210,8 +210,7 @@ std::string Nav2Robot::send_recv(std::string msg, int buffer_size) {
 
   if (sendstr(msg) < 0)
     throw std::runtime_error(
-      "Failed to write to Nav2 machine during send_recv. msg: " + msg
-    );
+        "Failed to write to Nav2 machine during send_recv. msg: " + msg);
 
   std::vector<char> buffer(buffer_size);
   std::string recieved_message;
@@ -222,14 +221,12 @@ std::string Nav2Robot::send_recv(std::string msg, int buffer_size) {
 
     if (bytes_received < 0)
       throw std::runtime_error(
-        "Failed to read from Nav2 machine during pose update. msg: " + msg
-      );
+          "Failed to read from Nav2 machine during pose update. msg: " + msg);
     else
       recieved_message.append(buffer.cbegin(), buffer.cend());
   } while (bytes_received == buffer_size);
 
   return recieved_message;
-
 }
 
 /**
@@ -238,7 +235,8 @@ std::string Nav2Robot::send_recv(std::string msg, int buffer_size) {
  * with up-to-date data.
  */
 // void Nav2Robot::update_pose() {
-//   // As much as I hate inconsistency, I can't justify using std::string for the
+//   // As much as I hate inconsistency, I can't justify using std::string for
+//   the
 //   // read buffer
 //   const int buff_size = 48;
 //   char buff[buff_size] {};
@@ -257,7 +255,7 @@ std::string Nav2Robot::send_recv(std::string msg, int buffer_size) {
 std::tuple<float, float, float> Nav2Robot::update_pose() {
   std::string q_response = send_recv("q\n");
   sscanf(q_response.c_str(), "%f %f %f", &pose_[0], &pose_[1], &pose_[2]);
-  return std::tuple<float, float, float> {pose_[0], pose_[1], pose_[2]};
+  return std::tuple<float, float, float>{pose_[0], pose_[1], pose_[2]};
 }
 
 // ## Wrapped Nav2 Commands
@@ -276,8 +274,8 @@ std::tuple<float, float, float> Nav2Robot::update_pose() {
  * @return    Forwards the return value from write() via sendstr().
  */
 int Nav2Robot::av(float vx, float vy) {
-  std::string msg = "AV "
-                    + std::to_string(vx) + ' ' + std::to_string(vy) + '\n';
+  std::string msg =
+      "AV " + std::to_string(vx) + ' ' + std::to_string(vy) + '\n';
   return sendstr(msg);
 }
 
@@ -344,8 +342,7 @@ int Nav2Robot::lt(float n) {
  * @return   Forwads the return value from write() via sendstr()
  */
 int Nav2Robot::mv(float x, float n) {
-  std::string msg = "MV "
-                    + std::to_string(x) + ' ' + std::to_string(n) + '\n';
+  std::string msg = "MV " + std::to_string(x) + ' ' + std::to_string(n) + '\n';
   return sendstr(msg);
 }
 
@@ -369,9 +366,7 @@ int Nav2Robot::o(float n) {
 
  * @return Forwards the return value from write() via sendstr().
  */
-int Nav2Robot::originate() {
-  return sendstr("p 0 0 0\n");
-}
+int Nav2Robot::originate() { return sendstr("p 0 0 0\n"); }
 
 /**
  * Send Nav2 'P' command to set the machine's internal understanding of it's
@@ -388,9 +383,8 @@ int Nav2Robot::originate() {
  * @return   Forwards the return value from write() via sendstr()
  */
 int Nav2Robot::p(float x, float y, float n) {
-  std::string msg = "P " + std::to_string(x) + ' '
-                    + std::to_string(y) + ' '
-                    + std::to_string(n) + '\n';
+  std::string msg = "P " + std::to_string(x) + ' ' + std::to_string(y) + ' ' +
+                    std::to_string(n) + '\n';
   return sendstr(msg);
 }
 
@@ -411,7 +405,7 @@ std::tuple<float, float, float, int> Nav2Robot::q() {
   float x, y, n;
   int q;
   sscanf(q_response.c_str(), "%f %f %f %d", &x, &y, &n, &q);
-  return std::tuple<float, float, float, int> {x, y, n, q};
+  return std::tuple<float, float, float, int>{x, y, n, q};
 }
 
 /**
@@ -438,9 +432,7 @@ int Nav2Robot::rt(float n) {
  *
  * @return Forwards the return value from write().
  */
-int Nav2Robot::stop() {
-  return sendstr("\ns\n");
-}
+int Nav2Robot::stop() { return sendstr("\ns\n"); }
 
 /**
  * Send a formatted CLI command to the VirtualME. The command sets the
@@ -448,8 +440,8 @@ int Nav2Robot::stop() {
  * <s> [<t>]'.
  */
 int Nav2Robot::v(float theta, float v, float Dth) {
-  std::string msg = "v " + std::to_string(theta) + ' ' + std::to_string(v)
-                    + ' ' + std::to_string(Dth) + '\n';
+  std::string msg = "v " + std::to_string(theta) + ' ' + std::to_string(v) +
+                    ' ' + std::to_string(Dth) + '\n';
   return sendstr(msg);
 }
 
@@ -465,8 +457,8 @@ int Nav2Robot::v(float theta, float v, float Dth) {
  */
 int Nav2Robot::avv(float v, float theta) {
   float rads = degToRad(theta);
-  std::string msg = "AV " + std::to_string(std::cos(rads) * v) + ' '
-                    + std::to_string(std::sin(rads) * v) + '\n';
+  std::string msg = "AV " + std::to_string(std::cos(rads) * v) + ' ' +
+                    std::to_string(std::sin(rads) * v) + '\n';
   return sendstr(msg);
 }
 

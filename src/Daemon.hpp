@@ -16,14 +16,13 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /* This file is based on the work of J-P Gignac. It is basically a rewrite of
  * his daemon class from the telep-head source tree, found in
- * 	telep-head/unwarp/Daemon.cpp
+ *  telep-head/unwarp/Daemon.cpp
  */
 
-#ifndef __VME_NMPC_SRC_DAEMON_HPP__
-#define __VME_NMPC_SRC_DAEMON_HPP__
+#ifndef VME_NMPC_SRC_DAEMON_HPP_
+#define VME_NMPC_SRC_DAEMON_HPP_
 
 /**
  * For historical AND practical reasons, I use the name daemon instead of
@@ -92,9 +91,8 @@ class RequestTicket {
   int connectionfd_;
   std::thread server_thread_;
   friend void server_child_wrapper(RequestTicket*);
-  void (*get_server_child())(int) {
-    return parent_daemon_->server_child_;
-  }
+  void (*get_server_child())(int) { return parent_daemon_->server_child_; }
+
  public:
   bool done;
   RequestTicket(const Daemon*);
@@ -106,9 +104,7 @@ class RequestTicket {
  * documentation therein for motivation.
  */
 struct blocked_socket : std::exception {
-  char const* what() const throw() {
-    return "";
-  };
+  char const* what() const throw() { return ""; };
 };
 
-#endif // __VME_NMPC_SRC_DAEMON_HPP__
+#endif  // VME_NMPC_SRC_DAEMON_HPP_

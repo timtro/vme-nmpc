@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __VME_NMPC_SRC_CLOPTS_HPP__
-#define __VME_NMPC_SRC_CLOPTS_HPP__
+#ifndef VME_NMPC_SRC_CLOPTS_HPP_
+#define VME_NMPC_SRC_CLOPTS_HPP_
 
 #include <string>
 
@@ -33,4 +33,4 @@ struct ClArgs {
   ClArgs(int, char**);
 };
 
-#endif // __VME_NMPC_SRC_CLOPTS_HPP__
+#endif // VME_NMPC_SRC_CLOPTS_HPP_

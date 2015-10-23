@@ -16,8 +16,8 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_SRC_INPUTFILEDATA_HPP__
-#define __VME_NMPC_SRC_INPUTFILEDATA_HPP__
+#ifndef VME_NMPC_SRC_INPUTFILEDATA_HPP_
+#define VME_NMPC_SRC_INPUTFILEDATA_HPP_
 
 #include "typedefs.h"
 #include <string>
@@ -37,4 +37,4 @@ struct InputFileData {
   // void save(const std::string &);
 };
 
-#endif // __VME_NMPC_SRC_INPUTFILEDATA_HPP__
+#endif  // VME_NMPC_SRC_INPUTFILEDATA_HPP_

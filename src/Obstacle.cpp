@@ -19,30 +19,30 @@
 #include "linear.hpp"
 #include "Obstacle.hpp"
 
-Point2R ObstacleStack::gradPhi(Point2R refPoint) {
-  auto sum = Point2R{0.f, 0.f};
+fp_point2d ObstacleContainer::gradPhi(fp_point2d refPoint) {
+  auto sum = fp_point2d{0.f, 0.f};
 
   for (auto const& each : obstacles) sum += each->gradPhi(refPoint);
 
   return sum;
 }
 
-void ObstacleStack::pushObstacleUniquePtr(std::unique_ptr<Obstacle> obs) {
+void ObstacleContainer::pushObstacleUniquePtr(std::unique_ptr<Obstacle> obs) {
   obstacles.push_back(std::move(obs));
 }
 
-void ObstacleStack::pushObstacle(Obstacle* obs) {
+void ObstacleContainer::pushObstacle(Obstacle* obs) {
   obstacles.push_back(std::unique_ptr<Obstacle>{obs});
 }
 
-void ObstacleStack::popObstacle() { obstacles.pop_back(); }
+void ObstacleContainer::popObstacle() { obstacles.pop_back(); }
 
-size_t ObstacleStack::numberOfObstacles() { return obstacles.size(); }
+size_t ObstacleContainer::numberOfObstacles() { return obstacles.size(); }
 
-void ObstacleStack::clearObstacleStack() { obstacles.clear(); }
+void ObstacleContainer::clearObstacleContainer() { obstacles.clear(); }
 
-bool ObstacleStack::hasObstacles() { return !obstacles.empty(); }
+bool ObstacleContainer::hasObstacles() { return !obstacles.empty(); }
 
-std::unique_ptr<Obstacle>& ObstacleStack::operator[](const int i) {
+std::unique_ptr<Obstacle>& ObstacleContainer::operator[](const int i) {
   return obstacles[i];
 }

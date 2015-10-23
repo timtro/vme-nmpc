@@ -21,8 +21,7 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_VME_NMPC_H__
-#define __VME_NMPC_VME_NMPC_H__
+#ifndef VME_NMPC_VME_NMPC_H_
+#define VME_NMPC_VME_NMPC_H_
 
-
-#endif // __VME_NMPC_VME_NMPC_H__
+#endif  // VME_NMPC_VME_NMPC_H_

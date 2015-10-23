@@ -16,21 +16,19 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP__
-#define __VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP__
+#ifndef VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP_
+#define VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP_
 
 #include "../src/NmpcMinimizer.hpp"
 #include <string>
 
-class FakeVirtualMeMinimizer : public NmpcMinimizer {
+class FakeMinimizer : public NmpcMinimizer {
   std::string eventHistory{};
   void recordEvent(char);
-public:
-  FakeVirtualMeMinimizer() = default;
-  ~FakeVirtualMeMinimizer() = default;
-  MinimizerCode solveOptimalControlHorizon();
+
+ public:
+  virtual MinimizerCode solveOptimalControlHorizon();
   std::string getEventHistory();
 };
 
-
-#endif // __VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP__
+#endif  // VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP_

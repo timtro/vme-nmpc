@@ -29,7 +29,6 @@
 namespace pt = boost::property_tree;
 
 void InputFileData::load(const std::string& filename) {
-
   pt::ptree tree;
   pt::read_json(filename, tree);
 

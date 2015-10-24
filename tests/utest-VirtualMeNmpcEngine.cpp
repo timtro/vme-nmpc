@@ -26,7 +26,7 @@ struct standardTestSetup {
   VirtualMeNmpcEngine* eng{nullptr};
 
   standardTestSetup() {
-    std::unique_ptr<VMeModel> mod{
+    std::unique_ptr<vMeModel> mod{
         new FakeVirtualMeModel{standardTestHorizon}};
     std::unique_ptr<NmpcMinimizer> min{new FakeMinimizer{}};
     eng = new VirtualMeNmpcEngine{std::move(mod), std::move(min)};

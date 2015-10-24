@@ -48,7 +48,7 @@ void VirtualMeNmpcEngine::seed(xyvth pose, fp_point2d target) {
 
 bool VirtualMeNmpcEngine::isHalted() { return machineIsHalted; }
 
-VMeModel* VirtualMeNmpcEngine::getModelPointer() { return model.get(); }
+vMeModel* VirtualMeNmpcEngine::getModelPointer() { return model.get(); }
 
 NmpcMinimizer* VirtualMeNmpcEngine::getMinimizerPointer() {
   return minimizer.get();

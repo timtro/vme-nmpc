@@ -27,7 +27,7 @@
 
 class NmpcMinimizer;
 
-using VMeModel = NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>;
+using vMeModel = NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>;
 
 class VirtualMeNmpcEngine : public Subject {
   std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>> model;
@@ -46,7 +46,7 @@ class VirtualMeNmpcEngine : public Subject {
   up_VirtualMeCommand nextCommand();
   void seed(xyvth, fp_point2d);
   bool isHalted();
-  VMeModel* getModelPointer();
+  vMeModel* getModelPointer();
   NmpcMinimizer* getMinimizerPointer();
 };
 

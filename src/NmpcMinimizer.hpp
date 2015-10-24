@@ -19,12 +19,12 @@
 #ifndef VME_NMPC_NMPCMINIMIZER_HPP_
 #define VME_NMPC_NMPCMINIMIZER_HPP_
 
-enum class MinimizerCode { success, exceededIterationLimit };
+enum class MinimizerCode { success, idle, active, exceededIterationLimit };
 
 class NmpcMinimizer {
  public:
   virtual ~NmpcMinimizer() = default;
-  virtual MinimizerCode solveOptimalControlHorizon() = 0;
+  virtual MinimizerCode solveOptimalControlHorizon() noexcept = 0;
 };
 
 #endif  // VME_NMPC_NMPCMINIMIZER_HPP_

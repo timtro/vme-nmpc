@@ -27,13 +27,20 @@ class VirtualMeSDMinimizer : public NmpcMinimizer {
   unsigned countSdLoop{0};
   unsigned maxSteps{1000};
   fptype gradNorm{0};
+  fptype gradDotPrevGrad{0};
   fptype sdStepFactor{.3};
+  fptype convergenceTolerance{.1};
   decltype(model.grad) prevGrad;
+  MinimizerCode status{MinimizerCode::idle};
 
-  bool iterate();
+  bool iterate() noexcept;
+
  public:
-  VirtualMeSDMinimizer(VirtualMeModel* model) : model{*model} {}
-  virtual MinimizerCode solveOptimalControlHorizon();
+  VirtualMeSDMinimizer(VirtualMeModel* model_) : model{*model_} {
+    prevGrad = model.grad;
+  }
+
+  virtual MinimizerCode solveOptimalControlHorizon() noexcept;
 };
 
 #endif  // VME_NMPC_VIRTUALMESDMINIMIZER_HPP_

@@ -27,7 +27,7 @@ class FakeMinimizer : public NmpcMinimizer {
   void recordEvent(char);
 
  public:
-  virtual MinimizerCode solveOptimalControlHorizon();
+  virtual MinimizerCode solveOptimalControlHorizon() noexcept;
   std::string getEventHistory();
 };
 

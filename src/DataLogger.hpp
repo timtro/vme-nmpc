@@ -16,15 +16,12 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FakeMinimizer.hpp"
+#ifndef VME_NMPC_SRC_DATALOGGER_HPP_
+#define VME_NMPC_SRC_DATALOGGER_HPP_
 
-void FakeMinimizer::recordEvent(char eventCode) {
-  eventHistory += eventCode;
-}
+class DataLogger {
+ public:
+  void recordPositionAndError();
+};
 
-std::string FakeMinimizer::getEventHistory() { return eventHistory; }
-
-MinimizerCode FakeMinimizer::solveOptimalControlHorizon() noexcept {
-  recordEvent('O');
-  return MinimizerCode::success;
-}
+#endif  // VME_NMPC_SRC_DATALOGGER_HPP_

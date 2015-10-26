@@ -28,8 +28,6 @@
 
 VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini)
     : N{ini.N},
-      m{ini.m},
-      n{ini.n},
       T{ini.T},
       cruiseSpeed{ini.cruiseSpeed},
       Q{ini.Q},
@@ -61,9 +59,11 @@ VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini)
   grad = fp_array(0.f, horizonSize - 1);
 }
 
-unsigned VirtualMeModel::getHorizonSize() const { return N; }
+unsigned VirtualMeModel::getHorizonSize() const noexcept { return N; }
 
-fptype VirtualMeModel::getTargetDistance() { return distanceToTarget; }
+fptype VirtualMeModel::getTargetDistance() const noexcept {
+  return distanceToTarget;
+}
 
 void VirtualMeModel::seed(xyvth pose, fp_point2d target) {
   x[0] = pose.x;
@@ -101,8 +101,8 @@ void VirtualMeModel::computeForecast() noexcept {
  */
 void VirtualMeModel::computeTrackingErrors() noexcept {
   for (unsigned k = 1; k < N; ++k) {
-    ex[k] = x[k] - (x[0] + cruiseSpeed * targetVector.x * k * T);
-    ey[k] = y[k] - (y[0] + cruiseSpeed * targetVector.y * k * T);
+    ex[k] = x[k] - (x[0] + v[k] * targetVector.x * k * T);
+    ey[k] = y[k] - (y[0] + v[k] * targetVector.y * k * T);
   }
 }
 
@@ -145,6 +145,19 @@ void VirtualMeModel::computeGradient() noexcept {
   gradNorm = std::sqrt(gradNorm);
 }
 
-up_VirtualMeCommand VirtualMeModel::getCommand(int n) {
+up_VirtualMeCommand VirtualMeModel::getCommand(int n) const {
   return up_VirtualMeCommand{new VMeV{0, v[n], Dth[n]}};
 }
+
+fp_array const& VirtualMeModel::getX() const { return x; }
+fp_array const& VirtualMeModel::getDx() const { return Dx; }
+fp_array const& VirtualMeModel::getEx() const { return Dy; }
+fp_array const& VirtualMeModel::getY() const { return y; }
+fp_array const& VirtualMeModel::getDy() const { return Dy; }
+fp_array const& VirtualMeModel::getEy() const { return Dy; }
+fp_array const& VirtualMeModel::getV() const { return v; }
+fp_array const& VirtualMeModel::getTh() const { return th; }
+fp_array const& VirtualMeModel::getDth() const { return Dth; }
+fp_array const& VirtualMeModel::getGrad() const { return grad; }
+
+void VirtualMeModel::setV(fptype velocity) { v = velocity; }

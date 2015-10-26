@@ -5,34 +5,32 @@
 #include "../src/trig.hpp"
 #include "test_helpers.hpp"
 
-auto stationaryTestModel() {
-  unsigned int num_of_intervals = 50;
-  float time_interval = 0.1f;
-  float speed = 0;
-
+class StandardTestModel {
+ public:
+  unsigned int nmpcHorizon{50};
+  float timeInterval{0.1f};
+  float speed{0};
   NmpcInitPkg init;
-  init.N = num_of_intervals;
-  init.T = time_interval;
-  init.cruiseSpeed = speed;
-  return VirtualMeModel(init);
-}
+  std::unique_ptr<VirtualMeModel> model;
 
-auto standardTestModel() {
-  float speed = 0.1f;
-  auto m = stationaryTestModel();
-  m.v = speed;
-  m.cruiseSpeed = speed;
-  m.seed(xyvth{0, 0, m.cruiseSpeed, 0});
-  return m;
-}
+  StandardTestModel() {
+    init.N = nmpcHorizon;
+    init.T = timeInterval;
+    init.cruiseSpeed = speed;
+
+    model = std::unique_ptr<VirtualMeModel>{new VirtualMeModel{init}};
+    model->seed(xyvth{0, 0, 0, 0});
+    model->setV(speed);
+  }
+};
 
 TEST_CASE(
     "A machine starting at the origin with no control input and velocity "
     "should remain stationary throught the forecast horizon.") {
-  auto m = stationaryTestModel();
-  m.computeForecast();
-  REQUIRE(eachInArrayIsApprox(m.x, 0.0f, 1e-5f));
-  REQUIRE(eachInArrayIsApprox(m.y, 0.0f, 1e-5f));
+  StandardTestModel m;
+  m.model->computeForecast();
+  REQUIRE(eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
+  REQUIRE(eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
 }
 
 template <typename T>
@@ -43,22 +41,24 @@ T linearTravelDistance(T speed, T time_interval, int num_of_intervals) {
 TEST_CASE(
     "A machine posed at the origin pointing in +x with a constant speed should "
     "drive a stright line along the +x-axis in a forecast horizon.") {
-  auto m = standardTestModel();
-  REQUIRE(eachInArrayIsApprox(m.v, m.v[0], 1e-5f));
-  m.computeForecast();
-  REQUIRE(m.x[m.N - 1] == Approx(linearTravelDistance(m.v[0], m.T, m.N)));
-  REQUIRE(eachInArrayIsApprox(m.y, 0.0f, 1e-5f));
+  StandardTestModel m;
+  REQUIRE(eachInArrayIsApprox(m.model->getV(), m.model->getV()[0], 1e-5f));
+  m.model->computeForecast();
+  REQUIRE(m.model->getX()[m.model->getHorizonSize() - 1] ==
+          Approx(linearTravelDistance(m.model->getV()[0], m.timeInterval,
+                                      m.nmpcHorizon)));
+  REQUIRE(eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
 }
 
 TEST_CASE(
     "A machine posed at the origin pointing in +y with a constant speed should "
     "drive a stright line along the +y-axis in a forecast horizon") {
-  auto m = standardTestModel();
-  m.th[0] = degToRad(90);
-  m.seed(xyvth{0, 0, m.cruiseSpeed, 90});
-  m.computeForecast();
-  REQUIRE(m.y[m.N - 1] == Approx(linearTravelDistance(m.v[0], m.T, m.N)));
-  REQUIRE(eachInArrayIsApprox(m.x, 0.0f, 1e-5f));
+  StandardTestModel m;
+  m.model->seed(xyvth{0, 0, m.speed, 90});
+  m.model->computeForecast();
+  REQUIRE(m.model->getY()[m.nmpcHorizon - 1] ==
+          Approx(linearTravelDistance(m.speed, m.timeInterval, m.nmpcHorizon)));
+  REQUIRE(eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
 }
 
 template <typename T>
@@ -75,49 +75,40 @@ auto pathLength(const T &x, const T &y) -> decltype(x[0] + y[0]) {
   return len;
 }
 
-TEST_CASE("Path length should not depend on steering rate") {
-  auto m = standardTestModel();
-  m.Dth = 1;
-  m.seed(xyvth{0, 0, m.cruiseSpeed, 45});
-  m.computeForecast();
-  REQUIRE(pathLength(m.x, m.y) ==
-          Approx(linearTravelDistance(m.v[0], m.T, m.N)));
-}
-
 TEST_CASE(
     "Tracking errors when the robot travels along +x and target lies on +y "
     "should form isosceles right triangles") {
-  auto m = standardTestModel();
-  m.computeForecast();
-  fp_point2d tgt{0, m.x[m.N - 1]};
-  m.seed(xyvth{0, 0, m.cruiseSpeed, 0}, tgt);
-  m.computeTrackingErrors();
-  REQUIRE(arraysAreAbsEqual(m.x, m.ex, 1e-6));
-  REQUIRE(arraysAreAbsEqual(m.x, m.ey, 1e-6));
-  REQUIRE(arraysAreAbsEqual(m.ex, m.ey, 1e-6));
+  StandardTestModel m;
+  m.model->computeForecast();
+  fp_point2d tgt{0, m.model->getX()[m.nmpcHorizon - 1]};
+  m.model->seed(xyvth{0, 0, m.speed, 0}, tgt);
+  m.model->computeTrackingErrors();
+  REQUIRE(arraysAreAbsEqual(m.model->getX(), m.model->getEx(), 1e-6));
+  REQUIRE(arraysAreAbsEqual(m.model->getX(), m.model->getEy(), 1e-6));
+  REQUIRE(arraysAreAbsEqual(m.model->getEx(), m.model->getEy(), 1e-6));
 }
 
 TEST_CASE(
     "Should be able to compute potential gradient along path without trowing "
     "or faulting") {
-  auto m = standardTestModel();
-  m.computeForecast();
+  StandardTestModel m;
+  m.model->computeForecast();
   ObstacleContainer obs;
   obs.pushObstacleUniquePtr(
       std::unique_ptr<Obstacle>{new PointObstacle{fp_point2d{10, 10}, 2, .12}});
   obs.pushObstacleUniquePtr(
       std::unique_ptr<Obstacle>{new PointObstacle{fp_point2d{5, 5}, 2, .12}});
-  m.computePathPotentialGradient(obs);
+  m.model->computePathPotentialGradient(obs);
 }
 
 TEST_CASE(
     "Should be able to compute Lagrange multipliers without trowing or "
     "faulting") {
-  auto m = standardTestModel();
-  m.computeForecast();
+  StandardTestModel m;
+  m.model->computeForecast();
   ObstacleContainer obs;
   obs.pushObstacle(new PointObstacle{fp_point2d{10, 10}, 2, .12});
   obs.pushObstacle(new PointObstacle{fp_point2d{5, 5}, 2, .12});
-  m.computePathPotentialGradient(obs);
-  m.computeLagrageMultipliers();
+  m.model->computePathPotentialGradient(obs);
+  m.model->computeLagrageMultipliers();
 }

@@ -28,7 +28,7 @@ class NmpcModel {
  public:
   virtual ~NmpcModel() = default;
   virtual unsigned getHorizonSize() const = 0;
-  virtual fptype getTargetDistance() = 0;
+  virtual fptype getTargetDistance() const noexcept = 0;
   virtual void seed(seedType, tgtType) = 0;
   virtual void seed(seedType) = 0;
   virtual void computeForecast() noexcept = 0;
@@ -36,7 +36,7 @@ class NmpcModel {
   virtual void computePathPotentialGradient(
       ObstacleContainer &obstacles) noexcept = 0;
   virtual void computeGradient() noexcept = 0;
-  virtual cmdType getCommand(int) = 0;
+  virtual cmdType getCommand(int) const = 0;
 };
 
 #endif  // VME_NMPC_SRC_NMPCMODEL_HPP_

@@ -18,7 +18,7 @@
 
 #include "FakeVirtualMeModel.hpp"
 
-void FakeVirtualMeModel::recordEvent(char eventCode) {
+void FakeVirtualMeModel::recordEvent(char eventCode) const {
   eventHistory += eventCode;
 }
 
@@ -26,7 +26,7 @@ FakeVirtualMeModel::FakeVirtualMeModel(unsigned N) : N{N} {}
 
 unsigned FakeVirtualMeModel::getHorizonSize() const { return N; }
 
-fptype FakeVirtualMeModel::getTargetDistance() {
+fptype FakeVirtualMeModel::getTargetDistance() const noexcept {
   recordEvent('D');
   return distanceToTarget;
 }
@@ -50,9 +50,9 @@ void FakeVirtualMeModel::computePathPotentialGradient(
 
 void FakeVirtualMeModel::computeGradient() noexcept { recordEvent('G'); }
 
-up_VirtualMeCommand FakeVirtualMeModel::getCommand(int) {
+up_VirtualMeCommand FakeVirtualMeModel::getCommand(int) const {
   recordEvent('C');
   return up_VirtualMeCommand{new VMeV{0, 0, 0}};
 }
 
-std::string FakeVirtualMeModel::getEventHistory() { return eventHistory; }
+std::string FakeVirtualMeModel::getEventHistory() const { return eventHistory; }

@@ -26,13 +26,7 @@
 
 class VirtualMeModel
     : public NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand> {
-  fptype distanceToTarget;
-  fp_point2d targetVector;
-
- public:
   unsigned N;
-  unsigned m;
-  unsigned n;
   fptype T;
   fptype cruiseSpeed;
   fptype Q;
@@ -48,8 +42,6 @@ class VirtualMeModel
   fp_array Dy;
   //! The angle from the x-axis of the direction of travel.
   fp_array th;
-  //! The steering rate. That is, the time rate-of-change of th.
-  fp_array Dth;
   //! The radial component of speed.
   fp_array v;
   //! The error of the x-coordinate.
@@ -67,14 +59,18 @@ class VirtualMeModel
   fp_array pDy;
   fp_array pth;
 
-  fptype gradNorm = 0.f;
-  fp_array grad;
+  fptype gradNorm{0};
+  fptype distanceToTarget;
+  fp_point2d targetVector;
 
+ public:
+  //! The steering rate. That is, the time rate-of-change of th.
+  fp_array Dth;
+  fp_array grad;
   VirtualMeModel(NmpcInitPkg &);
   virtual ~VirtualMeModel() = default;
-
-  virtual unsigned getHorizonSize() const;
-  virtual fptype getTargetDistance();
+  virtual unsigned getHorizonSize() const noexcept;
+  virtual fptype getTargetDistance() const noexcept;
   virtual void seed(xyvth, fp_point2d);
   virtual void seed(xyvth);
   virtual void computeForecast() noexcept;
@@ -83,7 +79,20 @@ class VirtualMeModel
       ObstacleContainer &obstacles) noexcept;
   void computeLagrageMultipliers() noexcept;
   virtual void computeGradient() noexcept;
-  virtual up_VirtualMeCommand getCommand(int);
+  virtual up_VirtualMeCommand getCommand(int) const;
+
+  fp_array const &getX() const;
+  fp_array const &getDx() const;
+  fp_array const &getEx() const;
+  fp_array const &getY() const;
+  fp_array const &getDy() const;
+  fp_array const &getEy() const;
+  fp_array const &getV() const;
+  fp_array const &getTh() const;
+  fp_array const &getDth() const;
+  fp_array const &getGrad() const;
+
+  void setV(fptype);
 };
 
 #endif  // VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP_

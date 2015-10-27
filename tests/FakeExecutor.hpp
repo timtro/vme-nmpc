@@ -16,12 +16,22 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VME_NMPC_SRC_DATALOGGER_HPP_
-#define VME_NMPC_SRC_DATALOGGER_HPP_
+#ifndef VME_NMPC_TESTS_FAKEEXECUTOR_HPP_
+#define VME_NMPC_TESTS_FAKEEXECUTOR_HPP_
 
-class DataLogger {
+#include "../src/Observer.hpp"
+#include "../src/VirtualMeNmpcEngine.hpp"
+
+
+class FakeExecutor : public Observer {
+  VirtualMeNmpcEngine* subjectEngine = nullptr;
+
  public:
-  void recordPositionAndError();
+  up_VirtualMeCommand commandFromLastNotify;
+
+  FakeExecutor(VirtualMeNmpcEngine*);
+  ~FakeExecutor();
+  void update(Subject*);
 };
 
-#endif  // VME_NMPC_SRC_DATALOGGER_HPP_
+#endif // VME_NMPC_TESTS_FAKEEXECUTOR_HPP_

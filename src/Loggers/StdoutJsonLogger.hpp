@@ -19,13 +19,18 @@
 #ifndef VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_
 #define VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_
 
+#include "../VirtualMeLogger.hpp"
+
 class VirtualMeModel;
 class VirtualMeSDMinimizer;
 
-class VirtualMeLogger {
+class StdoutJsonLogger : public VirtualMeLogger {
+  VirtualMeModel* model;
  public:
-  virtual void logPositionAndError(VirtualMeModel&);
-  virtual void logMinimizerData(VirtualMeSDMinimizer&);
+  StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>* model);
+  virtual void logPositionAndError() const noexcept;
 };
+
+class LoggerIsIncompatibleWithModelType : public std::exception {};
 
 #endif  // VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_

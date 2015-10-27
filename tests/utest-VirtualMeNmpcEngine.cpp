@@ -3,23 +3,7 @@
 #include "../src/VirtualMeNmpcEngine.hpp"
 #include "FakeVirtualMeModel.hpp"
 #include "FakeMinimizer.hpp"
-
-class FakeExecutor : public Observer {
-  VirtualMeNmpcEngine* subjectEngine = nullptr;
-
- public:
-  up_VirtualMeCommand commandFromLastNotify;
-
-  FakeExecutor(VirtualMeNmpcEngine* s) {
-    subjectEngine = s;
-    s->attachObserver(this);
-  }
-  ~FakeExecutor() { subjectEngine->detachObserver(this); }
-  void update(Subject* s) {
-    if (s == dynamic_cast<Subject*>(subjectEngine))
-      commandFromLastNotify = subjectEngine->nextCommand();
-  }
-};
+#include "FakeExecutor.hpp"
 
 const int standardTestHorizon = 10;
 struct standardTestSetup {

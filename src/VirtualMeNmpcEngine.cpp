@@ -22,7 +22,17 @@
 VirtualMeNmpcEngine::VirtualMeNmpcEngine(
     std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>> model,
     std::unique_ptr<NmpcMinimizer> minimizer)
-    : model{std::move(model)}, minimizer{std::move(minimizer)} {}
+    : model{std::move(model)}, minimizer{std::move(minimizer)} {
+  logger = std::unique_ptr<VirtualMeLogger>{new VirtualMeLogger};
+}
+
+VirtualMeNmpcEngine::VirtualMeNmpcEngine(
+    std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>> model,
+    std::unique_ptr<NmpcMinimizer> minimizer,
+    std::unique_ptr<VirtualMeLogger> logger)
+    : model{std::move(model)},
+      minimizer{std::move(minimizer)},
+      logger{std::move(logger)} {}
 
 void VirtualMeNmpcEngine::setTarget(fp_point2d point) { currentTarget = point; }
 
@@ -41,6 +51,7 @@ void VirtualMeNmpcEngine::seed(xyvth pose, fp_point2d target) {
   if (model->getTargetDistance() > targetDistanceTolerance) {
     machineIsHalted = false;
     minimizer->solveOptimalControlHorizon();
+    logger->logPositionAndError();
   } else
     machineIsHalted = true;
   notify();

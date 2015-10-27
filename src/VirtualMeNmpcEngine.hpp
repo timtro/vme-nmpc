@@ -22,8 +22,9 @@
 #include "linear.hpp"
 #include "Subject.hpp"
 #include "VirtualMeCommand.hpp"
-#include "../src/NmpcMinimizer.hpp"
-#include "../src/NmpcModel.hpp"
+#include "NmpcMinimizer.hpp"
+#include "NmpcModel.hpp"
+#include "VirtualMeLogger.hpp"
 
 class NmpcMinimizer;
 
@@ -32,6 +33,7 @@ using vMeModel = NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>;
 class VirtualMeNmpcEngine : public Subject {
   std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>> model;
   std::unique_ptr<NmpcMinimizer> minimizer;
+  std::unique_ptr<VirtualMeLogger> logger;
   fptype targetDistanceTolerance{0.1};
   unsigned cmdsExecutedFromCurrentHorizon{0};
   bool machineIsHalted{true};
@@ -42,6 +44,10 @@ class VirtualMeNmpcEngine : public Subject {
   VirtualMeNmpcEngine(
       std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>>,
       std::unique_ptr<NmpcMinimizer>);
+  VirtualMeNmpcEngine(
+      std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>>,
+      std::unique_ptr<NmpcMinimizer>,
+      std::unique_ptr<VirtualMeLogger>);
   void setTarget(fp_point2d point);
   up_VirtualMeCommand nextCommand();
   void seed(xyvth, fp_point2d);

@@ -1,12 +1,7 @@
 """
-
- * Nav2Robot.py
- * Author : Timothy A.V. Teatro
- * Date   : June 2015
- *
  * This file is part of vme-nmpc.
  *
- * Copyright (C) 2013--15 - Timothy A.V. Teatro
+ * Copyright (C) 2013--15 Timothy A.V. Teatro - All rights Reserved
  *
  * vme-nmpc is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

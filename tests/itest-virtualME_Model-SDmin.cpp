@@ -55,7 +55,7 @@ TEST_CASE("Whatever") {
   standardTestSetup test{"itest.log.json"};
   FakeExecutor exec(test.eng);
 
-  test.eng->seed(xyvth{0, 0, test.speed, 0}, fp_point2d{5, 0});
+  test.eng->seed(xyvth{0, 0, test.speed, 0}, fp_point2d{5, 5});
   while (isMoveCmd(exec.commandFromLastNotify.get())) {
     test.eng->seed(xyvth{
         test.model()->getX()[1], test.model()->getY()[1],

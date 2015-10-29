@@ -18,7 +18,7 @@ set(CMAKE_BUILD_TYPE debug)
 
 set(warnings "-Wall -Wextra -pedantic")
 # set(optimizations "-flto -ffast-math") #for perf: -fno-omit-frame-pointer
-set(optimizations "-fno-omit-frame-pointer -O0") #for perf: -fno-omit-frame-pointer
+# set(optimizations "-fno-omit-frame-pointer -O0") #for perf: -fno-omit-frame-pointer
 set(debug "-g")
 
 # for clang++ use -fuse-ld=gold to avoid LD error "File format not recognized"

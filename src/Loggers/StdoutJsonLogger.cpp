@@ -25,14 +25,17 @@ StdoutJsonLogger::StdoutJsonLogger(
   auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
   if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
   this->model = modelToLog;
+  fprintf(fp_out, "[\n");
 }
 
 StdoutJsonLogger::StdoutJsonLogger(
     NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>* model,
-    FILE* outputFilePtr) : fp_out{outputFilePtr} {
+    FILE* outputFilePtr)
+    : fp_out{outputFilePtr} {
   auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
   if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
   this->model = modelToLog;
+  fprintf(fp_out, "[\n");
 }
 
 StdoutJsonLogger::StdoutJsonLogger(
@@ -43,30 +46,41 @@ StdoutJsonLogger::StdoutJsonLogger(
   this->model = modelToLog;
   logFile = std::make_unique<CFileContainer>(outputFilePath);
   fp_out = logFile->fd;
+  fprintf(fp_out, "[\n");
+}
+
+StdoutJsonLogger::~StdoutJsonLogger() { fprintf(fp_out, "\n]\n"); }
+
+// TODO: In GCC 5.3, change std::end() to std::cend();
+template <typename T>
+void jsonPrintArray(FILE* fd, T array) {
+  auto iter = std::begin(array);
+  for (;;) {
+    fprintf(fd, "%f", *iter);
+    if (++iter == std::end(array)) break;
+    fprintf(fd, ",");
+  }
 }
 
 void StdoutJsonLogger::logPositionAndError() const noexcept {
+  if (printedFirstObject) {
+    fprintf(fp_out, ",\n");
+  } else {
+    printedFirstObject = true;
+  }
   fprintf(fp_out, "{\n    ");
   fprintf(fp_out, "\"x\" : [");
-  for (auto x: model->getX()) {
-    fprintf(fp_out, "%f,", x);
-  }
+  jsonPrintArray(fp_out, model->getX());
   fprintf(fp_out, "],\n");
   fprintf(fp_out, "    \"y\" : [");
-  for (auto x: model->getY()) {
-    fprintf(fp_out, "%f,", x);
-  }
+  jsonPrintArray(fp_out, model->getY());
   fprintf(fp_out, "],\n");
-  fprintf(fp_out, "    \"Dx\" : [");
-  for (auto x: model->getDx()) {
-    fprintf(fp_out, "%f,", x);
-  }
+  fprintf(fp_out, "    \"Ex\" : [");
+  jsonPrintArray(fp_out, model->getEx());
   fprintf(fp_out, "],\n");
-  fprintf(fp_out, "    \"Dy\" : [");
-  for (auto x: model->getDy()) {
-    fprintf(fp_out, "%f,", x);
-  }
+  fprintf(fp_out, "    \"Ey\" : [");
+  jsonPrintArray(fp_out, model->getEy());
   fprintf(fp_out, "]\n");
-  fprintf(fp_out, "}\n");
+  fprintf(fp_out, "}");
   fflush(fp_out);
 }

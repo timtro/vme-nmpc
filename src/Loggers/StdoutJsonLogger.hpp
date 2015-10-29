@@ -29,11 +29,13 @@ class StdoutJsonLogger : public VirtualMeLogger {
   VirtualMeModel* model{nullptr};
   FILE* fp_out{stdout};
   std::unique_ptr<CFileContainer> logFile;
+  mutable bool printedFirstObject{false};
 
  public:
   StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*);
   StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*, FILE*);
   StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*, std::string);
+  ~StdoutJsonLogger();
   virtual void logPositionAndError() const noexcept;
 
 };

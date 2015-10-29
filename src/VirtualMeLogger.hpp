@@ -30,6 +30,7 @@ class NmpcModel;
 
 class VirtualMeLogger {
  public:
+  virtual ~VirtualMeLogger() = default;
   virtual void logPositionAndError() const noexcept {};
 };
 

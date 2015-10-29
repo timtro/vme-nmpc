@@ -60,6 +60,7 @@ class VirtualMeModel
   fp_array pth;
 
   fptype gradNorm{0};
+  fp_point2d absoluteTarget;
   fptype distanceToTarget;
   fp_point2d targetVector;
 
@@ -68,7 +69,6 @@ class VirtualMeModel
   fp_array Dth;
   fp_array grad;
   VirtualMeModel(NmpcInitPkg &);
-  virtual ~VirtualMeModel() = default;
   virtual unsigned getHorizonSize() const noexcept;
   virtual fptype getTargetDistance() const noexcept;
   virtual void seed(xyvth, fp_point2d);

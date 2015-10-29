@@ -18,6 +18,7 @@
 
 #include "StdoutJsonLogger.hpp"
 #include "../NmpcModels/VirtualMeModel.hpp"
+#include <cstdio>
 
 StdoutJsonLogger::StdoutJsonLogger(
     NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>* model) {
@@ -26,8 +27,46 @@ StdoutJsonLogger::StdoutJsonLogger(
   this->model = modelToLog;
 }
 
-void StdoutJsonLogger::logPositionAndError() const noexcept {
-  printf("{");
+StdoutJsonLogger::StdoutJsonLogger(
+    NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>* model,
+    FILE* outputFilePtr) : fp_out{outputFilePtr} {
+  auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
+  if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
+  this->model = modelToLog;
+}
 
-  printf("}");
+StdoutJsonLogger::StdoutJsonLogger(
+    NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>* model,
+    std::string outputFilePath) {
+  auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
+  if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
+  this->model = modelToLog;
+  logFile = std::make_unique<FdRaiiWrapper>(outputFilePath);
+  fp_out = logFile->fd;
+}
+
+void StdoutJsonLogger::logPositionAndError() const noexcept {
+  fprintf(fp_out, "{\n    ");
+  fprintf(fp_out, "\"x\" : [");
+  for (auto x: model->getX()) {
+    fprintf(fp_out, "%f,", x);
+  }
+  fprintf(fp_out, "],\n");
+  fprintf(fp_out, "    \"y\" : [");
+  for (auto x: model->getY()) {
+    fprintf(fp_out, "%f,", x);
+  }
+  fprintf(fp_out, "],\n");
+  fprintf(fp_out, "    \"Dx\" : [");
+  for (auto x: model->getDx()) {
+    fprintf(fp_out, "%f,", x);
+  }
+  fprintf(fp_out, "],\n");
+  fprintf(fp_out, "    \"Dy\" : [");
+  for (auto x: model->getDy()) {
+    fprintf(fp_out, "%f,", x);
+  }
+  fprintf(fp_out, "]\n");
+  fprintf(fp_out, "}\n");
+  fflush(fp_out);
 }

@@ -28,6 +28,7 @@ class FakeExecutor : public Observer {
 
  public:
   up_VirtualMeCommand commandFromLastNotify;
+  bool loopback = false;
 
   FakeExecutor(VirtualMeNmpcEngine*);
   ~FakeExecutor();

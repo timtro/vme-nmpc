@@ -57,6 +57,18 @@ void VirtualMeNmpcEngine::seed(xyvth pose, fp_point2d target) {
   notify();
 }
 
+void VirtualMeNmpcEngine::seed(xyvth pose) {
+  model->seed(pose);
+  cmdsExecutedFromCurrentHorizon = 0;
+  if (model->getTargetDistance() > targetDistanceTolerance) {
+    machineIsHalted = false;
+    minimizer->solveOptimalControlHorizon();
+    logger->logPositionAndError();
+  } else
+    machineIsHalted = true;
+  notify();
+}
+
 bool VirtualMeNmpcEngine::isHalted() { return machineIsHalted; }
 
 vMeModel* VirtualMeNmpcEngine::getModelPointer() { return model.get(); }

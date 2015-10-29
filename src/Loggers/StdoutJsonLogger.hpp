@@ -20,15 +20,22 @@
 #define VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_
 
 #include "../VirtualMeLogger.hpp"
+#include "../FdRaiiWrapper.hpp"
 
 class VirtualMeModel;
 class VirtualMeSDMinimizer;
 
 class StdoutJsonLogger : public VirtualMeLogger {
-  VirtualMeModel* model;
+  VirtualMeModel* model{nullptr};
+  FILE* fp_out{stdout};
+  std::unique_ptr<FdRaiiWrapper> logFile;
+
  public:
-  StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>* model);
+  StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*);
+  StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*, FILE*);
+  StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*, std::string);
   virtual void logPositionAndError() const noexcept;
+
 };
 
 class LoggerIsIncompatibleWithModelType : public std::exception {};

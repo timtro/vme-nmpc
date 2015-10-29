@@ -16,14 +16,25 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FakeExecutor.hpp"
+#ifndef VME_NMPC_SRC_FDRAIIWRAPPER_HPP_
+#define VME_NMPC_SRC_FDRAIIWRAPPER_HPP_
 
-FakeExecutor::FakeExecutor(VirtualMeNmpcEngine* s) {
-  subjectEngine = s;
-  s->attachObserver(this);
-}
-FakeExecutor::~FakeExecutor() { subjectEngine->detachObserver(this); }
-void FakeExecutor::update(Subject* s) {
-  if (s == dynamic_cast<Subject*>(subjectEngine))
-    commandFromLastNotify = subjectEngine->nextCommand();
-}
+#include <stdexcept>
+#include <string>
+#include <cstdio>
+
+class ErrorOpeningFileWithFopen : public std::runtime_error {
+ public:
+  ErrorOpeningFileWithFopen(std::string const& msg) : std::runtime_error(msg) {}
+};
+
+struct FdRaiiWrapper {
+  FILE* fd;
+  FdRaiiWrapper(std::string filepath) {
+    fd = fopen(filepath.c_str(), "w");
+    if (fd == nullptr) throw ErrorOpeningFileWithFopen(filepath);
+  }
+  ~FdRaiiWrapper() { fclose(fd); }
+};
+
+#endif  // VME_NMPC_SRC_FDRAIIWRAPPER_HPP_

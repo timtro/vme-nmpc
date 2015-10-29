@@ -51,6 +51,7 @@ class VirtualMeNmpcEngine : public Subject {
   void setTarget(fp_point2d point);
   up_VirtualMeCommand nextCommand();
   void seed(xyvth, fp_point2d);
+  void seed(xyvth);
   bool isHalted();
   vMeModel* getModelPointer();
   NmpcMinimizer* getMinimizerPointer();

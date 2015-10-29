@@ -72,6 +72,7 @@ void VirtualMeModel::seed(xyvth pose, fp_point2d target) {
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
 
+  absoluteTarget = target;
   targetVector.x = target.x - x[0];
   targetVector.y = target.y - y[0];
   distanceToTarget = std::sqrt(dot(targetVector, targetVector));
@@ -84,6 +85,11 @@ void VirtualMeModel::seed(xyvth pose) {
   th[0] = degToRad(pose.th);
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
+
+  targetVector.x = absoluteTarget.x - x[0];
+  targetVector.y = absoluteTarget.y - y[0];
+  distanceToTarget = std::sqrt(dot(targetVector, targetVector));
+  targetVector /= distanceToTarget;
 }
 
 void VirtualMeModel::computeForecast() noexcept {
@@ -135,10 +141,10 @@ void VirtualMeModel::computeLagrageMultipliers() noexcept {
  * are computed.
  */
 void VirtualMeModel::computeGradient() noexcept {
-  grad[N - 1] = R * Dth[N - 2] + pth[N - 1] * T;  // segfault?
+  grad[N - 2] = R * Dth[N - 3] + pth[N - 2] * T;  // segfault?
   computeLagrageMultipliers();
   gradNorm = 0.f;
-  for (unsigned k = N - 2; k == 0; --k) {
+  for (unsigned k = N - 3; k == 0; --k) {
     grad[k] = R * Dth[k] + pth[k + 1] * T;
     gradNorm += grad[k] * grad[k];
   }

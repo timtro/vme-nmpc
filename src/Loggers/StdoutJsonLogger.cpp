@@ -41,7 +41,7 @@ StdoutJsonLogger::StdoutJsonLogger(
   auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
   if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
   this->model = modelToLog;
-  logFile = std::make_unique<FdRaiiWrapper>(outputFilePath);
+  logFile = std::make_unique<CFileContainer>(outputFilePath);
   fp_out = logFile->fd;
 }
 

@@ -4,7 +4,7 @@
 #include "../src/VirtualMeNmpcEngine.hpp"
 #include "../src/NmpcMinimizers/VirtualMeSDMinimizer.hpp"
 #include "FakeVirtualMeModel.hpp"
-#include "../src/FdRaiiWrapper.hpp"
+#include "../src/CFileContainer.hpp"
 
 struct standardTestSetup {
   VirtualMeNmpcEngine* eng{nullptr};
@@ -55,12 +55,12 @@ TEST_CASE(
       , LoggerIsIncompatibleWithModelType);
 }
 
-TEST_CASE("...") {
+TEST_CASE("Straightforward write to stdout with nothing to assert.") {
   standardTestSetup test;
   test.eng->seed(xyvth{0, 0, test.speed, 0}, fp_point2d{5, 0});
 }
 
-TEST_CASE("Loger shouldn't cause fault.") {
+TEST_CASE("Logger write to file. TODO: Assert against file contents.") {
   standardTestSetup test("loggertest.log");
   test.eng->seed(xyvth{0, 0, test.speed, 0}, fp_point2d{5, 0});
 }

@@ -20,7 +20,7 @@
 #define VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_
 
 #include "../VirtualMeLogger.hpp"
-#include "../FdRaiiWrapper.hpp"
+#include "../CFileContainer.hpp"
 
 class VirtualMeModel;
 class VirtualMeSDMinimizer;
@@ -28,7 +28,7 @@ class VirtualMeSDMinimizer;
 class StdoutJsonLogger : public VirtualMeLogger {
   VirtualMeModel* model{nullptr};
   FILE* fp_out{stdout};
-  std::unique_ptr<FdRaiiWrapper> logFile;
+  std::unique_ptr<CFileContainer> logFile;
 
  public:
   StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*);

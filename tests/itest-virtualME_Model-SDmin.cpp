@@ -41,12 +41,25 @@ struct standardTestSetup {
                                   std::move(logger)};
   }
   ~standardTestSetup() { delete eng; }
-  auto* model() { return eng->getModelPointer(); }
+  auto* model() {
+    return dynamic_cast<VirtualMeModel*>(eng->getModelPointer());
+  }
   auto* minimizer() { return eng->getMinimizerPointer(); }
 };
 
+bool isStopCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
+bool isNullCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
+bool isMoveCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
+
 TEST_CASE("Whatever") {
-  standardTestSetup test{"Blah"};
+  standardTestSetup test{"itest.log.json"};
   FakeExecutor exec(test.eng);
+
   test.eng->seed(xyvth{0, 0, test.speed, 0}, fp_point2d{5, 0});
+  while (isMoveCmd(exec.commandFromLastNotify.get())) {
+    test.eng->seed(xyvth{
+        test.model()->getX()[1], test.model()->getY()[1],
+        test.model()->getV()[1], test.model()->getTh()[1],
+    });
+  }
 }

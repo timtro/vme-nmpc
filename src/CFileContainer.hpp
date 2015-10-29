@@ -28,13 +28,13 @@ class ErrorOpeningFileWithFopen : public std::runtime_error {
   ErrorOpeningFileWithFopen(std::string const& msg) : std::runtime_error(msg) {}
 };
 
-struct FdRaiiWrapper {
+struct CFileContainer {
   FILE* fd;
-  FdRaiiWrapper(std::string filepath) {
+  CFileContainer(std::string filepath) {
     fd = fopen(filepath.c_str(), "w");
     if (fd == nullptr) throw ErrorOpeningFileWithFopen(filepath);
   }
-  ~FdRaiiWrapper() { fclose(fd); }
+  ~CFileContainer() { fclose(fd); }
 };
 
 #endif  // VME_NMPC_SRC_FDRAIIWRAPPER_HPP_

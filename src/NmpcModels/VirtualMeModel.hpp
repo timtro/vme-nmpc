@@ -62,7 +62,7 @@ class VirtualMeModel
   fptype gradNorm{0};
   fp_point2d absoluteTarget;
   fptype distanceToTarget;
-  fp_point2d targetVector;
+  fp_point2d targetUnitVector;
 
  public:
   //! The steering rate. That is, the time rate-of-change of th.
@@ -81,16 +81,16 @@ class VirtualMeModel
   virtual void computeGradient() noexcept;
   virtual up_VirtualMeCommand getCommand(int) const;
 
-  fp_array const &getX() const;
-  fp_array const &getDx() const;
-  fp_array const &getEx() const;
-  fp_array const &getY() const;
-  fp_array const &getDy() const;
-  fp_array const &getEy() const;
-  fp_array const &getV() const;
-  fp_array const &getTh() const;
-  fp_array const &getDth() const;
-  fp_array const &getGrad() const;
+  fp_array const &getX() const noexcept;
+  fp_array const &getDx() const noexcept;
+  fp_array const &getEx() const noexcept;
+  fp_array const &getY() const noexcept;
+  fp_array const &getDy() const noexcept;
+  fp_array const &getEy() const noexcept;
+  fp_array const &getV() const noexcept;
+  fp_array const &getTh() const noexcept;
+  fp_array const &getDth() const noexcept;
+  fp_array const &getGrad() const noexcept;
 
   void setV(fptype);
 };

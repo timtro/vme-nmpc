@@ -69,18 +69,27 @@ void StdoutJsonLogger::logPositionAndError() const noexcept {
     printedFirstObject = true;
   }
   fprintf(fp_out, "{\n    ");
+
   fprintf(fp_out, "\"x\" : [");
   jsonPrintArray(fp_out, model->getX());
   fprintf(fp_out, "],\n");
+
   fprintf(fp_out, "    \"y\" : [");
   jsonPrintArray(fp_out, model->getY());
   fprintf(fp_out, "],\n");
-  fprintf(fp_out, "    \"Ex\" : [");
+
+  fprintf(fp_out, "    \"ex\" : [");
   jsonPrintArray(fp_out, model->getEx());
   fprintf(fp_out, "],\n");
-  fprintf(fp_out, "    \"Ey\" : [");
+
+  fprintf(fp_out, "    \"ey\" : [");
   jsonPrintArray(fp_out, model->getEy());
+  fprintf(fp_out, "],\n");
+
+  fprintf(fp_out, "    \"Dth\" : [");
+  jsonPrintArray(fp_out, model->Dth);
   fprintf(fp_out, "]\n");
+
   fprintf(fp_out, "}");
   fflush(fp_out);
 }

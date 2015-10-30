@@ -19,19 +19,18 @@
 #include "VirtualMeSDMinimizer.hpp"
 
 MinimizerCode VirtualMeSDMinimizer::solveOptimalControlHorizon() noexcept {
-  /*   SD loop.  */
   countSdLoop = 0;
   status = MinimizerCode::active;
   do {
     model.computeForecast();
     model.computeTrackingErrors();
-    model.computeLagrageMultipliers();
     model.computeGradient();
   } while (iterate());
 
   return status;
 }
 
+//TODO: rename iterate()
 bool VirtualMeSDMinimizer::iterate() noexcept {
   ++countSdLoop;
   gradNorm = std::sqrt((model.grad * model.grad).sum());

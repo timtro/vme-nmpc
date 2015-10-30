@@ -52,7 +52,7 @@ class AnimatedPlot:
         self.ax1ErrPath, = ax1.plot([], [], 'yo-', lw=4, ms=3)
 
         ax2 = self.fig.add_subplot(
-            gs[1], adjustable='box', aspect=1.0, axisbg='b')
+            gs[1], adjustable='box', aspect=1.0, axisbg='w')
         plt.setp(ax2.get_xticklabels(), visible=False)
         plt.setp(ax2.get_yticklabels(), visible=False)
         ax2.set_xlim(-pathRadius, pathRadius)
@@ -81,18 +81,21 @@ class AnimatedPlot:
 def updatePlotData(data):
     jsonData = logParser.getNextObjectAsDict()
     if not jsonData:
-        return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
+        return self.ax1Path, self.ax1ErrPath, self.ax2Path, self.ax2ErrPath
 
     x = np.array(jsonData['x'])
     y = np.array(jsonData['y'])
-    Ex = np.array(jsonData['Ex'])
-    Ey = np.array(jsonData['Ey'])
+    ex = np.array(jsonData['ex'])
+    ey = np.array(jsonData['ey'])
 
     xRelative = x - x[0]
     yRelative = y - y[0]
 
-    xTracked = x + Ex
-    yTracked = y + Ey
+    print(xRelative)
+    print(yRelative)
+
+    xTracked = x - ex
+    yTracked = y - ey
 
     xTrackedRelative = xTracked - xTracked[0]
     yTrackedRelative = yTracked - yTracked[0]

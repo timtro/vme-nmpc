@@ -6,6 +6,8 @@
 #include "../src/Loggers/StdoutJsonLogger.hpp"
 #include "FakeExecutor.hpp"
 
+#include "../src/trig.hpp"
+
 struct standardTestSetup {
   VirtualMeNmpcEngine* eng{nullptr};
   unsigned int nmpcHorizon = 50;
@@ -55,7 +57,7 @@ TEST_CASE("Whatever") {
   standardTestSetup test{"itest.log.json"};
   FakeExecutor exec(test.eng);
 
-  test.eng->seed(xyvth{0, 0, test.speed, 0}, fp_point2d{5, 5});
+  test.eng->seed(xyvth{0, 0, test.speed, degToRad(10.f)}, fp_point2d{5, 5});
   while (isMoveCmd(exec.commandFromLastNotify.get())) {
     test.eng->seed(xyvth{
         test.model()->getX()[1], test.model()->getY()[1],

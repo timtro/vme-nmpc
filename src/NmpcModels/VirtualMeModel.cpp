@@ -66,30 +66,30 @@ fptype VirtualMeModel::getTargetDistance() const noexcept {
 }
 
 void VirtualMeModel::seed(xyvth pose, fp_point2d target) {
+  absoluteTarget = target;
   x[0] = pose.x;
   y[0] = pose.y;
   th[0] = pose.th;
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
 
-  absoluteTarget = target;
-  targetVector.x = target.x - x[0];
-  targetVector.y = target.y - y[0];
-  distanceToTarget = std::sqrt(dot(targetVector, targetVector));
-  targetVector /= distanceToTarget;
+  targetUnitVector.x = absoluteTarget.x - x[0];
+  targetUnitVector.y = absoluteTarget.y - y[0];
+  distanceToTarget = std::sqrt(dot(targetUnitVector, targetUnitVector));
+  targetUnitVector /= distanceToTarget;
 }
 
 void VirtualMeModel::seed(xyvth pose) {
   x[0] = pose.x;
   y[0] = pose.y;
-  th[0] = degToRad(pose.th);
+  th[0] = pose.th;
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
 
-  targetVector.x = absoluteTarget.x - x[0];
-  targetVector.y = absoluteTarget.y - y[0];
-  distanceToTarget = std::sqrt(dot(targetVector, targetVector));
-  targetVector /= distanceToTarget;
+  targetUnitVector.x = absoluteTarget.x - x[0];
+  targetUnitVector.y = absoluteTarget.y - y[0];
+  distanceToTarget = std::sqrt(dot(targetUnitVector, targetUnitVector));
+  targetUnitVector /= distanceToTarget;
 }
 
 void VirtualMeModel::computeForecast() noexcept {
@@ -107,8 +107,8 @@ void VirtualMeModel::computeForecast() noexcept {
  */
 void VirtualMeModel::computeTrackingErrors() noexcept {
   for (unsigned k = 1; k < N; ++k) {
-    ex[k] = x[k] - (x[0] + v[k] * targetVector.x * k * T);
-    ey[k] = y[k] - (y[0] + v[k] * targetVector.y * k * T);
+    ex[k] = x[k] - (x[0] + v[k] * targetUnitVector.x * k * T);
+    ey[k] = y[k] - (y[0] + v[k] * targetUnitVector.y * k * T);
   }
 }
 
@@ -141,10 +141,10 @@ void VirtualMeModel::computeLagrageMultipliers() noexcept {
  * are computed.
  */
 void VirtualMeModel::computeGradient() noexcept {
-  grad[N - 2] = R * Dth[N - 3] + pth[N - 2] * T;  // segfault?
   computeLagrageMultipliers();
+  grad[N - 2] = R * Dth[N - 3] + pth[N - 2] * T;  // segfault?
   gradNorm = 0.f;
-  for (unsigned k = N - 3; k == 0; --k) {
+  for (unsigned k = N - 2; k == 0; --k) {
     grad[k] = R * Dth[k] + pth[k + 1] * T;
     gradNorm += grad[k] * grad[k];
   }
@@ -155,15 +155,24 @@ up_VirtualMeCommand VirtualMeModel::getCommand(int n) const {
   return up_VirtualMeCommand{new VMeV{0, v[n], Dth[n]}};
 }
 
-fp_array const& VirtualMeModel::getX() const { return x; }
-fp_array const& VirtualMeModel::getDx() const { return Dx; }
-fp_array const& VirtualMeModel::getEx() const { return Dy; }
-fp_array const& VirtualMeModel::getY() const { return y; }
-fp_array const& VirtualMeModel::getDy() const { return Dy; }
-fp_array const& VirtualMeModel::getEy() const { return Dy; }
-fp_array const& VirtualMeModel::getV() const { return v; }
-fp_array const& VirtualMeModel::getTh() const { return th; }
-fp_array const& VirtualMeModel::getDth() const { return Dth; }
-fp_array const& VirtualMeModel::getGrad() const { return grad; }
+fp_array const& VirtualMeModel::getX() const noexcept { return x; }
+
+fp_array const& VirtualMeModel::getDx() const noexcept { return Dx; }
+
+fp_array const& VirtualMeModel::getEx() const noexcept { return ex; }
+
+fp_array const& VirtualMeModel::getY() const noexcept { return y; }
+
+fp_array const& VirtualMeModel::getDy() const noexcept { return Dy; }
+
+fp_array const& VirtualMeModel::getEy() const noexcept { return ey; }
+
+fp_array const& VirtualMeModel::getV() const noexcept { return v; }
+
+fp_array const& VirtualMeModel::getTh() const noexcept { return th; }
+
+fp_array const& VirtualMeModel::getDth() const noexcept { return Dth; }
+
+fp_array const& VirtualMeModel::getGrad() const noexcept { return grad; }
 
 void VirtualMeModel::setV(fptype velocity) { v = velocity; }

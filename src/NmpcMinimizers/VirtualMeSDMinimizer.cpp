@@ -38,7 +38,7 @@ bool VirtualMeSDMinimizer::iterate() noexcept {
     status = MinimizerCode::success;
     return false;
   } else if (sdLoopCount >= maxSteps) {
-    status = MinimizerCode::exceededIterationLimit;
+    status = MinimizerCode::reachedIterationLimit;
     return false;
   } else
     return true;

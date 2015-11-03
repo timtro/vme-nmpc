@@ -62,7 +62,9 @@ void VirtualMeNmpcEngine::seed(xyth pose) {
   cmdsExecutedFromCurrentHorizon = 0;
   if (model->getTargetDistance() > targetDistanceTolerance) {
     machineIsHalted = false;
-    minimizer->solveOptimalControlHorizon();
+    auto minimizerStatus = minimizer->solveOptimalControlHorizon();
+    if (minimizerStatus == MinimizerCode::reachedIterationLimit)
+      throw MinimizerReachedIterationLimit();
     logger->logPositionAndError();
   } else
     machineIsHalted = true;

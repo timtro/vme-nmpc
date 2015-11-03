@@ -57,4 +57,6 @@ class VirtualMeNmpcEngine : public Subject {
   NmpcMinimizer* getMinimizerPointer();
 };
 
+class MinimizerReachedIterationLimit : public std::exception {};
+
 #endif  // VME_NMPC_SRC_NMPCENGINE_HPP_

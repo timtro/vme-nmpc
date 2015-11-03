@@ -19,7 +19,7 @@
 #ifndef VME_NMPC_NMPCMINIMIZER_HPP_
 #define VME_NMPC_NMPCMINIMIZER_HPP_
 
-enum class MinimizerCode { success, idle, active, exceededIterationLimit };
+enum class MinimizerCode { success, idle, active, reachedIterationLimit };
 
 class NmpcMinimizer {
  public:

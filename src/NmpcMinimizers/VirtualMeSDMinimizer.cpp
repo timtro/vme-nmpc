@@ -19,34 +19,26 @@
 #include "VirtualMeSDMinimizer.hpp"
 
 MinimizerCode VirtualMeSDMinimizer::solveOptimalControlHorizon() noexcept {
-  countSdLoop = 0;
+  sdLoopCount = 0;
   status = MinimizerCode::active;
   do {
     model.computeForecast();
     model.computeTrackingErrors();
+    model.computeLagrageMultipliers();
     model.computeGradient();
+    ++sdLoopCount;
   } while (iterate());
 
   return status;
 }
 
-//TODO: rename iterate()
+// TODO: rename takeSdStep
 bool VirtualMeSDMinimizer::iterate() noexcept {
-  ++countSdLoop;
-  gradNorm = std::sqrt((model.grad * model.grad).sum());
-  gradDotPrevGrad = (model.grad * prevGrad).sum();
-  if (gradDotPrevGrad > 0) {
-    sdStepFactor *= 2;
-    model.Dth -= sdStepFactor * model.grad;
-  } else {
-    model.Dth += sdStepFactor * model.grad;
-    sdStepFactor = .1;
-  }
-  std::swap(model.grad, prevGrad);
-  if (gradNorm < convergenceTolerance) {
+  model.Dth -= sdStepFactor * model.grad;
+  if (model.gradNorm < convergenceTolerance) {
     status = MinimizerCode::success;
     return false;
-  } else if (countSdLoop >= maxSteps) {
+  } else if (sdLoopCount >= maxSteps) {
     status = MinimizerCode::exceededIterationLimit;
     return false;
   } else

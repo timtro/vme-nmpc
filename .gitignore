@@ -9,16 +9,31 @@ install_manifest.txt
 vme-nmpc
 a.out
 
+# C extensions
+*.so
+
 #Emacs backups
 *~
 
-build
-build/*
-.*
-*.bak
-*.user
-gitignore
-research/rough work.wxm
+# Python module junk
+__pycache__/
+/__pycache__/
+/__pycache__/*
+*.py[cod]
+
+# Distribution / packaging
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 *.sublime-project
 *.sublime-workspace
-.idea

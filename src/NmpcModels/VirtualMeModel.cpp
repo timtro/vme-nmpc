@@ -122,18 +122,18 @@ void VirtualMeModel::computePathPotentialGradient(
 }
 
 void VirtualMeModel::computeLagrageMultipliers() noexcept {
-  px[N - 1] = Q0 * ex[N - 1];
-  py[N - 1] = Q0 * ey[N - 1];
+  // px[N - 1] = Q0 * ex[N - 1];
+  // py[N - 1] = Q0 * ey[N - 1];
 
-  for (unsigned k = N - 2; k == 0; --k) {
-    // Compute the Lagrange multipliers:
-    px[k] = Q * ex[k] - DPhiX[k] + px[k + 1];
-    pDx[k] = px[k + 1] * T;
-    py[k] = Q * ey[k] - DPhiY[k] + py[k + 1];
-    pDy[k] = py[k + 1] * T;
-    pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k]) -
-             pDx[k + 1] * v[k] * std::sin(th[k]);
-  }
+  // for (int k = N - 2; k >= 0; --k) {
+  //   // Compute the Lagrange multipliers:
+  //   px[k] = Q * ex[k] - DPhiX[k] + px[k + 1];
+  //   pDx[k] = px[k + 1] * T;
+  //   py[k] = Q * ey[k] - DPhiY[k] + py[k + 1];
+  //   pDy[k] = py[k + 1] * T;
+  //   pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k]) -
+  //            pDx[k + 1] * v[k] * std::sin(th[k]);
+  // }
 }
 
 /*!
@@ -141,14 +141,37 @@ void VirtualMeModel::computeLagrageMultipliers() noexcept {
  * are computed.
  */
 void VirtualMeModel::computeGradient() noexcept {
-  computeLagrageMultipliers();
-  grad[N - 2] = R * Dth[N - 3] + pth[N - 2] * T;  // segfault?
-  gradNorm = 0.f;
-  for (unsigned k = N - 2; k == 0; --k) {
+  // gradNorm = 0.f;
+  // for (int k = N - 2; k >= 0; --k) {
+  //   grad[k] = R * Dth[k] + pth[k + 1] * T;
+  //   gradNorm += grad[k] * grad[k];
+  // }
+  // gradNorm = std::sqrt(gradNorm);
+
+  gradNorm = 0.;
+  float PhiX = 0.f, PhiY = 0.f;
+
+  px[N - 1] = Q0 * ex[N - 1];
+  py[N - 1] = Q0 * ey[N - 1];
+  // Dth[N - 2] -= C.dg * R * Dth[N - 2];
+
+  /*!
+   * Get the gradient ∂H/∂u_k, for each step, k in the horizon, loop
+   * through each k in N. This involves computing the obstacle potential
+   * and Lagrange multipliers. Then, the control plan is updated by
+   * stepping against the direction of the gradient.
+   */
+  for (int k = N - 2; k >= 0; --k) {
+    px[k] = Q * ex[k] - PhiX + px[k + 1];
+    pDx[k] = px[k + 1] * T;
+    py[k] = Q * ey[k] - PhiY + py[k + 1];
+    pDy[k] = py[k + 1] * T;
+    pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k]) -
+              pDx[k + 1] * v[k] * std::sin(th[k]);
     grad[k] = R * Dth[k] + pth[k + 1] * T;
     gradNorm += grad[k] * grad[k];
   }
-  gradNorm = std::sqrt(gradNorm);
+  gradNorm = sqrt(gradNorm);
 }
 
 up_VirtualMeCommand VirtualMeModel::getCommand(int n) const {

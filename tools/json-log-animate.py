@@ -91,9 +91,6 @@ def updatePlotData(data):
     xRelative = x - x[0]
     yRelative = y - y[0]
 
-    print(xRelative)
-    print(yRelative)
-
     xTracked = x - ex
     yTracked = y - ey
 

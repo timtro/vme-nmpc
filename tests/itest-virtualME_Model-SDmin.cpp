@@ -21,6 +21,7 @@ struct standardTestSetup {
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
+    init.R = init.Q/4;
     std::unique_ptr<VirtualMeModel> mod{new VirtualMeModel{init}};
     std::unique_ptr<VirtualMeSDMinimizer> min{
         new VirtualMeSDMinimizer{mod.get()}};

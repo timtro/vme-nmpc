@@ -24,11 +24,10 @@
 
 class VirtualMeSDMinimizer : public NmpcMinimizer {
   VirtualMeModel& model;
-  unsigned countSdLoop{0};
+  unsigned sdLoopCount{0};
   unsigned maxSteps{1000};
-  fptype gradNorm{0};
   fptype gradDotPrevGrad{0};
-  fptype sdStepFactor{.3};
+  fptype sdStepFactor{.1};
   fptype convergenceTolerance{.1};
   decltype(model.grad) prevGrad;
   MinimizerCode status{MinimizerCode::idle};

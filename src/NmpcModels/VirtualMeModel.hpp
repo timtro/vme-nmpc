@@ -59,7 +59,6 @@ class VirtualMeModel
   fp_array pDy;
   fp_array pth;
 
-  fptype gradNorm{0};
   fp_point2d absoluteTarget;
   fptype distanceToTarget;
   fp_point2d targetUnitVector;
@@ -68,6 +67,8 @@ class VirtualMeModel
   //! The steering rate. That is, the time rate-of-change of th.
   fp_array Dth;
   fp_array grad;
+  fptype gradNorm{0};
+
   VirtualMeModel(NmpcInitPkg &);
   virtual unsigned getHorizonSize() const noexcept;
   virtual fptype getTargetDistance() const noexcept;

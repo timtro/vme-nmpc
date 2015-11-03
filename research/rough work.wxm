@@ -1,0 +1,38 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 14.12.0 ] */
+
+/* [wxMaxima: input   start ] */
+kill(all);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load(vect);
+scalefactors([x,y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Phi(x,y) := 1/(sqrt(x^2 + y^2)^pwr + eps);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+[diff(Phi(x,y), x), diff(Phi(x,y), y)];
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+G(x,y) := [-(pwr*x*(y^2+x^2)^(pwr/2-1))/((y^2+x^2)^(pwr/2)+eps)^2,-(pwr*y*(y^2+x^2)^(pwr/2-1))/((y^2+x^2)^(pwr/2)+eps)^2];
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+float(ev(G(5, -2), pwr=4, eps=.12));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+ev(G(x,y), pwr=4, eps=.2);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+G(4, 5);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

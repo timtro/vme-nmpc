@@ -23,7 +23,7 @@
 #include "../src/VirtualMeCommand.hpp"
 
 class FakeVirtualMeModel
-    : public NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand> {
+    : public NmpcModel<xyth, fp_point2d, up_VirtualMeCommand> {
   mutable std::string eventHistory{};
   fptype distanceToTarget;
   void recordEvent(char) const;
@@ -35,8 +35,8 @@ class FakeVirtualMeModel
   virtual ~FakeVirtualMeModel() = default;
   virtual unsigned getHorizonSize() const;
   virtual fptype getTargetDistance() const noexcept;
-  virtual void seed(xyvth);
-  virtual void seed(xyvth, fp_point2d);
+  virtual void seed(xyth);
+  virtual void seed(xyth, fp_point2d);
   virtual void computeForecast() noexcept;
   virtual void computeTrackingErrors() noexcept;
   virtual void computePathPotentialGradient(ObstacleContainer&) noexcept;

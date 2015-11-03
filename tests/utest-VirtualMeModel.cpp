@@ -9,7 +9,7 @@ class StandardTestModel {
  public:
   unsigned int nmpcHorizon{50};
   float timeInterval{0.1f};
-  float speed{0};
+  float speed{0.4};
   NmpcInitPkg init;
   std::unique_ptr<VirtualMeModel> model;
 
@@ -19,7 +19,7 @@ class StandardTestModel {
     init.cruiseSpeed = speed;
 
     model = std::unique_ptr<VirtualMeModel>{new VirtualMeModel{init}};
-    model->seed(xyvth{0, 0, 0, 0});
+    model->seed(xyth{0, 0, 0});
     model->setV(speed);
   }
 };
@@ -28,6 +28,7 @@ TEST_CASE(
     "A machine starting at the origin with no control input and velocity "
     "should remain stationary throught the forecast horizon.") {
   StandardTestModel m;
+  m.model->setV(0.);
   m.model->computeForecast();
   REQUIRE(eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
   REQUIRE(eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
@@ -42,6 +43,7 @@ TEST_CASE(
     "A machine posed at the origin pointing in +x with a constant speed should "
     "drive a stright line along the +x-axis in a forecast horizon.") {
   StandardTestModel m;
+  m.model->setV(0.0);
   REQUIRE(eachInArrayIsApprox(m.model->getV(), m.model->getV()[0], 1e-5f));
   m.model->computeForecast();
   REQUIRE(m.model->getX()[m.model->getHorizonSize() - 1] ==
@@ -54,7 +56,7 @@ TEST_CASE(
     "A machine posed at the origin pointing in +y with a constant speed should "
     "drive a stright line along the +y-axis in a forecast horizon") {
   StandardTestModel m;
-  m.model->seed(xyvth{0, 0, m.speed, 90});
+  m.model->seed(xyth{0, 0, degToRad(90.f)});
   m.model->computeForecast();
   REQUIRE(m.model->getY()[m.nmpcHorizon - 1] ==
           Approx(linearTravelDistance(m.speed, m.timeInterval, m.nmpcHorizon)));
@@ -80,8 +82,8 @@ TEST_CASE(
     "should form isosceles right triangles") {
   StandardTestModel m;
   m.model->computeForecast();
-  fp_point2d tgt{0, m.model->getX()[m.nmpcHorizon - 1]};
-  m.model->seed(xyvth{0, 0, m.speed, 0}, tgt);
+  fp_point2d tgt{0, m.speed * m.timeInterval * m.nmpcHorizon};
+  m.model->seed(xyth{0, 0, 0}, tgt);
   m.model->computeTrackingErrors();
   REQUIRE(arraysAreAbsEqual(m.model->getX(), m.model->getEx(), 1e-6));
   REQUIRE(arraysAreAbsEqual(m.model->getX(), m.model->getEy(), 1e-6));
@@ -99,16 +101,4 @@ TEST_CASE(
   obs.pushObstacleUniquePtr(
       std::unique_ptr<Obstacle>{new PointObstacle{fp_point2d{5, 5}, 2, .12}});
   m.model->computePathPotentialGradient(obs);
-}
-
-TEST_CASE(
-    "Should be able to compute Lagrange multipliers without trowing or "
-    "faulting") {
-  StandardTestModel m;
-  m.model->computeForecast();
-  ObstacleContainer obs;
-  obs.pushObstacle(new PointObstacle{fp_point2d{10, 10}, 2, .12});
-  obs.pushObstacle(new PointObstacle{fp_point2d{5, 5}, 2, .12});
-  m.model->computePathPotentialGradient(obs);
-  m.model->computeLagrageMultipliers();
 }

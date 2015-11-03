@@ -31,9 +31,9 @@ fptype FakeVirtualMeModel::getTargetDistance() const noexcept {
   return distanceToTarget;
 }
 
-void FakeVirtualMeModel::seed(xyvth) { recordEvent('S'); }
+void FakeVirtualMeModel::seed(xyth) { recordEvent('S'); }
 
-void FakeVirtualMeModel::seed(xyvth position, fp_point2d target) {
+void FakeVirtualMeModel::seed(xyth position, fp_point2d target) {
   auto displacement = target - fp_point2d{position.x, position.y};
   distanceToTarget = std::sqrt(dot(displacement, displacement));
   recordEvent('S');

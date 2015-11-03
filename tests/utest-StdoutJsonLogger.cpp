@@ -57,10 +57,10 @@ TEST_CASE(
 
 TEST_CASE("Straightforward write to stdout with nothing to assert.") {
   standardTestSetup test;
-  test.eng->seed(xyvth{0, 0, test.speed, 0}, fp_point2d{5, 0});
+  test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 0});
 }
 
 TEST_CASE("Logger write to file. TODO: Assert against file contents.") {
   standardTestSetup test("loggertest.log");
-  test.eng->seed(xyvth{0, 0, test.speed, 0}, fp_point2d{5, 0});
+  test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 0});
 }

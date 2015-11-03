@@ -25,7 +25,7 @@
 #include "../NmpcInitPkg.hpp"
 
 class VirtualMeModel
-    : public NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand> {
+    : public NmpcModel<xyth, fp_point2d, up_VirtualMeCommand> {
   unsigned N;
   fptype T;
   fptype cruiseSpeed;
@@ -72,13 +72,12 @@ class VirtualMeModel
   VirtualMeModel(NmpcInitPkg &);
   virtual unsigned getHorizonSize() const noexcept;
   virtual fptype getTargetDistance() const noexcept;
-  virtual void seed(xyvth, fp_point2d);
-  virtual void seed(xyvth);
+  virtual void seed(xyth, fp_point2d);
+  virtual void seed(xyth);
   virtual void computeForecast() noexcept;
   virtual void computeTrackingErrors() noexcept;
   virtual void computePathPotentialGradient(
       ObstacleContainer &obstacles) noexcept;
-  void computeLagrageMultipliers() noexcept;
   virtual void computeGradient() noexcept;
   virtual up_VirtualMeCommand getCommand(int) const;
 

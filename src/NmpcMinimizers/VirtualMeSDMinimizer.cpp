@@ -24,7 +24,6 @@ MinimizerCode VirtualMeSDMinimizer::solveOptimalControlHorizon() noexcept {
   do {
     model.computeForecast();
     model.computeTrackingErrors();
-    model.computeLagrageMultipliers();
     model.computeGradient();
     ++sdLoopCount;
   } while (iterate());

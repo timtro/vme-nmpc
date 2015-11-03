@@ -50,6 +50,7 @@ class AnimatedPlot:
         ax1.grid()
         self.ax1Path, = ax1.plot([], [], 'ro-', lw=3, ms=3)
         self.ax1ErrPath, = ax1.plot([], [], 'yo-', lw=4, ms=3)
+        self.ax1ExecPath, = ax1.plot([], [], 'r-', lw=2)
 
         ax2 = self.fig.add_subplot(
             gs[1], adjustable='box', aspect=1.0, axisbg='w')
@@ -62,12 +63,15 @@ class AnimatedPlot:
 
         plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
 
+        self.execPath = [[],[]]
+
     def animationInit(self):
         self.ax1Path.set_data([], [])
         self.ax1ErrPath.set_data([], [])
         self.ax2Path.set_data([], [])
         self.ax2ErrPath.set_data([], [])
-        return self.ax1Path, self.ax1ErrPath, self.ax2Path, self.ax2ErrPath
+        self.ax1ExecPath.set_data(self.execPath[0], self.execPath[1])
+        return self.ax1Path, self.ax1ErrPath, self.ax1ExecPath, self.ax2Path, self.ax2ErrPath
 
     def startAnimation(self, interval, updateFunction):
         self.animater = animation.FuncAnimation(self.fig,
@@ -80,8 +84,12 @@ class AnimatedPlot:
 
 def updatePlotData(data):
     jsonData = logParser.getNextObjectAsDict()
+
     if not jsonData:
-        return self.ax1Path, self.ax1ErrPath, self.ax2Path, self.ax2ErrPath
+        return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
+
+    aniPlot.execPath[0].append(jsonData['x'][0])
+    aniPlot.execPath[1].append(jsonData['y'][0])
 
     x = np.array(jsonData['x'])
     y = np.array(jsonData['y'])
@@ -102,7 +110,9 @@ def updatePlotData(data):
     aniPlot.ax1ErrPath.set_data(xTracked, yTracked)
     aniPlot.ax2ErrPath.set_data(xTrackedRelative, yTrackedRelative)
 
-    return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
+    aniPlot.ax1ExecPath.set_data(aniPlot.execPath[0], aniPlot.execPath[1])
+
+    return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
 
 parser = argparse.ArgumentParser(
     description='Animate a plot of the NMPC calculation')

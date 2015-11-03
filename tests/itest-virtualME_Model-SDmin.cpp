@@ -58,11 +58,11 @@ TEST_CASE("Whatever") {
   standardTestSetup test{"itest.log.json"};
   FakeExecutor exec(test.eng);
 
-  test.eng->seed(xyvth{0, 0, test.speed, degToRad(10.f)}, fp_point2d{5, 5});
+  test.eng->seed(xyth{0, 0, 0}, fp_point2d{3, 4});
   while (isMoveCmd(exec.commandFromLastNotify.get())) {
-    test.eng->seed(xyvth{
+    test.eng->seed(xyth{
         test.model()->getX()[1], test.model()->getY()[1],
-        test.model()->getV()[1], test.model()->getTh()[1],
+        test.model()->getTh()[1],
     });
   }
 }

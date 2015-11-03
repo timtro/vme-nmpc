@@ -44,7 +44,7 @@ TEST_CASE(
   standardTestSetup test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.eng->seed(xyvth{1, 1, 0, 0}, fp_point2d{1, 1});
+  test.eng->seed(xyth{1, 1, 0}, fp_point2d{1, 1});
   // Should have called (S)eed (D)istanceToTarget and (H)alt:
   REQUIRE(test.model()->getEventHistory() == "SD");
   REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
@@ -58,7 +58,7 @@ TEST_CASE(
   standardTestSetup test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.eng->seed(xyvth{0, 0, 0, 0}, fp_point2d{5, 5});
+  test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
   REQUIRE(test.model()->getEventHistory() == "SDC");
   REQUIRE(test.minimizer()->getEventHistory() == "O");
   REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
@@ -70,7 +70,7 @@ TEST_CASE(
   standardTestSetup test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.eng->seed(xyvth{0, 0, 0, 0}, fp_point2d{5, 5});
+  test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
   unsigned countReturnedMotionCommands = 0;
   auto command = std::move(exec.commandFromLastNotify);
   for (;;) {

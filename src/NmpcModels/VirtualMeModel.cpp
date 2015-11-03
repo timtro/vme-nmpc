@@ -65,7 +65,7 @@ fptype VirtualMeModel::getTargetDistance() const noexcept {
   return distanceToTarget;
 }
 
-void VirtualMeModel::seed(xyvth pose, fp_point2d target) {
+void VirtualMeModel::seed(xyth pose, fp_point2d target) {
   absoluteTarget = target;
   x[0] = pose.x;
   y[0] = pose.y;
@@ -79,7 +79,7 @@ void VirtualMeModel::seed(xyvth pose, fp_point2d target) {
   targetUnitVector /= distanceToTarget;
 }
 
-void VirtualMeModel::seed(xyvth pose) {
+void VirtualMeModel::seed(xyth pose) {
   x[0] = pose.x;
   y[0] = pose.y;
   th[0] = pose.th;
@@ -121,36 +121,12 @@ void VirtualMeModel::computePathPotentialGradient(
   }
 }
 
-void VirtualMeModel::computeLagrageMultipliers() noexcept {
-  // px[N - 1] = Q0 * ex[N - 1];
-  // py[N - 1] = Q0 * ey[N - 1];
-
-  // for (int k = N - 2; k >= 0; --k) {
-  //   // Compute the Lagrange multipliers:
-  //   px[k] = Q * ex[k] - DPhiX[k] + px[k + 1];
-  //   pDx[k] = px[k + 1] * T;
-  //   py[k] = Q * ey[k] - DPhiY[k] + py[k + 1];
-  //   pDy[k] = py[k + 1] * T;
-  //   pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k]) -
-  //            pDx[k + 1] * v[k] * std::sin(th[k]);
-  // }
-}
-
 /*!
  * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
  * are computed.
  */
 void VirtualMeModel::computeGradient() noexcept {
-  // gradNorm = 0.f;
-  // for (int k = N - 2; k >= 0; --k) {
-  //   grad[k] = R * Dth[k] + pth[k + 1] * T;
-  //   gradNorm += grad[k] * grad[k];
-  // }
-  // gradNorm = std::sqrt(gradNorm);
-
   gradNorm = 0.;
-  float PhiX = 0.f, PhiY = 0.f;
-
   px[N - 1] = Q0 * ex[N - 1];
   py[N - 1] = Q0 * ey[N - 1];
   // Dth[N - 2] -= C.dg * R * Dth[N - 2];
@@ -162,9 +138,9 @@ void VirtualMeModel::computeGradient() noexcept {
    * stepping against the direction of the gradient.
    */
   for (int k = N - 2; k >= 0; --k) {
-    px[k] = Q * ex[k] - PhiX + px[k + 1];
+    px[k] = Q * ex[k] - DPhiX[k] + px[k + 1];
     pDx[k] = px[k + 1] * T;
-    py[k] = Q * ey[k] - PhiY + py[k + 1];
+    py[k] = Q * ey[k] - DPhiY[k] + py[k + 1];
     pDy[k] = py[k + 1] * T;
     pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k]) -
               pDx[k + 1] * v[k] * std::sin(th[k]);
@@ -198,4 +174,8 @@ fp_array const& VirtualMeModel::getDth() const noexcept { return Dth; }
 
 fp_array const& VirtualMeModel::getGrad() const noexcept { return grad; }
 
-void VirtualMeModel::setV(fptype velocity) { v = velocity; }
+void VirtualMeModel::setV(fptype velocity) {
+  v = velocity;
+  Dx[0] = v[0] * std::cos(th[0]);
+  Dy[0] = v[0] * std::sin(th[0]);
+}

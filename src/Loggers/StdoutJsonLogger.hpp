@@ -32,9 +32,9 @@ class StdoutJsonLogger : public VirtualMeLogger {
   mutable bool printedFirstObject{false};
 
  public:
-  StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*);
-  StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*, FILE*);
-  StdoutJsonLogger(NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>*, std::string);
+  StdoutJsonLogger(NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>*);
+  StdoutJsonLogger(NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>*, FILE*);
+  StdoutJsonLogger(NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>*, std::string);
   ~StdoutJsonLogger();
   virtual void logPositionAndError() const noexcept;
 

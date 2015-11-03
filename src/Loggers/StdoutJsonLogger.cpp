@@ -21,7 +21,7 @@
 #include <cstdio>
 
 StdoutJsonLogger::StdoutJsonLogger(
-    NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>* model) {
+    NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>* model) {
   auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
   if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
   this->model = modelToLog;
@@ -29,7 +29,7 @@ StdoutJsonLogger::StdoutJsonLogger(
 }
 
 StdoutJsonLogger::StdoutJsonLogger(
-    NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>* model,
+    NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>* model,
     FILE* outputFilePtr)
     : fp_out{outputFilePtr} {
   auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
@@ -39,7 +39,7 @@ StdoutJsonLogger::StdoutJsonLogger(
 }
 
 StdoutJsonLogger::StdoutJsonLogger(
-    NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>* model,
+    NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>* model,
     std::string outputFilePath) {
   auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
   if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();

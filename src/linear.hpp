@@ -25,21 +25,21 @@
 typedef Point<fptype, 2> fp_point2d;
 
 template <typename R>
-class XYVTh {
+class XYTh {
  public:
   static const unsigned size = 4;
-  R x, y, v, th;
-  XYVTh() {}
-  explicit XYVTh(R val) : x(val), y(val), v(val), th(val){};
+  R x, y, th;
+  XYTh() {}
+  explicit XYTh(R val) : x(val), y(val), th(val){};
   template <typename R2>
-  explicit XYVTh(const Point<R2, 4>& p) {
+  explicit XYTh(const Point<R2, 4>& p) {
     for (unsigned i = 0; i < size; ++i) (*this)[i] = R(p[i]);
   }
-  XYVTh(R x, R y, R v, R th)
-      : x(std::move(x)), y(std::move(y)), v(std::move(v)), th(std::move(th)){};
+  XYTh(R x, R y, R th)
+      : x(std::move(x)), y(std::move(y)), th(std::move(th)){};
   typedef R value_type;
   template <typename R2>
-  XYVTh<R>& operator=(const Point<R2, 4>& b) {
+  XYTh<R>& operator=(const Point<R2, 3>& b) {
     for (unsigned i = 0; i < size; ++i) (*this)[i] = R(b[i]);
     return *this;
   }
@@ -60,7 +60,7 @@ inline auto dot(const Point<R, 2>& a, const Point<R, 2>& b) -> R {
   return a.x * b.x + a.y * b.y;
 }
 
-using xyvth = XYVTh<fptype>;
+using xyth = XYTh<fptype>;
 
 // (TT) Added std:: to trig functions so the type of ANGLE is mirrored in the
 // (returned Point<T, 2>..

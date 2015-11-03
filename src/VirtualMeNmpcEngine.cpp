@@ -20,14 +20,14 @@
 #include "NmpcModel.hpp"
 
 VirtualMeNmpcEngine::VirtualMeNmpcEngine(
-    std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>> model,
+    std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>> model,
     std::unique_ptr<NmpcMinimizer> minimizer)
     : model{std::move(model)}, minimizer{std::move(minimizer)} {
   logger = std::unique_ptr<VirtualMeLogger>{new VirtualMeLogger};
 }
 
 VirtualMeNmpcEngine::VirtualMeNmpcEngine(
-    std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>> model,
+    std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>> model,
     std::unique_ptr<NmpcMinimizer> minimizer,
     std::unique_ptr<VirtualMeLogger> logger)
     : model{std::move(model)},
@@ -45,7 +45,7 @@ up_VirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
     return model->getCommand(cmdsExecutedFromCurrentHorizon);
 }
 
-void VirtualMeNmpcEngine::seed(xyvth pose, fp_point2d target) {
+void VirtualMeNmpcEngine::seed(xyth pose, fp_point2d target) {
   model->seed(pose, target);
   cmdsExecutedFromCurrentHorizon = 0;
   if (model->getTargetDistance() > targetDistanceTolerance) {
@@ -57,7 +57,7 @@ void VirtualMeNmpcEngine::seed(xyvth pose, fp_point2d target) {
   notify();
 }
 
-void VirtualMeNmpcEngine::seed(xyvth pose) {
+void VirtualMeNmpcEngine::seed(xyth pose) {
   model->seed(pose);
   cmdsExecutedFromCurrentHorizon = 0;
   if (model->getTargetDistance() > targetDistanceTolerance) {

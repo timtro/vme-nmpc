@@ -28,10 +28,10 @@
 
 class NmpcMinimizer;
 
-using vMeModel = NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>;
+using vMeModel = NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>;
 
 class VirtualMeNmpcEngine : public Subject {
-  std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>> model;
+  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>> model;
   std::unique_ptr<NmpcMinimizer> minimizer;
   std::unique_ptr<VirtualMeLogger> logger;
   fptype targetDistanceTolerance{0.1};
@@ -42,16 +42,16 @@ class VirtualMeNmpcEngine : public Subject {
   fp_point2d currentTarget;
 
   VirtualMeNmpcEngine(
-      std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>>,
+      std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>>,
       std::unique_ptr<NmpcMinimizer>);
   VirtualMeNmpcEngine(
-      std::unique_ptr<NmpcModel<xyvth, fp_point2d, up_VirtualMeCommand>>,
+      std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>>,
       std::unique_ptr<NmpcMinimizer>,
       std::unique_ptr<VirtualMeLogger>);
   void setTarget(fp_point2d point);
   up_VirtualMeCommand nextCommand();
-  void seed(xyvth, fp_point2d);
-  void seed(xyvth);
+  void seed(xyth, fp_point2d);
+  void seed(xyth);
   bool isHalted();
   vMeModel* getModelPointer();
   NmpcMinimizer* getMinimizerPointer();

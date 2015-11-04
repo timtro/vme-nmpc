@@ -44,8 +44,8 @@ struct Obstacle {
 };
 
 class ObstacleContainer {
-  std::vector<std::unique_ptr<Obstacle>> obstacles;
-
+  std::vector<std::unique_ptr<Obstacle>> obstacles
+;
  public:
   fp_point2d gradPhi(fp_point2d);
   void pushObstacle(Obstacle *obs);

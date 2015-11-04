@@ -21,7 +21,6 @@
 
 #include "Obstacle.hpp"
 #include "linear.hpp"
-#include "NmpcInitPkg.hpp"
 
 template <typename seedType, typename tgtType, typename cmdType>
 class NmpcModel {

@@ -23,12 +23,12 @@
 
 #include "VirtualMeModel.hpp"
 #include "../trig.hpp"
-#include "../NmpcInitPkg.hpp"
+#include "../VirtualMeNmpcInitPkg.hpp"
 #include "../VirtualMeCommand.hpp"
 
-VirtualMeModel::VirtualMeModel(NmpcInitPkg& ini)
-    : N{ini.N},
-      T{ini.T},
+VirtualMeModel::VirtualMeModel(VirtualMeNmpcInitPkg& ini)
+    : N{ini.horizonSize},
+      T{ini.timeInterval},
       cruiseSpeed{ini.cruiseSpeed},
       Q{ini.Q},
       Q0{ini.Q0},

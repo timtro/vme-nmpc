@@ -20,16 +20,27 @@
 #define VME_NMPC_NMPCINITPKG_HPP_
 
 #include "typedefs.h"
+#include "linear.hpp"
+#include "NmpcModel.hpp"
+#include "NmpcMinimizer.hpp"
+#include "VirtualMeLogger.hpp"
+#include "VirtualMeCommand.hpp"
+#include <memory>
 
-struct NmpcInitPkg {
-  unsigned int N;
-  unsigned int m;
-  unsigned int n;
-  fptype T;
-  fptype cruiseSpeed;
-  fptype Q;
-  fptype Q0;
-  fptype R;
+class ObstacleContainer;
+
+struct VirtualMeNmpcInitPkg {
+  unsigned int horizonSize;
+  fptype timeInterval{0};
+  fptype cruiseSpeed{0};
+  fptype Q{0};
+  fptype Q0{0};
+  fptype R{0};
+  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>> model{
+      nullptr};
+  std::unique_ptr<NmpcMinimizer> minimizer{nullptr};
+  std::unique_ptr<VirtualMeLogger> logger{nullptr};
+  std::shared_ptr<ObstacleContainer> obstacles{nullptr};
 };
 
 #endif  // VME_NMPC_NMPCINITPKG_HPP_

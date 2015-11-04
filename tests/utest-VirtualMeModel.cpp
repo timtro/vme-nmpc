@@ -10,12 +10,12 @@ class StandardTestModel {
   unsigned int nmpcHorizon{50};
   float timeInterval{0.1f};
   float speed{0.4};
-  NmpcInitPkg init;
+  VirtualMeNmpcInitPkg init;
   std::unique_ptr<VirtualMeModel> model;
 
   StandardTestModel() {
-    init.N = nmpcHorizon;
-    init.T = timeInterval;
+    init.horizonSize = nmpcHorizon;
+    init.timeInterval = timeInterval;
     init.cruiseSpeed = speed;
 
     model = std::unique_ptr<VirtualMeModel>{new VirtualMeModel{init}};

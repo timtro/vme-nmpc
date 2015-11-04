@@ -11,11 +11,11 @@ struct standardTestSetup {
   unsigned int nmpcHorizon = 10;
   float timeInterval = 0.1f;
   float speed = .4;
-  NmpcInitPkg init;
+  VirtualMeNmpcInitPkg init;
 
   standardTestSetup() {
-    init.N = nmpcHorizon;
-    init.T = timeInterval;
+    init.horizonSize = nmpcHorizon;
+    init.timeInterval = timeInterval;
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
@@ -28,8 +28,8 @@ struct standardTestSetup {
   }
 
   standardTestSetup(std::string logFilePath) {
-    init.N = nmpcHorizon;
-    init.T = timeInterval;
+    init.horizonSize = nmpcHorizon;
+    init.timeInterval = timeInterval;
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;

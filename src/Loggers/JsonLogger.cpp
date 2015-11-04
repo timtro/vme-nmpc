@@ -16,32 +16,32 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdoutJsonLogger.hpp"
-#include "../NmpcModels/VirtualMeModel.hpp"
+#include "JsonLogger.hpp"
+#include "../NmpcModels/VMeModel.hpp"
 #include <cstdio>
 
-StdoutJsonLogger::StdoutJsonLogger(
-    NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>* model) {
-  auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
+JsonLogger::JsonLogger(
+    NmpcModel<xyth, fp_point2d, up_VMeCommand>* model) {
+  auto modelToLog = dynamic_cast<VMeModel*>(model);
   if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
   this->model = modelToLog;
   fprintf(fp_out, "[\n");
 }
 
-StdoutJsonLogger::StdoutJsonLogger(
-    NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>* model,
+JsonLogger::JsonLogger(
+    NmpcModel<xyth, fp_point2d, up_VMeCommand>* model,
     FILE* outputFilePtr)
     : fp_out{outputFilePtr} {
-  auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
+  auto modelToLog = dynamic_cast<VMeModel*>(model);
   if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
   this->model = modelToLog;
   fprintf(fp_out, "[\n");
 }
 
-StdoutJsonLogger::StdoutJsonLogger(
-    NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>* model,
+JsonLogger::JsonLogger(
+    NmpcModel<xyth, fp_point2d, up_VMeCommand>* model,
     std::string outputFilePath) {
-  auto modelToLog = dynamic_cast<VirtualMeModel*>(model);
+  auto modelToLog = dynamic_cast<VMeModel*>(model);
   if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
   this->model = modelToLog;
   logFile = std::make_unique<CFileContainer>(outputFilePath);
@@ -49,7 +49,7 @@ StdoutJsonLogger::StdoutJsonLogger(
   fprintf(fp_out, "[\n");
 }
 
-StdoutJsonLogger::~StdoutJsonLogger() { fprintf(fp_out, "\n]\n"); }
+JsonLogger::~JsonLogger() { fprintf(fp_out, "\n]\n"); }
 
 // TODO: In GCC 5.3, change std::end() to std::cend();
 template <typename T>
@@ -62,7 +62,7 @@ void jsonPrintArray(FILE* fd, T array) {
   }
 }
 
-void StdoutJsonLogger::logPositionAndError() const noexcept {
+void JsonLogger::logPositionAndError() const noexcept {
   if (printedFirstObject) {
     fprintf(fp_out, ",\n");
   } else {

@@ -16,30 +16,10 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VME_NMPC_VIRTUALMESDMINIMIZER_HPP_
-#define VME_NMPC_VIRTUALMESDMINIMIZER_HPP_
+#include "VMeCommand.hpp"
 
-#include "../NmpcMinimizer.hpp"
-#include "../NmpcModels/VirtualMeModel.hpp"
+int VMeStop::execute(Nav2Robot &rob) { return rob.stop(); }
 
-class VirtualMeSDMinimizer : public NmpcMinimizer {
-  VirtualMeModel& model;
-  unsigned sdLoopCount{0};
-  unsigned maxSteps{1000};
-  fptype gradDotPrevGrad{0};
-  fptype sdStepFactor{.1};
-  fptype convergenceTolerance{.1};
-  decltype(model.grad) prevGrad;
-  MinimizerCode status{MinimizerCode::idle};
+int VMeV::execute(Nav2Robot &rob) { return rob.v(th, v, Dth); }
 
-  bool iterate() noexcept;
-
- public:
-  VirtualMeSDMinimizer(VirtualMeModel* model_) : model{*model_} {
-    prevGrad = model.grad;
-  }
-
-  virtual MinimizerCode solveOptimalControlHorizon() noexcept;
-};
-
-#endif  // VME_NMPC_VIRTUALMESDMINIMIZER_HPP_
+int VMeNullCmd::execute(Nav2Robot &) { return 0; }

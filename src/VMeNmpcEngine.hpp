@@ -21,19 +21,19 @@
 
 #include "linear.hpp"
 #include "Subject.hpp"
-#include "VirtualMeCommand.hpp"
+#include "VMeCommand.hpp"
 #include "NmpcMinimizer.hpp"
 #include "NmpcModel.hpp"
-#include "VirtualMeLogger.hpp"
+#include "VMeLogger.hpp"
 
 class NmpcMinimizer;
 
-using vMeModel = NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>;
+using vMeModel = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
-class VirtualMeNmpcEngine : public Subject {
-  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>> model;
+class VMeNmpcEngine : public Subject {
+  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model;
   std::unique_ptr<NmpcMinimizer> minimizer;
-  std::unique_ptr<VirtualMeLogger> logger;
+  std::unique_ptr<VMeLogger> logger;
   fptype targetDistanceTolerance{0.1};
   unsigned cmdsExecutedFromCurrentHorizon{0};
   bool machineIsHalted{true};
@@ -41,15 +41,15 @@ class VirtualMeNmpcEngine : public Subject {
  public:
   fp_point2d currentTarget;
 
-  VirtualMeNmpcEngine(
-      std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>>,
+  VMeNmpcEngine(
+      std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>>,
       std::unique_ptr<NmpcMinimizer>);
-  VirtualMeNmpcEngine(
-      std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>>,
+  VMeNmpcEngine(
+      std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>>,
       std::unique_ptr<NmpcMinimizer>,
-      std::unique_ptr<VirtualMeLogger>);
+      std::unique_ptr<VMeLogger>);
   void setTarget(fp_point2d point);
-  up_VirtualMeCommand nextCommand();
+  up_VMeCommand nextCommand();
   void seed(xyth, fp_point2d);
   void seed(xyth);
   bool isHalted();

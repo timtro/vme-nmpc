@@ -16,30 +16,22 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "VirtualMeSDMinimizer.hpp"
+#ifndef VME_NMPC_SRC_DATALOGGER_HPP_
+#define VME_NMPC_SRC_DATALOGGER_HPP_
 
-MinimizerCode VirtualMeSDMinimizer::solveOptimalControlHorizon() noexcept {
-  sdLoopCount = 0;
-  status = MinimizerCode::active;
-  do {
-    model.computeForecast();
-    model.computeTrackingErrors();
-    model.computeGradient();
-    ++sdLoopCount;
-  } while (iterate());
+#include "linear.hpp"
+#include <memory>
 
-  return status;
-}
+struct VMeCommand;
+using up_VMeCommand = std::unique_ptr<VMeCommand>;
 
-// TODO: rename takeSdStep
-bool VirtualMeSDMinimizer::iterate() noexcept {
-  model.Dth -= sdStepFactor * model.grad;
-  if (model.gradNorm < convergenceTolerance) {
-    status = MinimizerCode::success;
-    return false;
-  } else if (sdLoopCount >= maxSteps) {
-    status = MinimizerCode::reachedIterationLimit;
-    return false;
-  } else
-    return true;
-}
+template <typename seedType, typename tgtType, typename cmdType>
+class NmpcModel;
+
+class VMeLogger {
+ public:
+  virtual ~VMeLogger() = default;
+  virtual void logPositionAndError() const noexcept {};
+};
+
+#endif  // VME_NMPC_SRC_DATALOGGER_HPP_

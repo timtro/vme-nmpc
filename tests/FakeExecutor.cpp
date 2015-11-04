@@ -18,7 +18,7 @@
 
 #include "FakeExecutor.hpp"
 
-FakeExecutor::FakeExecutor(VirtualMeNmpcEngine* s) {
+FakeExecutor::FakeExecutor(VMeNmpcEngine* s) {
   subjectEngine = s;
   s->attachObserver(this);
 }

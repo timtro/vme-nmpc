@@ -16,22 +16,30 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VME_NMPC_SRC_DATALOGGER_HPP_
-#define VME_NMPC_SRC_DATALOGGER_HPP_
+#ifndef VME_NMPC_VIRTUALMESDMINIMIZER_HPP_
+#define VME_NMPC_VIRTUALMESDMINIMIZER_HPP_
 
-#include "linear.hpp"
-#include <memory>
+#include "../NmpcMinimizer.hpp"
+#include "../NmpcModels/VMeModel.hpp"
 
-struct VirtualMeCommand;
-using up_VirtualMeCommand = std::unique_ptr<VirtualMeCommand>;
+class VMeNaiveSdMinimizer : public NmpcMinimizer {
+  VMeModel& model;
+  unsigned sdLoopCount{0};
+  unsigned maxSteps{1000};
+  fptype gradDotPrevGrad{0};
+  fptype sdStepFactor{.1};
+  fptype convergenceTolerance{.1};
+  decltype(model.grad) prevGrad;
+  MinimizerCode status{MinimizerCode::idle};
 
-template <typename seedType, typename tgtType, typename cmdType>
-class NmpcModel;
+  bool iterate() noexcept;
 
-class VirtualMeLogger {
  public:
-  virtual ~VirtualMeLogger() = default;
-  virtual void logPositionAndError() const noexcept {};
+  VMeNaiveSdMinimizer(VMeModel* model_) : model{*model_} {
+    prevGrad = model.grad;
+  }
+
+  virtual MinimizerCode solveOptimalControlHorizon() noexcept;
 };
 
-#endif  // VME_NMPC_SRC_DATALOGGER_HPP_
+#endif  // VME_NMPC_VIRTUALMESDMINIMIZER_HPP_

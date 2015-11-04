@@ -21,12 +21,12 @@
 // NB(TT to TT): to convert from old notation:
 // s/qu\[([^\]]*)\]\.([a-zA-Z0-9]*)/\2\[\1\]/g
 
-#include "VirtualMeModel.hpp"
+#include "VMeModel.hpp"
 #include "../trig.hpp"
-#include "../VirtualMeNmpcInitPkg.hpp"
-#include "../VirtualMeCommand.hpp"
+#include "../VMeNmpcInitPkg.hpp"
+#include "../VMeCommand.hpp"
 
-VirtualMeModel::VirtualMeModel(VirtualMeNmpcInitPkg& ini)
+VMeModel::VMeModel(VMeNmpcInitPkg& ini)
     : N{ini.horizonSize},
       T{ini.timeInterval},
       cruiseSpeed{ini.cruiseSpeed},
@@ -59,13 +59,13 @@ VirtualMeModel::VirtualMeModel(VirtualMeNmpcInitPkg& ini)
   grad = fp_array(0.f, horizonSize - 1);
 }
 
-unsigned VirtualMeModel::getHorizonSize() const noexcept { return N; }
+unsigned VMeModel::getHorizonSize() const noexcept { return N; }
 
-fptype VirtualMeModel::getTargetDistance() const noexcept {
+fptype VMeModel::getTargetDistance() const noexcept {
   return distanceToTarget;
 }
 
-void VirtualMeModel::seed(xyth pose, fp_point2d target) {
+void VMeModel::seed(xyth pose, fp_point2d target) {
   absoluteTarget = target;
   x[0] = pose.x;
   y[0] = pose.y;
@@ -79,7 +79,7 @@ void VirtualMeModel::seed(xyth pose, fp_point2d target) {
   targetUnitVector /= distanceToTarget;
 }
 
-void VirtualMeModel::seed(xyth pose) {
+void VMeModel::seed(xyth pose) {
   x[0] = pose.x;
   y[0] = pose.y;
   th[0] = pose.th;
@@ -92,7 +92,7 @@ void VirtualMeModel::seed(xyth pose) {
   targetUnitVector /= distanceToTarget;
 }
 
-void VirtualMeModel::computeForecast() noexcept {
+void VMeModel::computeForecast() noexcept {
   for (unsigned k = 1; k < N; ++k) {
     th[k] = th[k - 1] + Dth[k - 1] * T;
     x[k] = x[k - 1] + Dx[k - 1] * T;
@@ -105,14 +105,14 @@ void VirtualMeModel::computeForecast() noexcept {
 /*!
  * This is vanilla, and just tracks the straight line at the cruising speed.
  */
-void VirtualMeModel::computeTrackingErrors() noexcept {
+void VMeModel::computeTrackingErrors() noexcept {
   for (unsigned k = 1; k < N; ++k) {
     ex[k] = x[k] - (x[0] + v[k] * targetUnitVector.x * k * T);
     ey[k] = y[k] - (y[0] + v[k] * targetUnitVector.y * k * T);
   }
 }
 
-void VirtualMeModel::computePathPotentialGradient(
+void VMeModel::computePathPotentialGradient(
     ObstacleContainer& obstacles) noexcept {
   for (unsigned k = 0; k < N; ++k) {
     fp_point2d gradVec = obstacles.gradPhi(fp_point2d{x[k], y[k]});
@@ -125,7 +125,7 @@ void VirtualMeModel::computePathPotentialGradient(
  * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
  * are computed.
  */
-void VirtualMeModel::computeGradient() noexcept {
+void VMeModel::computeGradient() noexcept {
   gradNorm = 0.;
   px[N - 1] = Q0 * ex[N - 1];
   py[N - 1] = Q0 * ey[N - 1];
@@ -150,31 +150,31 @@ void VirtualMeModel::computeGradient() noexcept {
   gradNorm = sqrt(gradNorm);
 }
 
-up_VirtualMeCommand VirtualMeModel::getCommand(int n) const {
-  return up_VirtualMeCommand{new VMeV{0, v[n], Dth[n]}};
+up_VMeCommand VMeModel::getCommand(int n) const {
+  return up_VMeCommand{new VMeV{0, v[n], Dth[n]}};
 }
 
-fp_array const& VirtualMeModel::getX() const noexcept { return x; }
+fp_array const& VMeModel::getX() const noexcept { return x; }
 
-fp_array const& VirtualMeModel::getDx() const noexcept { return Dx; }
+fp_array const& VMeModel::getDx() const noexcept { return Dx; }
 
-fp_array const& VirtualMeModel::getEx() const noexcept { return ex; }
+fp_array const& VMeModel::getEx() const noexcept { return ex; }
 
-fp_array const& VirtualMeModel::getY() const noexcept { return y; }
+fp_array const& VMeModel::getY() const noexcept { return y; }
 
-fp_array const& VirtualMeModel::getDy() const noexcept { return Dy; }
+fp_array const& VMeModel::getDy() const noexcept { return Dy; }
 
-fp_array const& VirtualMeModel::getEy() const noexcept { return ey; }
+fp_array const& VMeModel::getEy() const noexcept { return ey; }
 
-fp_array const& VirtualMeModel::getV() const noexcept { return v; }
+fp_array const& VMeModel::getV() const noexcept { return v; }
 
-fp_array const& VirtualMeModel::getTh() const noexcept { return th; }
+fp_array const& VMeModel::getTh() const noexcept { return th; }
 
-fp_array const& VirtualMeModel::getDth() const noexcept { return Dth; }
+fp_array const& VMeModel::getDth() const noexcept { return Dth; }
 
-fp_array const& VirtualMeModel::getGrad() const noexcept { return grad; }
+fp_array const& VMeModel::getGrad() const noexcept { return grad; }
 
-void VirtualMeModel::setV(fptype velocity) {
+void VMeModel::setV(fptype velocity) {
   v = velocity;
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);

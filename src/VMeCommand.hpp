@@ -16,31 +16,34 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VME_NMPC_NMPCINITPKG_HPP_
-#define VME_NMPC_NMPCINITPKG_HPP_
+#ifndef VME_NMPC_VIRTUALMECOMMAND_HPP
+#define VME_NMPC_VIRTUALMECOMMAND_HPP
 
-#include "typedefs.h"
-#include "linear.hpp"
-#include "NmpcModel.hpp"
-#include "NmpcMinimizer.hpp"
-#include "VirtualMeLogger.hpp"
-#include "VirtualMeCommand.hpp"
+#include "Nav2Robot.hpp"
 #include <memory>
 
-class ObstacleContainer;
-
-struct VirtualMeNmpcInitPkg {
-  unsigned int horizonSize;
-  fptype timeInterval{0};
-  fptype cruiseSpeed{0};
-  fptype Q{0};
-  fptype Q0{0};
-  fptype R{0};
-  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>> model{
-      nullptr};
-  std::unique_ptr<NmpcMinimizer> minimizer{nullptr};
-  std::unique_ptr<VirtualMeLogger> logger{nullptr};
-  std::shared_ptr<ObstacleContainer> obstacles{nullptr};
+struct VMeCommand {
+  virtual int execute(Nav2Robot &) = 0;
 };
 
-#endif  // VME_NMPC_NMPCINITPKG_HPP_
+struct VMeStop : public VMeCommand {
+  virtual int execute(Nav2Robot &rob);
+};
+
+struct VMeV : public VMeCommand {
+  float v = 0;
+  float th = 0;
+  float Dth = 0;
+
+  VMeV(float th, float v, float Dth) : v{v}, th{th}, Dth{Dth} {}
+
+  virtual int execute(Nav2Robot &rob);
+};
+
+struct VMeNullCmd : public VMeCommand {
+  virtual int execute(Nav2Robot &rob);
+};
+
+using up_VMeCommand = std::unique_ptr<VMeCommand>;
+
+#endif  // VME_NMPC_VIRTUALMECOMMAND_HPP

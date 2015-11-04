@@ -16,43 +16,43 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FakeVirtualMeModel.hpp"
+#include "FakeVMeModel.hpp"
 
-void FakeVirtualMeModel::recordEvent(char eventCode) const {
+void FakeVMeModel::recordEvent(char eventCode) const {
   eventHistory += eventCode;
 }
 
-FakeVirtualMeModel::FakeVirtualMeModel(unsigned N) : N{N} {}
+FakeVMeModel::FakeVMeModel(unsigned N) : N{N} {}
 
-unsigned FakeVirtualMeModel::getHorizonSize() const { return N; }
+unsigned FakeVMeModel::getHorizonSize() const { return N; }
 
-fptype FakeVirtualMeModel::getTargetDistance() const noexcept {
+fptype FakeVMeModel::getTargetDistance() const noexcept {
   recordEvent('D');
   return distanceToTarget;
 }
 
-void FakeVirtualMeModel::seed(xyth) { recordEvent('S'); }
+void FakeVMeModel::seed(xyth) { recordEvent('S'); }
 
-void FakeVirtualMeModel::seed(xyth position, fp_point2d target) {
+void FakeVMeModel::seed(xyth position, fp_point2d target) {
   auto displacement = target - fp_point2d{position.x, position.y};
   distanceToTarget = std::sqrt(dot(displacement, displacement));
   recordEvent('S');
 }
 
-void FakeVirtualMeModel::computeForecast() noexcept { recordEvent('F'); }
+void FakeVMeModel::computeForecast() noexcept { recordEvent('F'); }
 
-void FakeVirtualMeModel::computeTrackingErrors() noexcept { recordEvent('E'); }
+void FakeVMeModel::computeTrackingErrors() noexcept { recordEvent('E'); }
 
-void FakeVirtualMeModel::computePathPotentialGradient(
+void FakeVMeModel::computePathPotentialGradient(
     ObstacleContainer&) noexcept {
   recordEvent('P');
 }
 
-void FakeVirtualMeModel::computeGradient() noexcept { recordEvent('G'); }
+void FakeVMeModel::computeGradient() noexcept { recordEvent('G'); }
 
-up_VirtualMeCommand FakeVirtualMeModel::getCommand(int) const {
+up_VMeCommand FakeVMeModel::getCommand(int) const {
   recordEvent('C');
-  return up_VirtualMeCommand{new VMeV{0, 0, 0}};
+  return up_VMeCommand{new VMeV{0, 0, 0}};
 }
 
-std::string FakeVirtualMeModel::getEventHistory() const { return eventHistory; }
+std::string FakeVMeModel::getEventHistory() const { return eventHistory; }

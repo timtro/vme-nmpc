@@ -16,10 +16,31 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "VirtualMeCommand.hpp"
+#ifndef VME_NMPC_NMPCINITPKG_HPP_
+#define VME_NMPC_NMPCINITPKG_HPP_
 
-int VMeStop::execute(Nav2Robot &rob) { return rob.stop(); }
+#include "typedefs.h"
+#include "linear.hpp"
+#include "NmpcModel.hpp"
+#include "NmpcMinimizer.hpp"
+#include "VMeLogger.hpp"
+#include "VMeCommand.hpp"
+#include <memory>
 
-int VMeV::execute(Nav2Robot &rob) { return rob.v(th, v, Dth); }
+class ObstacleContainer;
 
-int VMeNullCmd::execute(Nav2Robot &) { return 0; }
+struct VMeNmpcInitPkg {
+  unsigned int horizonSize;
+  fptype timeInterval{0};
+  fptype cruiseSpeed{0};
+  fptype Q{0};
+  fptype Q0{0};
+  fptype R{0};
+  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model{
+      nullptr};
+  std::unique_ptr<NmpcMinimizer> minimizer{nullptr};
+  std::unique_ptr<VMeLogger> logger{nullptr};
+  std::shared_ptr<ObstacleContainer> obstacles{nullptr};
+};
+
+#endif  // VME_NMPC_NMPCINITPKG_HPP_

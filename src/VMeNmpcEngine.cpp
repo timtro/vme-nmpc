@@ -16,36 +16,36 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "VirtualMeNmpcEngine.hpp"
+#include "VMeNmpcEngine.hpp"
 #include "NmpcModel.hpp"
 
-VirtualMeNmpcEngine::VirtualMeNmpcEngine(
-    std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>> model,
+VMeNmpcEngine::VMeNmpcEngine(
+    std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model,
     std::unique_ptr<NmpcMinimizer> minimizer)
     : model{std::move(model)}, minimizer{std::move(minimizer)} {
-  logger = std::unique_ptr<VirtualMeLogger>{new VirtualMeLogger};
+  logger = std::unique_ptr<VMeLogger>{new VMeLogger};
 }
 
-VirtualMeNmpcEngine::VirtualMeNmpcEngine(
-    std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>> model,
+VMeNmpcEngine::VMeNmpcEngine(
+    std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model,
     std::unique_ptr<NmpcMinimizer> minimizer,
-    std::unique_ptr<VirtualMeLogger> logger)
+    std::unique_ptr<VMeLogger> logger)
     : model{std::move(model)},
       minimizer{std::move(minimizer)},
       logger{std::move(logger)} {}
 
-void VirtualMeNmpcEngine::setTarget(fp_point2d point) { currentTarget = point; }
+void VMeNmpcEngine::setTarget(fp_point2d point) { currentTarget = point; }
 
-up_VirtualMeCommand VirtualMeNmpcEngine::nextCommand() {
+up_VMeCommand VMeNmpcEngine::nextCommand() {
   if (machineIsHalted)
-    return up_VirtualMeCommand{new VMeStop()};
+    return up_VMeCommand{new VMeStop()};
   else if (cmdsExecutedFromCurrentHorizon++ >= model->getHorizonSize())
-    return up_VirtualMeCommand{new VMeNullCmd()};
+    return up_VMeCommand{new VMeNullCmd()};
   else
     return model->getCommand(cmdsExecutedFromCurrentHorizon);
 }
 
-void VirtualMeNmpcEngine::seed(xyth pose, fp_point2d target) {
+void VMeNmpcEngine::seed(xyth pose, fp_point2d target) {
   model->seed(pose, target);
   cmdsExecutedFromCurrentHorizon = 0;
   if (model->getTargetDistance() > targetDistanceTolerance) {
@@ -57,7 +57,7 @@ void VirtualMeNmpcEngine::seed(xyth pose, fp_point2d target) {
   notify();
 }
 
-void VirtualMeNmpcEngine::seed(xyth pose) {
+void VMeNmpcEngine::seed(xyth pose) {
   model->seed(pose);
   cmdsExecutedFromCurrentHorizon = 0;
   if (model->getTargetDistance() > targetDistanceTolerance) {
@@ -71,10 +71,10 @@ void VirtualMeNmpcEngine::seed(xyth pose) {
   notify();
 }
 
-bool VirtualMeNmpcEngine::isHalted() { return machineIsHalted; }
+bool VMeNmpcEngine::isHalted() { return machineIsHalted; }
 
-vMeModel* VirtualMeNmpcEngine::getModelPointer() { return model.get(); }
+vMeModel* VMeNmpcEngine::getModelPointer() { return model.get(); }
 
-NmpcMinimizer* VirtualMeNmpcEngine::getMinimizerPointer() {
+NmpcMinimizer* VMeNmpcEngine::getMinimizerPointer() {
   return minimizer.get();
 }

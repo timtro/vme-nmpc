@@ -1,17 +1,17 @@
 #include "catch.hpp"
 
-#include "../src/Loggers/StdoutJsonLogger.hpp"
-#include "../src/VirtualMeNmpcEngine.hpp"
-#include "../src/NmpcMinimizers/VirtualMeSDMinimizer.hpp"
-#include "FakeVirtualMeModel.hpp"
+#include "../src/Loggers/JsonLogger.hpp"
+#include "../src/VMeNmpcEngine.hpp"
+#include "../src/NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
+#include "FakeVMeModel.hpp"
 #include "../src/CFileContainer.hpp"
 
 struct standardTestSetup {
-  VirtualMeNmpcEngine* eng{nullptr};
+  VMeNmpcEngine* eng{nullptr};
   unsigned int nmpcHorizon = 10;
   float timeInterval = 0.1f;
   float speed = .4;
-  VirtualMeNmpcInitPkg init;
+  VMeNmpcInitPkg init;
 
   standardTestSetup() {
     init.horizonSize = nmpcHorizon;
@@ -19,11 +19,11 @@ struct standardTestSetup {
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
-    std::unique_ptr<VirtualMeModel> mod{new VirtualMeModel{init}};
-    std::unique_ptr<VirtualMeSDMinimizer> min{
-        new VirtualMeSDMinimizer{mod.get()}};
-    std::unique_ptr<StdoutJsonLogger> logger{new StdoutJsonLogger(mod.get())};
-    eng = new VirtualMeNmpcEngine{std::move(mod), std::move(min),
+    std::unique_ptr<VMeModel> mod{new VMeModel{init}};
+    std::unique_ptr<VMeNaiveSdMinimizer> min{
+        new VMeNaiveSdMinimizer{mod.get()}};
+    std::unique_ptr<JsonLogger> logger{new JsonLogger(mod.get())};
+    eng = new VMeNmpcEngine{std::move(mod), std::move(min),
                                   std::move(logger)};
   }
 
@@ -33,11 +33,11 @@ struct standardTestSetup {
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
-    std::unique_ptr<VirtualMeModel> mod{new VirtualMeModel{init}};
-    std::unique_ptr<NmpcMinimizer> min{new VirtualMeSDMinimizer{mod.get()}};
-    std::unique_ptr<StdoutJsonLogger> logger{
-        new StdoutJsonLogger(mod.get(), logFilePath)};
-    eng = new VirtualMeNmpcEngine{std::move(mod), std::move(min),
+    std::unique_ptr<VMeModel> mod{new VMeModel{init}};
+    std::unique_ptr<NmpcMinimizer> min{new VMeNaiveSdMinimizer{mod.get()}};
+    std::unique_ptr<JsonLogger> logger{
+        new JsonLogger(mod.get(), logFilePath)};
+    eng = new VMeNmpcEngine{std::move(mod), std::move(min),
                                   std::move(logger)};
   }
   ~standardTestSetup() { delete eng; }
@@ -48,10 +48,10 @@ struct standardTestSetup {
 TEST_CASE(
     "Throw LoggerIsIncompatibleWithModelType if I try to pass an unfamilliar "
     "model to the logger initializer") {
-  std::unique_ptr<vMeModel> mod{new FakeVirtualMeModel{10}};
+  std::unique_ptr<vMeModel> mod{new FakeVMeModel{10}};
 
   REQUIRE_THROWS_AS(
-      std::unique_ptr<VirtualMeLogger> logger{new StdoutJsonLogger(mod.get())};
+      std::unique_ptr<VMeLogger> logger{new JsonLogger(mod.get())};
       , LoggerIsIncompatibleWithModelType);
 }
 

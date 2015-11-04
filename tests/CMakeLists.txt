@@ -4,14 +4,14 @@ endmacro (create_test)
 
 add_library (CATCH catch.cpp)
 
-set(testname utest-VirtualMeNmpcEngine)
+set(testname utest-VMeNmpcEngine)
 add_executable (${testname} ${testname}.cpp
-                    FakeVirtualMeModel.cpp
+                    FakeVMeModel.cpp
                     FakeMinimizer.cpp
                     FakeExecutor.cpp
                     ../src/Nav2Robot.cpp
                 )
-target_link_libraries (${testname} CATCH VirtualMeNmpcEngine)
+target_link_libraries (${testname} CATCH VMeNmpcEngine)
 create_test(${testname})
 
 set(testname utest-ObstacleContainer)
@@ -20,36 +20,36 @@ add_executable (${testname} ${testname}.cpp
 target_link_libraries (${testname} CATCH Obstacle)
 create_test(${testname})
 
-set(testname utest-VirtualMeModel)
+set(testname utest-VMeModel)
 add_executable (${testname} ${testname}.cpp
-                    ../src/NmpcModels/VirtualMeModel.cpp
-                    ../src/VirtualMeCommand.cpp
+                    ../src/NmpcModels/VMeModel.cpp
+                    ../src/VMeCommand.cpp
                 )
 target_link_libraries (${testname} CATCH Obstacle Nav2Robot)
 create_test(${testname})
 
-set(testname utest-StdoutJsonLogger)
+set(testname utest-JsonLogger)
 add_executable (${testname} ${testname}.cpp
-                    FakeVirtualMeModel.cpp
+                    FakeVMeModel.cpp
                     FakeExecutor.cpp
-                    ../src/NmpcModels/VirtualMeModel.cpp
-                    ../src/NmpcMinimizers/VirtualMeSDMinimizer.cpp
+                    ../src/NmpcModels/VMeModel.cpp
+                    ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp
                     ../src/Nav2Robot.cpp
-                    ../src/Loggers/StdoutJsonLogger.cpp
+                    ../src/Loggers/JsonLogger.cpp
                 )
-target_link_libraries (${testname} CATCH VirtualMeNmpcEngine Obstacle)
+target_link_libraries (${testname} CATCH VMeNmpcEngine Obstacle)
 create_test(${testname})
 
 set(testname itest-virtualME_Model-SDmin)
 add_executable (${testname} ${testname}.cpp
-                    ../src/NmpcModels/VirtualMeModel.cpp
-                    ../src/NmpcMinimizers/VirtualMeSDMinimizer.cpp
-                    ../src/Loggers/StdoutJsonLogger.cpp
+                    ../src/NmpcModels/VMeModel.cpp
+                    ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp
+                    ../src/Loggers/JsonLogger.cpp
                     FakeExecutor.cpp
                 )
-target_link_libraries (${testname} CATCH VirtualMeNmpcEngine Obstacle Nav2Robot)
+target_link_libraries (${testname} CATCH VMeNmpcEngine Obstacle Nav2Robot)
 
 #set(testname PathPlannerTest)
 #add_executable (${testname} ${testname}.cpp)
-#target_link_libraries (${testname} VirtualMeNmpcEngine Obstacle)
+#target_link_libraries (${testname} VMeNmpcEngine Obstacle)
 #create_test(${testname})

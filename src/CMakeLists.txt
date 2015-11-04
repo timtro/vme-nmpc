@@ -1,8 +1,8 @@
 file(GLOB Obstacle_sources Obstacle.cpp ObstacleTypes/*.cpp)
 add_library (Obstacle ${Obstacle_sources})
-add_library (VirtualMeNmpcEngine VirtualMeNmpcEngine.cpp
+add_library (VMeNmpcEngine VMeNmpcEngine.cpp
                                  Subject.cpp
-                                 VirtualMeCommand.cpp
+                                 VMeCommand.cpp
             )
 add_library (Nav2Robot Nav2Robot.cpp)
 

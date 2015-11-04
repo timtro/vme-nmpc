@@ -19,23 +19,23 @@
 #ifndef VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_
 #define VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_
 
-#include "../VirtualMeLogger.hpp"
+#include "../VMeLogger.hpp"
 #include "../CFileContainer.hpp"
 
-class VirtualMeModel;
-class VirtualMeSDMinimizer;
+class VMeModel;
+class VMeNaiveSdMinimizer;
 
-class StdoutJsonLogger : public VirtualMeLogger {
-  VirtualMeModel* model{nullptr};
+class JsonLogger : public VMeLogger {
+  VMeModel* model{nullptr};
   FILE* fp_out{stdout};
   std::unique_ptr<CFileContainer> logFile;
   mutable bool printedFirstObject{false};
 
  public:
-  StdoutJsonLogger(NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>*);
-  StdoutJsonLogger(NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>*, FILE*);
-  StdoutJsonLogger(NmpcModel<xyth, fp_point2d, up_VirtualMeCommand>*, std::string);
-  ~StdoutJsonLogger();
+  JsonLogger(NmpcModel<xyth, fp_point2d, up_VMeCommand>*);
+  JsonLogger(NmpcModel<xyth, fp_point2d, up_VMeCommand>*, FILE*);
+  JsonLogger(NmpcModel<xyth, fp_point2d, up_VMeCommand>*, std::string);
+  ~JsonLogger();
   virtual void logPositionAndError() const noexcept;
 
 };

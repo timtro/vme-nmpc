@@ -21,11 +21,11 @@
 
 #include "../NmpcModel.hpp"
 #include "../Obstacle.hpp"
-#include "../VirtualMeCommand.hpp"
-#include "../VirtualMeNmpcInitPkg.hpp"
+#include "../VMeCommand.hpp"
+#include "../VMeNmpcInitPkg.hpp"
 
-class VirtualMeModel
-    : public NmpcModel<xyth, fp_point2d, up_VirtualMeCommand> {
+class VMeModel
+    : public NmpcModel<xyth, fp_point2d, up_VMeCommand> {
   unsigned N;
   fptype T;
   fptype cruiseSpeed;
@@ -69,7 +69,7 @@ class VirtualMeModel
   fp_array grad;
   fptype gradNorm{0};
 
-  VirtualMeModel(VirtualMeNmpcInitPkg &);
+  VMeModel(VMeNmpcInitPkg &);
   virtual unsigned getHorizonSize() const noexcept;
   virtual fptype getTargetDistance() const noexcept;
   virtual void seed(xyth, fp_point2d);
@@ -79,7 +79,7 @@ class VirtualMeModel
   virtual void computePathPotentialGradient(
       ObstacleContainer &obstacles) noexcept;
   virtual void computeGradient() noexcept;
-  virtual up_VirtualMeCommand getCommand(int) const;
+  virtual up_VMeCommand getCommand(int) const;
 
   fp_array const &getX() const noexcept;
   fp_array const &getDx() const noexcept;

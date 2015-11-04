@@ -16,34 +16,30 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VME_NMPC_VIRTUALMECOMMAND_HPP
-#define VME_NMPC_VIRTUALMECOMMAND_HPP
+#include "VMeNaiveSdMinimizer.hpp"
 
-#include "Nav2Robot.hpp"
-#include <memory>
+MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {
+  sdLoopCount = 0;
+  status = MinimizerCode::active;
+  do {
+    model.computeForecast();
+    model.computeTrackingErrors();
+    model.computeGradient();
+    ++sdLoopCount;
+  } while (iterate());
 
-struct VirtualMeCommand {
-  virtual int execute(Nav2Robot &) = 0;
-};
+  return status;
+}
 
-struct VMeStop : public VirtualMeCommand {
-  virtual int execute(Nav2Robot &rob);
-};
-
-struct VMeV : public VirtualMeCommand {
-  float v = 0;
-  float th = 0;
-  float Dth = 0;
-
-  VMeV(float th, float v, float Dth) : v{v}, th{th}, Dth{Dth} {}
-
-  virtual int execute(Nav2Robot &rob);
-};
-
-struct VMeNullCmd : public VirtualMeCommand {
-  virtual int execute(Nav2Robot &rob);
-};
-
-using up_VirtualMeCommand = std::unique_ptr<VirtualMeCommand>;
-
-#endif  // VME_NMPC_VIRTUALMECOMMAND_HPP
+// TODO: rename takeSdStep
+bool VMeNaiveSdMinimizer::iterate() noexcept {
+  model.Dth -= sdStepFactor * model.grad;
+  if (model.gradNorm < convergenceTolerance) {
+    status = MinimizerCode::success;
+    return false;
+  } else if (sdLoopCount >= maxSteps) {
+    status = MinimizerCode::reachedIterationLimit;
+    return false;
+  } else
+    return true;
+}

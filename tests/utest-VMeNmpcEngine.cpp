@@ -1,34 +1,34 @@
 #include "catch.hpp"
 
-#include "../src/VirtualMeNmpcEngine.hpp"
-#include "FakeVirtualMeModel.hpp"
+#include "../src/VMeNmpcEngine.hpp"
+#include "FakeVMeModel.hpp"
 #include "FakeMinimizer.hpp"
 #include "FakeExecutor.hpp"
 
 const int standardTestHorizon = 10;
 struct standardTestSetup {
-  VirtualMeNmpcEngine* eng{nullptr};
+  VMeNmpcEngine* eng{nullptr};
 
   standardTestSetup() {
     std::unique_ptr<vMeModel> mod{
-        new FakeVirtualMeModel{standardTestHorizon}};
+        new FakeVMeModel{standardTestHorizon}};
     std::unique_ptr<NmpcMinimizer> min{new FakeMinimizer{}};
-    eng = new VirtualMeNmpcEngine{std::move(mod), std::move(min)};
+    eng = new VMeNmpcEngine{std::move(mod), std::move(min)};
   }
   ~standardTestSetup() {
     delete eng;
   }
   auto* model() {
-    return dynamic_cast<FakeVirtualMeModel*>(eng->getModelPointer());
+    return dynamic_cast<FakeVMeModel*>(eng->getModelPointer());
   }
   auto* minimizer() {
     return dynamic_cast<FakeMinimizer*>(eng->getMinimizerPointer());
   }
 };
 
-bool isStopCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
-bool isNullCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
-bool isMoveCmd(VirtualMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
+bool isStopCmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
+bool isNullCmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
+bool isMoveCmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
 TEST_CASE("Throw appropriately if we try to attach the same observer twice.") {
   standardTestSetup test;

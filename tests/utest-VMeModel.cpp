@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "../src/NmpcModels/VirtualMeModel.hpp"
+#include "../src/NmpcModels/VMeModel.hpp"
 #include "../src/ObstacleTypes/PointObstacle.hpp"
 #include "../src/trig.hpp"
 #include "test_helpers.hpp"
@@ -10,15 +10,15 @@ class StandardTestModel {
   unsigned int nmpcHorizon{50};
   float timeInterval{0.1f};
   float speed{0.4};
-  VirtualMeNmpcInitPkg init;
-  std::unique_ptr<VirtualMeModel> model;
+  VMeNmpcInitPkg init;
+  std::unique_ptr<VMeModel> model;
 
   StandardTestModel() {
     init.horizonSize = nmpcHorizon;
     init.timeInterval = timeInterval;
     init.cruiseSpeed = speed;
 
-    model = std::unique_ptr<VirtualMeModel>{new VirtualMeModel{init}};
+    model = std::unique_ptr<VMeModel>{new VMeModel{init}};
     model->seed(xyth{0, 0, 0});
     model->setV(speed);
   }

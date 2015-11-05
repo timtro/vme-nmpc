@@ -23,10 +23,11 @@
 #include <string>
 
 class FakeMinimizer : public NmpcMinimizer {
-  std::string eventHistory{};
+  std::string& eventHistory;
   void recordEvent(char);
 
  public:
+  FakeMinimizer(std::string&);
   virtual MinimizerCode solveOptimalControlHorizon() noexcept;
   std::string getEventHistory();
 };

@@ -21,7 +21,6 @@
 
 #include "../NmpcModel.hpp"
 #include "../Obstacle.hpp"
-#include "../VMeCommand.hpp"
 #include "../VMeNmpcInitPkg.hpp"
 
 class VMeModel

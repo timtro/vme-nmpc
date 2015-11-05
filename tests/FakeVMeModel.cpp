@@ -22,7 +22,8 @@ void FakeVMeModel::recordEvent(char eventCode) const {
   eventHistory += eventCode;
 }
 
-FakeVMeModel::FakeVMeModel(unsigned N) : N{N} {}
+FakeVMeModel::FakeVMeModel(std::string& history, unsigned N)
+    : eventHistory(history), N{N} {}
 
 unsigned FakeVMeModel::getHorizonSize() const { return N; }
 

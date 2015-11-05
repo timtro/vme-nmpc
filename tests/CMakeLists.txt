@@ -40,7 +40,7 @@ add_executable (${testname} ${testname}.cpp
 target_link_libraries (${testname} CATCH VMeNmpcEngine Obstacle)
 create_test(${testname})
 
-set(testname itest-virtualME_Model-SDmin)
+set(testname itest-VMe-Model_NaiveSdMinimizer)
 add_executable (${testname} ${testname}.cpp
                     ../src/NmpcModels/VMeModel.cpp
                     ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp

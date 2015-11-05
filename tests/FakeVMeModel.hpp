@@ -24,14 +24,14 @@
 
 class FakeVMeModel
     : public NmpcModel<xyth, fp_point2d, up_VMeCommand> {
-  mutable std::string eventHistory{};
+  std::string& eventHistory;
   fptype distanceToTarget;
   void recordEvent(char) const;
 
  public:
   unsigned N = 0;
 
-  FakeVMeModel(unsigned);
+  FakeVMeModel(std::string&, unsigned);
   virtual ~FakeVMeModel() = default;
   virtual unsigned getHorizonSize() const;
   virtual fptype getTargetDistance() const noexcept;

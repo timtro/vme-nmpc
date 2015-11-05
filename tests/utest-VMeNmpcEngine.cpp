@@ -8,11 +8,12 @@
 const int standardTestHorizon = 10;
 struct standardTestSetup {
   VMeNmpcEngine* eng{nullptr};
+  std::string callRecord;
 
   standardTestSetup() {
     std::unique_ptr<vMeModel> mod{
-        new FakeVMeModel{standardTestHorizon}};
-    std::unique_ptr<NmpcMinimizer> min{new FakeMinimizer{}};
+        new FakeVMeModel{callRecord, standardTestHorizon}};
+    std::unique_ptr<NmpcMinimizer> min{new FakeMinimizer{callRecord}};
     eng = new VMeNmpcEngine{std::move(mod), std::move(min)};
   }
   ~standardTestSetup() {
@@ -46,7 +47,7 @@ TEST_CASE(
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyth{1, 1, 0}, fp_point2d{1, 1});
   // Should have called (S)eed (D)istanceToTarget and (H)alt:
-  REQUIRE(test.model()->getEventHistory() == "SD");
+  REQUIRE(test.callRecord == "SD");
   REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
   REQUIRE(test.eng->isHalted());
 }
@@ -59,8 +60,7 @@ TEST_CASE(
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
-  REQUIRE(test.model()->getEventHistory() == "SDC");
-  REQUIRE(test.minimizer()->getEventHistory() == "O");
+  REQUIRE(test.callRecord == "SDOC");
   REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
 }
 

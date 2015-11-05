@@ -48,7 +48,8 @@ struct standardTestSetup {
 TEST_CASE(
     "Throw LoggerIsIncompatibleWithModelType if I try to pass an unfamilliar "
     "model to the logger initializer") {
-  std::unique_ptr<vMeModel> mod{new FakeVMeModel{10}};
+  std::string notUsed;
+  std::unique_ptr<vMeModel> mod(new FakeVMeModel(notUsed, 10));
 
   REQUIRE_THROWS_AS(
       std::unique_ptr<VMeLogger> logger{new JsonLogger(mod.get())};

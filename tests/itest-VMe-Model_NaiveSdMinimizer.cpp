@@ -9,7 +9,7 @@
 #include "../src/trig.hpp"
 
 struct standardTestSetup {
-  VMeNmpcEngine* eng{nullptr};
+  std::unique_ptr<VMeNmpcEngine> eng{nullptr};
   unsigned int nmpcHorizon = 50;
   float timeInterval = 0.1f;
   float speed = .4;
@@ -21,13 +21,13 @@ struct standardTestSetup {
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
-    init.R = init.Q/4;
+    init.R = init.Q / 4;
     std::unique_ptr<VMeModel> mod{new VMeModel{init}};
     std::unique_ptr<VMeNaiveSdMinimizer> min{
         new VMeNaiveSdMinimizer{mod.get()}};
     std::unique_ptr<JsonLogger> logger{new JsonLogger(mod.get())};
-    eng = new VMeNmpcEngine{std::move(mod), std::move(min),
-                                  std::move(logger)};
+    eng = std::make_unique<VMeNmpcEngine>(std::move(mod), std::move(min),
+                                          std::move(logger));
   }
 
   standardTestSetup(std::string logFilePath) {
@@ -38,15 +38,11 @@ struct standardTestSetup {
     init.Q0 = init.Q / 2;
     std::unique_ptr<VMeModel> mod{new VMeModel{init}};
     std::unique_ptr<NmpcMinimizer> min{new VMeNaiveSdMinimizer{mod.get()}};
-    std::unique_ptr<JsonLogger> logger{
-        new JsonLogger(mod.get(), logFilePath)};
-    eng = new VMeNmpcEngine{std::move(mod), std::move(min),
-                                  std::move(logger)};
+    std::unique_ptr<JsonLogger> logger{new JsonLogger(mod.get(), logFilePath)};
+    eng = std::make_unique<VMeNmpcEngine>(std::move(mod), std::move(min),
+                                          std::move(logger));
   }
-  ~standardTestSetup() { delete eng; }
-  auto* model() {
-    return dynamic_cast<VMeModel*>(eng->getModelPointer());
-  }
+  auto* model() { return dynamic_cast<VMeModel*>(eng->getModelPointer()); }
   auto* minimizer() { return eng->getMinimizerPointer(); }
 };
 
@@ -56,7 +52,7 @@ bool isMoveCmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
 TEST_CASE("Whatever") {
   standardTestSetup test{"itest.log.json"};
-  FakeExecutor exec(test.eng);
+  FakeExecutor exec(test.eng.get());
 
   test.eng->seed(xyth{0, 0, 0}, fp_point2d{3, 4});
   while (isMoveCmd(exec.commandFromLastNotify.get())) {

@@ -9,10 +9,9 @@ set(testname utest-VMeNmpcEngine)
                         FakeVMeModel.cpp
                         FakeMinimizer.cpp
                         FakeExecutor.cpp
-                        ../src/Nav2Robot.cpp
                         ../src/VMeCommand.cpp
                     )
-    target_link_libraries (${testname} CATCH VMeNmpcEngine)
+    target_link_libraries (${testname} CATCH VMeNmpcEngine Nav2Robot)
     create_test(${testname})
 
 set(testname utest-ObstacleContainer)
@@ -21,7 +20,7 @@ set(testname utest-ObstacleContainer)
     target_link_libraries (${testname} CATCH Obstacle)
     create_test(${testname})
 
-    set(testname utest-VMeModel)
+set(testname utest-VMeModel)
     add_executable (${testname} ${testname}.cpp)
     target_link_libraries (${testname} CATCH Obstacle VMeModel)
     create_test(${testname})

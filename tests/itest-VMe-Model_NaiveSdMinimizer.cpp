@@ -8,14 +8,14 @@
 
 #include "../src/trig.hpp"
 
-struct standardTestSetup {
+struct TestSetup {
   std::unique_ptr<VMeNmpcEngine> eng{nullptr};
   unsigned int nmpcHorizon = 50;
   float timeInterval = 0.1f;
   float speed = .4;
   VMeNmpcInitPkg init;
 
-  standardTestSetup() {
+  TestSetup() {
     init.horizonSize = nmpcHorizon;
     init.timeInterval = timeInterval;
     init.cruiseSpeed = speed;
@@ -30,7 +30,7 @@ struct standardTestSetup {
                                           std::move(logger));
   }
 
-  standardTestSetup(std::string logFilePath) {
+  TestSetup(std::string logFilePath) {
     init.horizonSize = nmpcHorizon;
     init.timeInterval = timeInterval;
     init.cruiseSpeed = speed;
@@ -51,7 +51,7 @@ bool isNullCmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
 bool isMoveCmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
 TEST_CASE("Whatever") {
-  standardTestSetup test{"itest.log.json"};
+  TestSetup test{"itest.log.json"};
   FakeExecutor exec(test.eng.get());
 
   test.eng->seed(xyth{0, 0, 0}, fp_point2d{3, 4});

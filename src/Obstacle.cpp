@@ -21,9 +21,7 @@
 
 fp_point2d ObstacleContainer::gradPhi(fp_point2d refPoint) {
   auto sum = fp_point2d{0.f, 0.f};
-
   for (auto const& each : obstacles) sum += each->gradPhi(refPoint);
-
   return sum;
 }
 

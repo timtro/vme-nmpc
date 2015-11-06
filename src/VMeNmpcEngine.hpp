@@ -25,6 +25,7 @@
 #include "NmpcMinimizer.hpp"
 #include "NmpcModel.hpp"
 #include "VMeLogger.hpp"
+#include "VMeNmpcInitPkg.hpp"
 
 class NmpcMinimizer;
 
@@ -41,13 +42,7 @@ class VMeNmpcEngine : public Subject {
  public:
   fp_point2d currentTarget;
 
-  VMeNmpcEngine(
-      std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>>,
-      std::unique_ptr<NmpcMinimizer>);
-  VMeNmpcEngine(
-      std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>>,
-      std::unique_ptr<NmpcMinimizer>,
-      std::unique_ptr<VMeLogger>);
+  VMeNmpcEngine(VMeNmpcInitPkg&);
   void setTarget(fp_point2d point);
   up_VMeCommand nextCommand();
   void seed(xyth, fp_point2d);

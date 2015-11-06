@@ -19,10 +19,7 @@
 #include "VMeNaiveSdMinimizer.hpp"
 
 VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(VMeNmpcInitPkg& init) {
-  if (!init._hasInitializedModel_ || (init.model.get() == nullptr))
-    throw InitPkgDoesNotContainPointerToAModel();
-  else if (init._hasInitializedMinimizer_ || (init.minimizer.get() != nullptr) )
-    throw InitPkgCanOnlyBeUsedOnceToInitializeAMinimizer();
+  init.bindToMinimizer(this);
   model = dynamic_cast<VMeModel*>(init.model.get());
 }
 

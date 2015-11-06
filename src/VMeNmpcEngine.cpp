@@ -19,20 +19,13 @@
 #include "VMeNmpcEngine.hpp"
 #include "NmpcModel.hpp"
 
-VMeNmpcEngine::VMeNmpcEngine(
-    std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model,
-    std::unique_ptr<NmpcMinimizer> minimizer)
-    : model{std::move(model)}, minimizer{std::move(minimizer)} {
-  logger = std::unique_ptr<VMeLogger>{new VMeLogger};
-}
 
-VMeNmpcEngine::VMeNmpcEngine(
-    std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model,
-    std::unique_ptr<NmpcMinimizer> minimizer,
-    std::unique_ptr<VMeLogger> logger)
-    : model{std::move(model)},
-      minimizer{std::move(minimizer)},
-      logger{std::move(logger)} {}
+VMeNmpcEngine::VMeNmpcEngine(VMeNmpcInitPkg& init) {
+  //TODO Safety checks
+  model = std::move(init.model);
+  minimizer = std::move(init.minimizer);
+  logger = std::move(init.logger);
+}
 
 void VMeNmpcEngine::setTarget(fp_point2d point) { currentTarget = point; }
 

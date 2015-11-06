@@ -21,6 +21,7 @@
 
 #include "../src/NmpcModel.hpp"
 #include "../src/VMeCommand.hpp"
+#include "../src/VMeNmpcInitPkg.hpp"
 
 class FakeVMeModel
     : public NmpcModel<xyth, fp_point2d, up_VMeCommand> {
@@ -31,7 +32,7 @@ class FakeVMeModel
  public:
   unsigned N = 0;
 
-  FakeVMeModel(std::string&, unsigned);
+  FakeVMeModel(VMeNmpcInitPkg&, std::string&);
   virtual ~FakeVMeModel() = default;
   virtual unsigned getHorizonSize() const;
   virtual fptype getTargetDistance() const noexcept;

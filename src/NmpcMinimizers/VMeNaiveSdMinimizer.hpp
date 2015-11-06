@@ -39,7 +39,4 @@ class VMeNaiveSdMinimizer : public NmpcMinimizer {
   virtual MinimizerCode solveOptimalControlHorizon() noexcept;
 };
 
-class InitPkgDoesNotContainPointerToAModel : public std::exception {};
-class InitPkgCanOnlyBeUsedOnceToInitializeAMinimizer : public std::exception {};
-
 #endif  // VME_NMPC_VIRTUALMESDMINIMIZER_HPP_

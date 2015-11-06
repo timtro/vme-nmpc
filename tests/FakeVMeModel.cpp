@@ -18,12 +18,15 @@
 
 #include "FakeVMeModel.hpp"
 
+FakeVMeModel::FakeVMeModel(VMeNmpcInitPkg& init, std::string& history)
+    : eventHistory(history), N(init.horizonSize) {
+    init.model = std::unique_ptr<NmpcModel>(this);
+    init._hasInitializedModel_ = true;
+}
+
 void FakeVMeModel::recordEvent(char eventCode) const {
   eventHistory += eventCode;
 }
-
-FakeVMeModel::FakeVMeModel(std::string& history, unsigned N)
-    : eventHistory(history), N{N} {}
 
 unsigned FakeVMeModel::getHorizonSize() const { return N; }
 

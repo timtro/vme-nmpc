@@ -6,41 +6,37 @@
 #include "FakeVMeModel.hpp"
 #include "../src/CFileContainer.hpp"
 
-struct standardTestSetup {
+struct TestObject {
   VMeNmpcEngine* eng{nullptr};
   unsigned int nmpcHorizon = 10;
   float timeInterval = 0.1f;
   float speed = .4;
   VMeNmpcInitPkg init;
 
-  standardTestSetup() {
+  TestObject() {
     init.horizonSize = nmpcHorizon;
     init.timeInterval = timeInterval;
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
-    std::unique_ptr<VMeModel> mod{new VMeModel{init}};
-    std::unique_ptr<VMeNaiveSdMinimizer> min{
-        new VMeNaiveSdMinimizer{mod.get()}};
-    std::unique_ptr<JsonLogger> logger{new JsonLogger(mod.get())};
-    eng = new VMeNmpcEngine{std::move(mod), std::move(min),
-                                  std::move(logger)};
+    new VMeModel{init};
+    new VMeNaiveSdMinimizer{init};
+    new JsonLogger{init};
+    eng = new VMeNmpcEngine{init};
   }
 
-  standardTestSetup(std::string logFilePath) {
+  TestObject(std::string logFilePath) {
     init.horizonSize = nmpcHorizon;
     init.timeInterval = timeInterval;
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
-    std::unique_ptr<VMeModel> mod{new VMeModel{init}};
-    std::unique_ptr<NmpcMinimizer> min{new VMeNaiveSdMinimizer{mod.get()}};
-    std::unique_ptr<JsonLogger> logger{
-        new JsonLogger(mod.get(), logFilePath)};
-    eng = new VMeNmpcEngine{std::move(mod), std::move(min),
-                                  std::move(logger)};
+    new VMeModel{init};
+    new VMeNaiveSdMinimizer{init};
+    new JsonLogger{init, logFilePath};
+    eng = new VMeNmpcEngine{init};
   }
-  ~standardTestSetup() { delete eng; }
+  ~TestObject() { delete eng; }
   auto* model() { return eng->_getModelPointer_(); }
   auto* minimizer() { return eng->_getMinimizerPointer_(); }
 };
@@ -49,19 +45,19 @@ TEST_CASE(
     "Throw LoggerIsIncompatibleWithModelType if I try to pass an unfamilliar "
     "model to the logger initializer") {
   std::string notUsed;
-  std::unique_ptr<vMeModel> mod(new FakeVMeModel(notUsed, 10));
+  VMeNmpcInitPkg init;
+  init.horizonSize = 5;
+  new FakeVMeModel(init, notUsed);
 
-  REQUIRE_THROWS_AS(
-      std::unique_ptr<VMeLogger> logger{new JsonLogger(mod.get())};
-      , LoggerIsIncompatibleWithModelType);
+  REQUIRE_THROWS_AS(new JsonLogger(init), LoggerIsIncompatibleWithModelType);
 }
 
 TEST_CASE("Straightforward write to stdout with nothing to assert.") {
-  standardTestSetup test;
+  TestObject test;
   test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 0});
 }
 
-TEST_CASE("Logger write to file. TODO: Assert against file contents.") {
-  standardTestSetup test("loggertest.log");
-  test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 0});
-}
+// TEST_CASE("Logger write to file. TODO: Assert against file contents.") {
+//   TestObject test("loggertest.log");
+//   test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 0});
+// }

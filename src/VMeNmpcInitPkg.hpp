@@ -38,8 +38,7 @@ struct VMeNmpcInitPkg {
   fptype R{0};
   fptype sdStepFactor{0};
   fptype sdConvergenceTolerance{0};
-  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model{
-      nullptr};
+  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model{nullptr};
   std::unique_ptr<NmpcMinimizer> minimizer{nullptr};
   std::unique_ptr<VMeLogger> logger{nullptr};
   std::shared_ptr<ObstacleContainer> obstacles{nullptr};
@@ -49,6 +48,20 @@ struct VMeNmpcInitPkg {
   bool _hasInitializedModel_{false};
   bool _hasInitializedMinimizer_{false};
   bool _hasInitializedLogger_{false};
+
+  bool bindToModel(NmpcModel<xyth, fp_point2d, up_VMeCommand>*);
+  bool bindToMinimizer(NmpcMinimizer*);
+  bool bindToLogger(VMeLogger*);
 };
+
+class ModelMustBeInitializedBeforeMinimizerOrLogger : public std::exception {};
+class InitPkgCanOnlyBeUsedOnceToInitializeAModel : public std::exception {};
+class InitPkgDoesNotContainPointerToAModelForMinimizer : public std::exception {
+};
+class InitPkgCanOnlyBeUsedOnceToInitializeASingleMinimizer
+    : public std::exception {};
+class InitPkgDoesNotContainPointerToAModelForLogger : public std::exception {};
+class InitPkgDoesNotContainPointerToAMinimizerForLogger
+    : public std::exception {};
 
 #endif  // VME_NMPC_NMPCINITPKG_HPP_

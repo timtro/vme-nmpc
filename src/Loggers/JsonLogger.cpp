@@ -20,30 +20,29 @@
 #include "../NmpcModels/VMeModel.hpp"
 #include <cstdio>
 
-JsonLogger::JsonLogger(
-    NmpcModel<xyth, fp_point2d, up_VMeCommand>* model) {
-  auto modelToLog = dynamic_cast<VMeModel*>(model);
-  if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
-  this->model = modelToLog;
+auto guranteedCompatibleModel(NmpcModel<xyth, fp_point2d, up_VMeCommand>* model) {
+  auto modelToBeLogged = dynamic_cast<VMeModel*>(model);
+  if (modelToBeLogged == nullptr) throw LoggerIsIncompatibleWithModelType();
+  return modelToBeLogged;
+}
+
+JsonLogger::JsonLogger(VMeNmpcInitPkg& init) {
+  init.bindToLogger(this);
+  this->model = guranteedCompatibleModel(init.model.get());
   fprintf(fp_out, "[\n");
 }
 
-JsonLogger::JsonLogger(
-    NmpcModel<xyth, fp_point2d, up_VMeCommand>* model,
-    FILE* outputFilePtr)
+JsonLogger::JsonLogger(VMeNmpcInitPkg& init, FILE* outputFilePtr)
     : fp_out{outputFilePtr} {
-  auto modelToLog = dynamic_cast<VMeModel*>(model);
-  if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
-  this->model = modelToLog;
+  init.bindToLogger(this);
+  this->model = guranteedCompatibleModel(init.model.get());
   fprintf(fp_out, "[\n");
 }
 
-JsonLogger::JsonLogger(
-    NmpcModel<xyth, fp_point2d, up_VMeCommand>* model,
-    std::string outputFilePath) {
-  auto modelToLog = dynamic_cast<VMeModel*>(model);
-  if (modelToLog == nullptr) throw LoggerIsIncompatibleWithModelType();
-  this->model = modelToLog;
+JsonLogger::JsonLogger(VMeNmpcInitPkg& init, std::string outputFilePath) {
+  init.bindToLogger(this);
+  this->model = guranteedCompatibleModel(init.model.get());
+
   logFile = std::make_unique<CFileContainer>(outputFilePath);
   fp_out = logFile->fd;
   fprintf(fp_out, "[\n");

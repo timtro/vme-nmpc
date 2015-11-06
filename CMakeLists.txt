@@ -22,13 +22,13 @@ set(CMAKE_BUILD_TYPE debug)
 # set(LIBRARY_OUTPUT_PATH ${bld_dir} CACHE PATH "Build directory" FORCE)
 
 set(warnings "-Wall -Wextra -pedantic")
-set(optimizations "-flto") #for perf: -fno-omit-frame-pointer
+set(optimizations "-O0") # -flto for perf: -fno-omit-frame-pointer
 set(debug "-g")
 #-ffast-math -O3
 
 # for clang++ use -fuse-ld=gold to avoid LD error "File format not recognized"
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold") # -fsanitize=address conflicts with CATCH
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold -fsanitize=address") # -fsanitize=address conflicts with CATCH
 endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -std=c++14 ${warnings} ${optimizations} ${debug}")

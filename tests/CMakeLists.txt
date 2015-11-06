@@ -22,7 +22,7 @@ set(testname utest-ObstacleContainer)
 
 set(testname utest-VMeModel)
     add_executable (${testname} ${testname}.cpp)
-    target_link_libraries (${testname} CATCH Obstacle VMeModel)
+    target_link_libraries (${testname} CATCH Obstacle VMeModel VMeNmpcInitPkg)
     create_test(${testname})
 
 set(testname utest-JsonLogger)
@@ -32,15 +32,15 @@ set(testname utest-JsonLogger)
                         ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp
                         ../src/Loggers/JsonLogger.cpp
                     )
-    target_link_libraries (${testname} CATCH VMeNmpcEngine VMeModel Obstacle)
+    target_link_libraries (${testname} CATCH VMeNmpcEngine VMeModel Obstacle VMeNmpcInitPkg)
     create_test(${testname})
 
 set(testname utest-VMeNaiveSdMinimizer)
     add_executable (${testname} ${testname}.cpp
-                        ../src/NmpcModels/VMeModel.cpp
+                        FakeVMeModel.cpp
                         ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp
                     )
-    target_link_libraries (${testname} CATCH Obstacle VMeModel)
+    target_link_libraries (${testname} CATCH VMeModel Obstacle VMeNmpcInitPkg)
     create_test(${testname})
 
 set(testname itest-VMe-Model_NaiveSdMinimizer)
@@ -51,6 +51,9 @@ set(testname itest-VMe-Model_NaiveSdMinimizer)
                     )
     target_link_libraries (${testname} CATCH VMeNmpcEngine VMeModel Obstacle ${Boost_LIBRARIES})
     create_test(${testname})
+
+# add_executable(non-catch-test non-catch-test.cpp FakeVMeModel.cpp ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp)
+# target_link_libraries (non-catch-test VMeModel Obstacle)
 
 #set(testname PathPlannerTest)
 #add_executable (${testname} ${testname}.cpp)

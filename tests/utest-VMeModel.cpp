@@ -71,8 +71,8 @@ TEST_CASE(
   TestObject m;
   m.model->setV(0.);
   m.model->computeForecast();
-  REQUIRE(eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
-  REQUIRE(eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
+  REQUIRE(thlp::eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
+  REQUIRE(thlp::eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
 }
 
 template <typename T>
@@ -86,12 +86,12 @@ TEST_CASE(
     "drive a straight line along the +x-axis in a forecast horizon.") {
   TestObject m;
   m.model->setV(0.0);
-  REQUIRE(eachInArrayIsApprox(m.model->getV(), m.model->getV()[0], 1e-5f));
+  REQUIRE(thlp::eachInArrayIsApprox(m.model->getV(), m.model->getV()[0], 1e-5f));
   m.model->computeForecast();
   REQUIRE(m.model->getX()[m.model->getHorizonSize() - 1] ==
           Approx(linearTravelDistance(m.model->getV()[0], m.timeInterval,
                                       m.horizonSize)));
-  REQUIRE(eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
+  REQUIRE(thlp::eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
 }
 
 TEST_CASE(
@@ -104,7 +104,7 @@ TEST_CASE(
   REQUIRE(m.model->getY()[m.horizonSize - 1] ==
           Approx(linearTravelDistance(m.cruiseSpeed, m.timeInterval,
                                       m.horizonSize)));
-  REQUIRE(eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
+  REQUIRE(thlp::eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
 }
 
 template <typename T>
@@ -129,9 +129,9 @@ TEST_CASE(
   fp_point2d tgt{0, m.cruiseSpeed * m.timeInterval * m.horizonSize};
   m.model->seed(xyth{0, 0, 0}, tgt);
   m.model->computeTrackingErrors();
-  REQUIRE(arraysAreAbsEqual(m.model->getX(), m.model->getEx(), 1e-6));
-  REQUIRE(arraysAreAbsEqual(m.model->getX(), m.model->getEy(), 1e-6));
-  REQUIRE(arraysAreAbsEqual(m.model->getEx(), m.model->getEy(), 1e-6));
+  REQUIRE(thlp::arraysAreAbsEqual(m.model->getX(), m.model->getEx(), 1e-6));
+  REQUIRE(thlp::arraysAreAbsEqual(m.model->getX(), m.model->getEy(), 1e-6));
+  REQUIRE(thlp::arraysAreAbsEqual(m.model->getEx(), m.model->getEy(), 1e-6));
 }
 
 TEST_CASE(

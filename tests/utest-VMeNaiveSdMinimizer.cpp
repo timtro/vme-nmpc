@@ -18,13 +18,14 @@ class TestObject {
   VMeNmpcInitPkg init;
   VMeModel *model;
   VMeNaiveSdMinimizer *minimizer;
+  std::string callRecord;
 
   TestObject() {
     init.horizonSize = horizonSize;
     init.timeInterval = timeInterval;
     init.cruiseSpeed = cruiseSpeed;
 
-    new FakeVMeModel{init};
+    new FakeVMeModel{init, callRecord};
     new VMeNaiveSdMinimizer{init};
     model = dynamic_cast<VMeModel *>(init.model.get());
     model->seed(xyth{0, 0, 0});
@@ -40,17 +41,19 @@ TEST_CASE(
   VMeNmpcInitPkg badInit;
   badInit._hasInitializedModel_ = false;
   REQUIRE_THROWS_AS(std::make_unique<VMeNaiveSdMinimizer>(badInit),
-                    InitPkgDoesNotContainPointerToAModel);
+                    InitPkgDoesNotContainPointerToAModelForMinimizer);
   badInit._hasInitializedModel_ = true;
   // Still throw since init.model == nullptr;
   REQUIRE_THROWS_AS(std::make_unique<VMeNaiveSdMinimizer>(badInit),
-                    InitPkgDoesNotContainPointerToAModel);
+                    InitPkgDoesNotContainPointerToAModelForMinimizer);
 }
 
 TEST_CASE(
     "Throw appropriately if initPkg has already been bound to a minimizer") {
   VMeNmpcInitPkg badInit;
-  badInit._hasInitializedMinimizer_ = true;
+  std::string callRecord;
+  new FakeVMeModel{badInit, callRecord};
+  new VMeNaiveSdMinimizer(badInit);
   REQUIRE_THROWS_AS(std::make_unique<VMeNaiveSdMinimizer>(badInit),
-                    InitPkgCanOnlyBeUsedOnceToInitializeAMinimizer);
+                    InitPkgCanOnlyBeUsedOnceToInitializeASingleMinimizer);
 }

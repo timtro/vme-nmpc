@@ -35,14 +35,7 @@ VMeModel::VMeModel(VMeNmpcInitPkg& init)
       R{init.R} {
   if (init.horizonSize <= 2) throw HorizonSizeShouldBeSensiblyLarge();
 
-  if (init._hasInitializedMinimizer_ || init._hasInitializedLogger_)
-    throw ModelMustBeInitializedBeforeMinimizerOrLogger();
-  else if (init._hasInitializedModel_)
-    throw InitPkgCanOnlyBeUsedOnceToInitializeAModel();
-  else {
-    init._hasInitializedModel_ = true;
-    init.model = std::unique_ptr<NmpcModel>(this);
-  }
+  init.bindToModel(this);
 
   size_t horizonSize = static_cast<size_t>(N);
 

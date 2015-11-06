@@ -73,8 +73,8 @@ void VMeNmpcEngine::seed(xyth pose) {
 
 bool VMeNmpcEngine::isHalted() { return machineIsHalted; }
 
-vMeModel* VMeNmpcEngine::getModelPointer() { return model.get(); }
+vMeModel* VMeNmpcEngine::_getModelPointer_() { return model.get(); }
 
-NmpcMinimizer* VMeNmpcEngine::getMinimizerPointer() {
+NmpcMinimizer* VMeNmpcEngine::_getMinimizerPointer_() {
   return minimizer.get();
 }

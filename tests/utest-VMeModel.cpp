@@ -5,29 +5,70 @@
 #include "../src/trig.hpp"
 #include "test_helpers.hpp"
 
-class StandardTestModel {
+class TestObject {
  public:
-  unsigned int nmpcHorizon{50};
+  unsigned horizonSize{50};
   float timeInterval{0.1f};
-  float speed{0.4};
+  float cruiseSpeed{0.4};
   VMeNmpcInitPkg init;
-  std::unique_ptr<VMeModel> model;
+  VMeModel *model;
 
-  StandardTestModel() {
-    init.horizonSize = nmpcHorizon;
+  TestObject() {
+    init.horizonSize = horizonSize;
     init.timeInterval = timeInterval;
-    init.cruiseSpeed = speed;
+    init.cruiseSpeed = cruiseSpeed;
 
-    model = std::unique_ptr<VMeModel>{new VMeModel{init}};
+    new VMeModel{init};
+    model = dynamic_cast<VMeModel *>(init.model.get());
     model->seed(xyth{0, 0, 0});
-    model->setV(speed);
+    model->setV(cruiseSpeed);
   }
 };
 
+TEST_CASE("Throw appropriately if horizon size is less than reasonable.") {
+  VMeNmpcInitPkg badInit;
+  badInit.horizonSize = 0;
+  REQUIRE_THROWS_AS(auto model = std::make_unique<VMeModel>(badInit),
+                    HorizonSizeShouldBeSensiblyLarge);
+  REQUIRE(badInit._hasInitializedModel_ == false);
+}
+
+TEST_CASE(
+    "Must throw appropriately if the initPkg has been previously used to "
+    "initialize a model") {
+  VMeNmpcInitPkg badInit;
+  badInit.horizonSize = 3;
+  badInit._hasInitializedModel_ = true;
+  REQUIRE_THROWS_AS(auto model = std::make_unique<VMeModel>(badInit),
+                    InitPkgCanOnlyBeUsedOnceToInitializeAModel);
+}
+
+TEST_CASE(
+    "Throw appropriately if the initPkg has been previously used to initialize "
+    "a minimizer (which shouldn't be possible if the minimizer is checking).") {
+  VMeNmpcInitPkg badInit;
+  badInit.horizonSize = 3;
+  badInit._hasInitializedMinimizer_ = true;
+  REQUIRE_THROWS_AS(std::make_unique<VMeModel>(badInit),
+                    ModelMustBeInitializedBeforeMinimizerOrLogger);
+  REQUIRE(badInit._hasInitializedModel_ == false);
+}
+
+TEST_CASE(
+    "Throw appropriately if the initPkg has been previously used to initialize "
+    "a logger (which shouldn't be possible if the logger is checking).") {
+  VMeNmpcInitPkg badInit;
+  badInit.horizonSize = 3;
+  badInit._hasInitializedLogger_ = true;
+  REQUIRE_THROWS_AS(auto model = std::make_unique<VMeModel>(badInit),
+                    ModelMustBeInitializedBeforeMinimizerOrLogger);
+  REQUIRE(badInit._hasInitializedModel_ == false);
+}
+
 TEST_CASE(
     "A machine starting at the origin with no control input and velocity "
-    "should remain stationary throught the forecast horizon.") {
-  StandardTestModel m;
+    "should remain stationary throughout the forecast horizon.") {
+  TestObject m;
   m.model->setV(0.);
   m.model->computeForecast();
   REQUIRE(eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
@@ -35,31 +76,34 @@ TEST_CASE(
 }
 
 template <typename T>
-T linearTravelDistance(T speed, T time_interval, int num_of_intervals) {
-  return (num_of_intervals - 1) * speed * time_interval;
+T linearTravelDistance(T cruiseSpeed, T time_interval, int num_of_intervals) {
+  return (num_of_intervals - 1) * cruiseSpeed * time_interval;
 }
 
 TEST_CASE(
-    "A machine posed at the origin pointing in +x with a constant speed should "
-    "drive a stright line along the +x-axis in a forecast horizon.") {
-  StandardTestModel m;
+    "A machine posed at the origin pointing in +x with a constant cruiseSpeed "
+    "should "
+    "drive a straight line along the +x-axis in a forecast horizon.") {
+  TestObject m;
   m.model->setV(0.0);
   REQUIRE(eachInArrayIsApprox(m.model->getV(), m.model->getV()[0], 1e-5f));
   m.model->computeForecast();
   REQUIRE(m.model->getX()[m.model->getHorizonSize() - 1] ==
           Approx(linearTravelDistance(m.model->getV()[0], m.timeInterval,
-                                      m.nmpcHorizon)));
+                                      m.horizonSize)));
   REQUIRE(eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
 }
 
 TEST_CASE(
-    "A machine posed at the origin pointing in +y with a constant speed should "
-    "drive a stright line along the +y-axis in a forecast horizon") {
-  StandardTestModel m;
+    "A machine posed at the origin pointing in +y with a constant cruiseSpeed "
+    "should "
+    "drive a straight line along the +y-axis in a forecast horizon") {
+  TestObject m;
   m.model->seed(xyth{0, 0, degToRad(90.f)});
   m.model->computeForecast();
-  REQUIRE(m.model->getY()[m.nmpcHorizon - 1] ==
-          Approx(linearTravelDistance(m.speed, m.timeInterval, m.nmpcHorizon)));
+  REQUIRE(m.model->getY()[m.horizonSize - 1] ==
+          Approx(linearTravelDistance(m.cruiseSpeed, m.timeInterval,
+                                      m.horizonSize)));
   REQUIRE(eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
 }
 
@@ -80,9 +124,9 @@ auto pathLength(const T &x, const T &y) -> decltype(x[0] + y[0]) {
 TEST_CASE(
     "Tracking errors when the robot travels along +x and target lies on +y "
     "should form isosceles right triangles") {
-  StandardTestModel m;
+  TestObject m;
   m.model->computeForecast();
-  fp_point2d tgt{0, m.speed * m.timeInterval * m.nmpcHorizon};
+  fp_point2d tgt{0, m.cruiseSpeed * m.timeInterval * m.horizonSize};
   m.model->seed(xyth{0, 0, 0}, tgt);
   m.model->computeTrackingErrors();
   REQUIRE(arraysAreAbsEqual(m.model->getX(), m.model->getEx(), 1e-6));
@@ -91,9 +135,9 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "Should be able to compute potential gradient along path without trowing "
+    "Should be able to compute potential gradient along path without throwing "
     "or faulting") {
-  StandardTestModel m;
+  TestObject m;
   m.model->computeForecast();
   ObstacleContainer obs;
   obs.pushObstacleUniquePtr(

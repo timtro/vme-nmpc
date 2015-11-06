@@ -30,17 +30,25 @@
 class ObstacleContainer;
 
 struct VMeNmpcInitPkg {
-  unsigned int horizonSize;
+  unsigned int horizonSize{0};
   fptype timeInterval{0};
   fptype cruiseSpeed{0};
   fptype Q{0};
   fptype Q0{0};
   fptype R{0};
+  fptype sdStepFactor{0};
+  fptype sdConvergenceTolerance{0};
   std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model{
       nullptr};
   std::unique_ptr<NmpcMinimizer> minimizer{nullptr};
   std::unique_ptr<VMeLogger> logger{nullptr};
   std::shared_ptr<ObstacleContainer> obstacles{nullptr};
+
+  // Used as part of the check system so that objects are initialized in the
+  // correct order.
+  bool _hasInitializedModel_{false};
+  bool _hasInitializedMinimizer_{false};
+  bool _hasInitializedLogger_{false};
 };
 
 #endif  // VME_NMPC_NMPCINITPKG_HPP_

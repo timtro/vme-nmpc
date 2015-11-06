@@ -26,13 +26,24 @@
 #include "../VMeNmpcInitPkg.hpp"
 #include "../VMeCommand.hpp"
 
-VMeModel::VMeModel(VMeNmpcInitPkg& ini)
-    : N{ini.horizonSize},
-      T{ini.timeInterval},
-      cruiseSpeed{ini.cruiseSpeed},
-      Q{ini.Q},
-      Q0{ini.Q0},
-      R{ini.R} {
+VMeModel::VMeModel(VMeNmpcInitPkg& init)
+    : N{init.horizonSize},
+      T{init.timeInterval},
+      cruiseSpeed{init.cruiseSpeed},
+      Q{init.Q},
+      Q0{init.Q0},
+      R{init.R} {
+  if (init.horizonSize <= 2) throw HorizonSizeShouldBeSensiblyLarge();
+
+  if (init._hasInitializedMinimizer_ || init._hasInitializedLogger_)
+    throw ModelMustBeInitializedBeforeMinimizerOrLogger();
+  else if (init._hasInitializedModel_)
+    throw InitPkgCanOnlyBeUsedOnceToInitializeAModel();
+  else {
+    init._hasInitializedModel_ = true;
+    init.model = std::unique_ptr<NmpcModel>(this);
+  }
+
   size_t horizonSize = static_cast<size_t>(N);
 
   // State Vector:
@@ -61,9 +72,7 @@ VMeModel::VMeModel(VMeNmpcInitPkg& ini)
 
 unsigned VMeModel::getHorizonSize() const noexcept { return N; }
 
-fptype VMeModel::getTargetDistance() const noexcept {
-  return distanceToTarget;
-}
+fptype VMeModel::getTargetDistance() const noexcept { return distanceToTarget; }
 
 void VMeModel::seed(xyth pose, fp_point2d target) {
   absoluteTarget = target;
@@ -143,7 +152,7 @@ void VMeModel::computeGradient() noexcept {
     py[k] = Q * ey[k] - DPhiY[k] + py[k + 1];
     pDy[k] = py[k + 1] * T;
     pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k]) -
-              pDx[k + 1] * v[k] * std::sin(th[k]);
+             pDx[k + 1] * v[k] * std::sin(th[k]);
     grad[k] = R * Dth[k] + pth[k + 1] * T;
     gradNorm += grad[k] * grad[k];
   }

@@ -49,7 +49,7 @@ set(testname itest-VMe-Model_NaiveSdMinimizer)
                         ../src/Loggers/JsonLogger.cpp
                         FakeExecutor.cpp
                     )
-    target_link_libraries (${testname} CATCH VMeNmpcEngine VMeModel Obstacle)
+    target_link_libraries (${testname} CATCH VMeNmpcEngine VMeModel Obstacle ${Boost_LIBRARIES})
     create_test(${testname})
 
 #set(testname PathPlannerTest)

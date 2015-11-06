@@ -20,10 +20,10 @@ struct standardTestSetup {
     delete eng;
   }
   auto* model() {
-    return dynamic_cast<FakeVMeModel*>(eng->getModelPointer());
+    return dynamic_cast<FakeVMeModel*>(eng->_getModelPointer_());
   }
   auto* minimizer() {
-    return dynamic_cast<FakeMinimizer*>(eng->getMinimizerPointer());
+    return dynamic_cast<FakeMinimizer*>(eng->_getMinimizerPointer_());
   }
 };
 

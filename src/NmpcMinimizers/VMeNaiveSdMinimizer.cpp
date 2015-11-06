@@ -18,13 +18,21 @@
 
 #include "VMeNaiveSdMinimizer.hpp"
 
+VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(VMeNmpcInitPkg& init) {
+  if (!init._hasInitializedModel_ || (init.model.get() == nullptr))
+    throw InitPkgDoesNotContainPointerToAModel();
+  else if (init._hasInitializedMinimizer_ || (init.minimizer.get() != nullptr) )
+    throw InitPkgCanOnlyBeUsedOnceToInitializeAMinimizer();
+  model = dynamic_cast<VMeModel*>(init.model.get());
+}
+
 MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {
   sdLoopCount = 0;
   status = MinimizerCode::active;
   do {
-    model.computeForecast();
-    model.computeTrackingErrors();
-    model.computeGradient();
+    model->computeForecast();
+    model->computeTrackingErrors();
+    model->computeGradient();
     ++sdLoopCount;
   } while (iterate());
 
@@ -33,8 +41,8 @@ MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {
 
 // TODO: rename takeSdStep
 bool VMeNaiveSdMinimizer::iterate() noexcept {
-  model.Dth -= sdStepFactor * model.grad;
-  if (model.gradNorm < convergenceTolerance) {
+  model->Dth -= sdStepFactor * model->grad;
+  if (model->gradNorm < convergenceTolerance) {
     status = MinimizerCode::success;
     return false;
   } else if (sdLoopCount >= maxSteps) {

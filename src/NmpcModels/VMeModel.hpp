@@ -94,4 +94,8 @@ class VMeModel
   void setV(fptype);
 };
 
+class ModelMustBeInitializedBeforeMinimizerOrLogger : public std::exception {};
+class InitPkgCanOnlyBeUsedOnceToInitializeAModel: public std::exception {};
+class HorizonSizeShouldBeSensiblyLarge: public std::exception {};
+
 #endif  // VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP_

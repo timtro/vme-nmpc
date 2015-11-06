@@ -41,8 +41,8 @@ struct standardTestSetup {
                                   std::move(logger)};
   }
   ~standardTestSetup() { delete eng; }
-  auto* model() { return eng->getModelPointer(); }
-  auto* minimizer() { return eng->getMinimizerPointer(); }
+  auto* model() { return eng->_getModelPointer_(); }
+  auto* minimizer() { return eng->_getMinimizerPointer_(); }
 };
 
 TEST_CASE(

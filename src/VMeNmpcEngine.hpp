@@ -53,8 +53,8 @@ class VMeNmpcEngine : public Subject {
   void seed(xyth, fp_point2d);
   void seed(xyth);
   bool isHalted();
-  vMeModel* getModelPointer();
-  NmpcMinimizer* getMinimizerPointer();
+  vMeModel* _getModelPointer_();
+  NmpcMinimizer* _getMinimizerPointer_();
 };
 
 class MinimizerReachedIterationLimit : public std::exception {};

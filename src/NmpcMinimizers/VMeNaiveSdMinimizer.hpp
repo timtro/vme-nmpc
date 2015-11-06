@@ -21,25 +21,25 @@
 
 #include "../NmpcMinimizer.hpp"
 #include "../NmpcModels/VMeModel.hpp"
+#include "../VMeNmpcInitPkg.hpp"
 
 class VMeNaiveSdMinimizer : public NmpcMinimizer {
-  VMeModel& model;
+  VMeModel* model{nullptr};
   unsigned sdLoopCount{0};
   unsigned maxSteps{1000};
-  fptype gradDotPrevGrad{0};
   fptype sdStepFactor{.1};
   fptype convergenceTolerance{.1};
-  decltype(model.grad) prevGrad;
   MinimizerCode status{MinimizerCode::idle};
 
   bool iterate() noexcept;
 
  public:
-  VMeNaiveSdMinimizer(VMeModel* model_) : model{*model_} {
-    prevGrad = model.grad;
-  }
+  VMeNaiveSdMinimizer(VMeNmpcInitPkg&);
 
   virtual MinimizerCode solveOptimalControlHorizon() noexcept;
 };
+
+class InitPkgDoesNotContainPointerToAModel : public std::exception {};
+class InitPkgCanOnlyBeUsedOnceToInitializeAMinimizer : public std::exception {};
 
 #endif  // VME_NMPC_VIRTUALMESDMINIMIZER_HPP_

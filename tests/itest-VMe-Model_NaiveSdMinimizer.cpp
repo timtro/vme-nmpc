@@ -42,8 +42,8 @@ struct TestSetup {
     eng = std::make_unique<VMeNmpcEngine>(std::move(mod), std::move(min),
                                           std::move(logger));
   }
-  auto* model() { return dynamic_cast<VMeModel*>(eng->getModelPointer()); }
-  auto* minimizer() { return eng->getMinimizerPointer(); }
+  auto* model() { return dynamic_cast<VMeModel*>(eng->_getModelPointer_()); }
+  auto* minimizer() { return eng->_getMinimizerPointer_(); }
 };
 
 bool isStopCmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }

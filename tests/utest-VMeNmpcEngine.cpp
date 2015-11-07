@@ -5,21 +5,19 @@
 #include "FakeVMeMinimizer.hpp"
 #include "FakeExecutor.hpp"
 
-struct standardTestSetup {
+struct TestObject {
   VMeNmpcEngine* eng{nullptr};
   std::string callRecord;
   VMeNmpcInitPkg init;
   unsigned horizonSize = 5;
 
-  standardTestSetup() {
+  TestObject() {
     init.horizonSize = horizonSize;
     new FakeVMeModel{init, callRecord};
     new FakeVMeMinimizer{init, callRecord};
     eng = new VMeNmpcEngine{init};
   }
-  ~standardTestSetup() {
-    delete eng;
-  }
+  ~TestObject() { delete eng; }
   auto* model() {
     return dynamic_cast<FakeVMeModel*>(eng->_getModelPointer_());
   }
@@ -32,12 +30,10 @@ bool isStopCmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
 bool isNullCmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
 bool isMoveCmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
-
-
 TEST_CASE(
     "When the robot is on the target the controller should return the command "
     "to stop, and should have halted the model.") {
-  standardTestSetup test;
+  TestObject test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyth{1, 1, 0}, fp_point2d{1, 1});
@@ -51,7 +47,7 @@ TEST_CASE(
     "When the robot and target are sufficiently separated, the engine should "
     "orchestrate the minimization of the cost function over the NMPC horizon "
     "and notify observers of success.") {
-  standardTestSetup test;
+  TestObject test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
@@ -62,7 +58,7 @@ TEST_CASE(
 TEST_CASE(
     "If I ask for more commands than are available from the current horizon, "
     "then start returning null commands.") {
-  standardTestSetup test;
+  TestObject test;
   FakeExecutor exec(test.eng);
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 5});

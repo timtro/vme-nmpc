@@ -6,7 +6,7 @@
 #include "FakeExecutor.hpp"
 
 struct TestObject {
-  VMeNmpcEngine* eng{nullptr};
+  std::unique_ptr<VMeNmpcEngine> eng{nullptr};
   std::string callRecord;
   VMeNmpcInitPkg init;
   unsigned horizonSize = 5;
@@ -15,9 +15,8 @@ struct TestObject {
     init.horizonSize = horizonSize;
     new FakeVMeModel{init, callRecord};
     new FakeVMeMinimizer{init, callRecord};
-    eng = new VMeNmpcEngine{init};
+    eng = std::make_unique<VMeNmpcEngine>(init);
   }
-  ~TestObject() { delete eng; }
   auto* model() {
     return dynamic_cast<FakeVMeModel*>(eng->_getModelPointer_());
   }
@@ -34,7 +33,7 @@ TEST_CASE(
     "When the robot is on the target the controller should return the command "
     "to stop, and should have halted the model.") {
   TestObject test;
-  FakeExecutor exec(test.eng);
+  FakeExecutor exec(test.eng.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyth{1, 1, 0}, fp_point2d{1, 1});
   // Should have called (S)eed (D)istanceToTarget and (H)alt:
@@ -48,7 +47,7 @@ TEST_CASE(
     "orchestrate the minimization of the cost function over the NMPC horizon "
     "and notify observers of success.") {
   TestObject test;
-  FakeExecutor exec(test.eng);
+  FakeExecutor exec(test.eng.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
   REQUIRE(test.callRecord == "SDOC");
@@ -59,7 +58,7 @@ TEST_CASE(
     "If I ask for more commands than are available from the current horizon, "
     "then start returning null commands.") {
   TestObject test;
-  FakeExecutor exec(test.eng);
+  FakeExecutor exec(test.eng.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
   test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
   unsigned countReturnedMotionCommands = 0;

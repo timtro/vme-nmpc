@@ -22,12 +22,10 @@ struct TestSetup {
     init.Q = 1;
     init.Q0 = init.Q / 2;
     init.R = init.Q / 4;
-    std::unique_ptr<VMeModel> mod{new VMeModel{init}};
-    std::unique_ptr<VMeNaiveSdMinimizer> min{
-        new VMeNaiveSdMinimizer{mod.get()}};
-    std::unique_ptr<JsonLogger> logger{new JsonLogger(mod.get())};
-    eng = std::make_unique<VMeNmpcEngine>(std::move(mod), std::move(min),
-                                          std::move(logger));
+    new VMeModel{init};
+    new VMeNaiveSdMinimizer{init};
+    new JsonLogger(init);
+    eng = std::make_unique<VMeNmpcEngine>(init);
   }
 
   TestSetup(std::string logFilePath) {
@@ -36,11 +34,10 @@ struct TestSetup {
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
-    std::unique_ptr<VMeModel> mod{new VMeModel{init}};
-    std::unique_ptr<NmpcMinimizer> min{new VMeNaiveSdMinimizer{mod.get()}};
-    std::unique_ptr<JsonLogger> logger{new JsonLogger(mod.get(), logFilePath)};
-    eng = std::make_unique<VMeNmpcEngine>(std::move(mod), std::move(min),
-                                          std::move(logger));
+    new VMeModel{init};
+    new VMeNaiveSdMinimizer{init};
+    new JsonLogger(init, logFilePath);
+    eng = std::make_unique<VMeNmpcEngine>(init);
   }
   auto* model() { return dynamic_cast<VMeModel*>(eng->_getModelPointer_()); }
   auto* minimizer() { return eng->_getMinimizerPointer_(); }

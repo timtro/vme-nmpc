@@ -47,7 +47,7 @@ set(testname itest-VMe-Model_NaiveSdMinimizer)
                         ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp
                         ../src/Loggers/JsonLogger.cpp
                     )
-    target_link_libraries (${testname} CATCH VMeNmpcEngine VMeModel Obstacle fakes)
+    target_link_libraries (${testname} CATCH VMeNmpcEngine VMeModel VMeNmpcInitPkg Obstacle fakes)
     create_test(${testname})
 
 # add_executable(non-catch-test non-catch-test.cpp ../src/Loggers/JsonLogger.cpp ../src/VMeNmpcInitPkg.cpp)

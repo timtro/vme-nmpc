@@ -51,3 +51,8 @@ List of dependencies other than standard libraries:
 Code formatting was done with `clang-format -style=LLVM`, and an attempt is made to conform to the [LLVM Coding Standards](http://llvm.org/docs/CodingStandards.html).
 
 ##TODO
+* Rename VMeNmpcInitPkg to AggregatingInitPkg or something (much) better.
+* Rename VMeNmpcInitPkg::bindToAggregator().
+* Add minimizer logging to VMeNmpcEngine.
+* Change InitPkg safety checks from bool to void if I'm not going to check the return values.
+* Write utests for new VMeNmpcEngine initialization.

@@ -16,50 +16,53 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// void throwIfInitPkgHasNoModel(VMeNmpcInitPkg& init) {
-//   if (!init._hasInitializedModel_ || (init.model.get() == nullptr))
-//     throw InitPkgDoesNotContainPointerToAModelForLogger();
-// }
-
-// void throwIfInitPkgHasNoMinimizer(VMeNmpcInitPkg& init) {
-//   if (!init._hasInitializedMinimizer_ || (init.minimizer.get() == nullptr))
-//     throw InitPkgDoesNotContainPointerToAMinimizerForLogger();
-// }
-
 #include "VMeNmpcInitPkg.hpp"
 
-bool VMeNmpcInitPkg::bindToModel(NmpcModel<xyth, fp_point2d, up_VMeCommand>* caller) {
-  if (_hasInitializedMinimizer_ || _hasInitializedLogger_)
+bool VMeNmpcInitPkg::modelBindingSafetyCheck() {
+  if ((minimizer.get() != nullptr) || (logger.get() != nullptr))
     throw ModelMustBeInitializedBeforeMinimizerOrLogger();
-  else if (_hasInitializedModel_)
+  else if (model.get() != nullptr)
     throw InitPkgCanOnlyBeUsedOnceToInitializeAModel();
-  else {
-    _hasInitializedModel_ = true;
-    model = std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>>(caller);
+  else
     return true;
-  }
 }
 
-bool VMeNmpcInitPkg::bindToMinimizer(NmpcMinimizer* caller) {
-  if (!_hasInitializedModel_ || (model.get() == nullptr))
-    throw InitPkgDoesNotContainPointerToAModelForMinimizer();
-  else if (_hasInitializedMinimizer_ || (minimizer.get() != nullptr))
-    throw InitPkgCanOnlyBeUsedOnceToInitializeASingleMinimizer();
-  else {
-    _hasInitializedMinimizer_ = true;
-    minimizer = std::unique_ptr<NmpcMinimizer>(caller);
-    return true;
-  }
+void VMeNmpcInitPkg::bindIntoAggregator(
+    NmpcModel<xyth, fp_point2d, up_VMeCommand>* caller) {
+  model = std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>>(caller);
 }
 
-bool VMeNmpcInitPkg::bindToLogger(VMeLogger* caller) {
-  if (!_hasInitializedModel_ || (model.get() == nullptr))
-    throw InitPkgDoesNotContainPointerToAModelForLogger();
-  else if (!_hasInitializedMinimizer_ || (minimizer.get() == nullptr))
-    throw InitPkgDoesNotContainPointerToAMinimizerForLogger();
-  else {
-    _hasInitializedLogger_ = true;
-    logger = std::unique_ptr<VMeLogger>(caller);
+bool VMeNmpcInitPkg::minimizerBindingSafetyCheck() {
+  if (model.get() == nullptr)
+    throw InitPkgDoesNotContainPointerToAModel();
+  else if (minimizer.get() != nullptr)
+    throw InitPkgAlreadyHasBoundMinimizer();
+  else
     return true;
-  }
 }
+
+void VMeNmpcInitPkg::bindIntoAggregator(NmpcMinimizer* caller) {
+  minimizer = std::unique_ptr<NmpcMinimizer>(caller);
+}
+
+bool VMeNmpcInitPkg::loggerBindingSafetyCheck() {
+  if (model.get() == nullptr)
+    throw InitPkgDoesNotContainPointerToAModel();
+  else if (minimizer.get() == nullptr)
+    throw InitPkgDoesNotContainPointerToAMinimizer();
+  else
+    return true;
+}
+
+void VMeNmpcInitPkg::bindIntoAggregator(VMeLogger* caller) {
+  logger = std::unique_ptr<VMeLogger>(caller);
+}
+
+bool VMeNmpcInitPkg::aggregatorCompletionSafetyCheck() {
+  if (model.get() == nullptr)
+    throw InitPkgDoesNotContainPointerToAModel();
+  else if (minimizer.get() == nullptr)
+    throw InitPkgDoesNotContainPointerToAMinimizer();
+  else
+    return true;
+};

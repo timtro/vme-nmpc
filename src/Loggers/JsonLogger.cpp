@@ -27,24 +27,27 @@ auto guranteedCompatibleModel(NmpcModel<xyth, fp_point2d, up_VMeCommand>* model)
 }
 
 JsonLogger::JsonLogger(VMeNmpcInitPkg& init) {
-  init.bindToLogger(this);
+  init.loggerBindingSafetyCheck();
   this->model = guranteedCompatibleModel(init.model.get());
+  init.bindIntoAggregator(this);
   fprintf(fp_out, "[\n");
 }
 
 JsonLogger::JsonLogger(VMeNmpcInitPkg& init, FILE* outputFilePtr)
     : fp_out{outputFilePtr} {
-  init.bindToLogger(this);
+  init.loggerBindingSafetyCheck();
   this->model = guranteedCompatibleModel(init.model.get());
+  init.bindIntoAggregator(this);
   fprintf(fp_out, "[\n");
 }
 
 JsonLogger::JsonLogger(VMeNmpcInitPkg& init, std::string outputFilePath) {
-  init.bindToLogger(this);
+  init.loggerBindingSafetyCheck();
   this->model = guranteedCompatibleModel(init.model.get());
 
   logFile = std::make_unique<CFileContainer>(outputFilePath);
   fp_out = logFile->fd;
+  init.bindIntoAggregator(this);
   fprintf(fp_out, "[\n");
 }
 

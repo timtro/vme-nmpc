@@ -4,6 +4,7 @@
 #include "../src/VMeNmpcEngine.hpp"
 #include "../src/NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include "FakeVMeModel.hpp"
+#include "FakeVMeMinimizer.hpp"
 #include "../src/CFileContainer.hpp"
 
 struct TestObject {
@@ -47,8 +48,8 @@ TEST_CASE(
   std::string notUsed;
   VMeNmpcInitPkg init;
   init.horizonSize = 5;
-  new FakeVMeModel(init, notUsed);
-
+  new FakeVMeModel{init, notUsed};
+  new FakeVMeMinimizer{init, notUsed};
   REQUIRE_THROWS_AS(new JsonLogger(init), LoggerIsIncompatibleWithModelType);
 }
 

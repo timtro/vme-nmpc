@@ -35,7 +35,7 @@ VMeModel::VMeModel(VMeNmpcInitPkg& init)
       R{init.R} {
   if (init.horizonSize <= 2) throw HorizonSizeShouldBeSensiblyLarge();
 
-  init.bindToModel(this);
+  init.modelBindingSafetyCheck();
 
   size_t horizonSize = static_cast<size_t>(N);
 
@@ -61,6 +61,9 @@ VMeModel::VMeModel(VMeNmpcInitPkg& init)
   pth = fp_array(0.f, horizonSize);
   // Gradients:
   grad = fp_array(0.f, horizonSize - 1);
+
+  //Must be last or destruction of init's unique_ptr causes double destruction.
+  init.bindIntoAggregator(this);
 }
 
 unsigned VMeModel::getHorizonSize() const noexcept { return N; }

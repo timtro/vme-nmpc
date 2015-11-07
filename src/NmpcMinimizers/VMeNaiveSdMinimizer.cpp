@@ -19,8 +19,9 @@
 #include "VMeNaiveSdMinimizer.hpp"
 
 VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(VMeNmpcInitPkg& init) {
-  init.bindToMinimizer(this);
+  init.minimizerBindingSafetyCheck();
   model = dynamic_cast<VMeModel*>(init.model.get());
+  init.bindIntoAggregator(this);
 }
 
 MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {
@@ -36,7 +37,6 @@ MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {
   return status;
 }
 
-// TODO: rename takeSdStep
 bool VMeNaiveSdMinimizer::iterate() noexcept {
   model->Dth -= sdStepFactor * model->grad;
   if (model->gradNorm < convergenceTolerance) {

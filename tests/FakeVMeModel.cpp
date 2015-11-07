@@ -18,10 +18,9 @@
 
 #include "FakeVMeModel.hpp"
 
-FakeVMeModel::FakeVMeModel(VMeNmpcInitPkg& init, std::string& history)
-    : eventHistory(history), N(init.horizonSize) {
-    init.model = std::unique_ptr<NmpcModel>(this);
-    init._hasInitializedModel_ = true;
+FakeVMeModel::FakeVMeModel(VMeNmpcInitPkg& init, std::string& historyString)
+    : eventHistory(historyString), N(init.horizonSize) {
+    init.bindIntoAggregator(this);
 }
 
 void FakeVMeModel::recordEvent(char eventCode) const {

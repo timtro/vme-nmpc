@@ -39,13 +39,8 @@ TEST_CASE(
     "(and therefore doesn't contain a unique_ptr to a model to which we "
     "bind)") {
   VMeNmpcInitPkg badInit;
-  badInit._hasInitializedModel_ = false;
-  REQUIRE_THROWS_AS(std::make_unique<VMeNaiveSdMinimizer>(badInit),
-                    InitPkgDoesNotContainPointerToAModelForMinimizer);
-  badInit._hasInitializedModel_ = true;
-  // Still throw since init.model == nullptr;
-  REQUIRE_THROWS_AS(std::make_unique<VMeNaiveSdMinimizer>(badInit),
-                    InitPkgDoesNotContainPointerToAModelForMinimizer);
+  REQUIRE_THROWS_AS(new VMeNaiveSdMinimizer(badInit),
+                    InitPkgDoesNotContainPointerToAModel);
 }
 
 TEST_CASE(
@@ -54,6 +49,6 @@ TEST_CASE(
   std::string callRecord;
   new FakeVMeModel{badInit, callRecord};
   new VMeNaiveSdMinimizer(badInit);
-  REQUIRE_THROWS_AS(std::make_unique<VMeNaiveSdMinimizer>(badInit),
-                    InitPkgCanOnlyBeUsedOnceToInitializeASingleMinimizer);
+  REQUIRE_THROWS_AS(new VMeNaiveSdMinimizer(badInit),
+                    InitPkgAlreadyHasBoundMinimizer);
 }

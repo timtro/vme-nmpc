@@ -43,25 +43,19 @@ struct VMeNmpcInitPkg {
   std::unique_ptr<VMeLogger> logger{nullptr};
   std::shared_ptr<ObstacleContainer> obstacles{nullptr};
 
-  // Used as part of the check system so that objects are initialized in the
-  // correct order.
-  bool _hasInitializedModel_{false};
-  bool _hasInitializedMinimizer_{false};
-  bool _hasInitializedLogger_{false};
-
-  bool bindToModel(NmpcModel<xyth, fp_point2d, up_VMeCommand>*);
-  bool bindToMinimizer(NmpcMinimizer*);
-  bool bindToLogger(VMeLogger*);
+  bool modelBindingSafetyCheck();
+  bool minimizerBindingSafetyCheck();
+  bool loggerBindingSafetyCheck();
+  bool aggregatorCompletionSafetyCheck();
+  void bindIntoAggregator(NmpcModel<xyth, fp_point2d, up_VMeCommand>*);
+  void bindIntoAggregator(NmpcMinimizer*);
+  void bindIntoAggregator(VMeLogger*);
 };
 
 class ModelMustBeInitializedBeforeMinimizerOrLogger : public std::exception {};
 class InitPkgCanOnlyBeUsedOnceToInitializeAModel : public std::exception {};
-class InitPkgDoesNotContainPointerToAModelForMinimizer : public std::exception {
-};
-class InitPkgCanOnlyBeUsedOnceToInitializeASingleMinimizer
-    : public std::exception {};
-class InitPkgDoesNotContainPointerToAModelForLogger : public std::exception {};
-class InitPkgDoesNotContainPointerToAMinimizerForLogger
-    : public std::exception {};
+class InitPkgDoesNotContainPointerToAModel : public std::exception {};
+class InitPkgDoesNotContainPointerToAMinimizer : public std::exception {};
+class InitPkgAlreadyHasBoundMinimizer : public std::exception {};
 
 #endif  // VME_NMPC_NMPCINITPKG_HPP_

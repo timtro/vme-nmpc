@@ -19,12 +19,16 @@
 #include "VMeNmpcEngine.hpp"
 #include "NmpcModel.hpp"
 
-
 VMeNmpcEngine::VMeNmpcEngine(VMeNmpcInitPkg& init) {
-  //TODO Safety checks
+  // TODO Safety checks
+  init.aggregatorCompletionSafetyCheck();
   model = std::move(init.model);
   minimizer = std::move(init.minimizer);
-  logger = std::move(init.logger);
+
+  if (init.logger.get() == nullptr)
+    logger = std::unique_ptr<VMeLogger>{new VMeLogger};
+  else
+    logger = std::move(init.logger);
 }
 
 void VMeNmpcEngine::setTarget(fp_point2d point) { currentTarget = point; }

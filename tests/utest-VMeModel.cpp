@@ -3,6 +3,7 @@
 #include "../src/NmpcModels/VMeModel.hpp"
 #include "../src/ObstacleTypes/PointObstacle.hpp"
 #include "../src/trig.hpp"
+#include "FakeVMeMinimizer.hpp"
 #include "test_helpers.hpp"
 
 class TestObject {
@@ -30,7 +31,6 @@ TEST_CASE("Throw appropriately if horizon size is less than reasonable.") {
   badInit.horizonSize = 0;
   REQUIRE_THROWS_AS(auto model = std::make_unique<VMeModel>(badInit),
                     HorizonSizeShouldBeSensiblyLarge);
-  REQUIRE(badInit._hasInitializedModel_ == false);
 }
 
 TEST_CASE(
@@ -38,8 +38,8 @@ TEST_CASE(
     "initialize a model") {
   VMeNmpcInitPkg badInit;
   badInit.horizonSize = 3;
-  badInit._hasInitializedModel_ = true;
-  REQUIRE_THROWS_AS(auto model = std::make_unique<VMeModel>(badInit),
+  new VMeModel(badInit);
+  REQUIRE_THROWS_AS(new VMeModel(badInit),
                     InitPkgCanOnlyBeUsedOnceToInitializeAModel);
 }
 
@@ -48,21 +48,10 @@ TEST_CASE(
     "a minimizer (which shouldn't be possible if the minimizer is checking).") {
   VMeNmpcInitPkg badInit;
   badInit.horizonSize = 3;
-  badInit._hasInitializedMinimizer_ = true;
-  REQUIRE_THROWS_AS(std::make_unique<VMeModel>(badInit),
+  std::string unusedStr;
+  new FakeVMeMinimizer{badInit, unusedStr};
+  REQUIRE_THROWS_AS(new VMeModel(badInit),
                     ModelMustBeInitializedBeforeMinimizerOrLogger);
-  REQUIRE(badInit._hasInitializedModel_ == false);
-}
-
-TEST_CASE(
-    "Throw appropriately if the initPkg has been previously used to initialize "
-    "a logger (which shouldn't be possible if the logger is checking).") {
-  VMeNmpcInitPkg badInit;
-  badInit.horizonSize = 3;
-  badInit._hasInitializedLogger_ = true;
-  REQUIRE_THROWS_AS(auto model = std::make_unique<VMeModel>(badInit),
-                    ModelMustBeInitializedBeforeMinimizerOrLogger);
-  REQUIRE(badInit._hasInitializedModel_ == false);
 }
 
 TEST_CASE(
@@ -86,7 +75,8 @@ TEST_CASE(
     "drive a straight line along the +x-axis in a forecast horizon.") {
   TestObject m;
   m.model->setV(0.0);
-  REQUIRE(thlp::eachInArrayIsApprox(m.model->getV(), m.model->getV()[0], 1e-5f));
+  REQUIRE(
+      thlp::eachInArrayIsApprox(m.model->getV(), m.model->getV()[0], 1e-5f));
   m.model->computeForecast();
   REQUIRE(m.model->getX()[m.model->getHorizonSize() - 1] ==
           Approx(linearTravelDistance(m.model->getV()[0], m.timeInterval,

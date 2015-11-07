@@ -2,19 +2,20 @@
 
 #include "../src/VMeNmpcEngine.hpp"
 #include "FakeVMeModel.hpp"
-#include "FakeMinimizer.hpp"
+#include "FakeVMeMinimizer.hpp"
 #include "FakeExecutor.hpp"
 
-const int standardTestHorizon = 10;
 struct standardTestSetup {
   VMeNmpcEngine* eng{nullptr};
   std::string callRecord;
+  VMeNmpcInitPkg init;
+  unsigned horizonSize = 5;
 
   standardTestSetup() {
-    std::unique_ptr<vMeModel> mod{
-        new FakeVMeModel{callRecord, standardTestHorizon}};
-    std::unique_ptr<NmpcMinimizer> min{new FakeMinimizer{callRecord}};
-    eng = new VMeNmpcEngine{std::move(mod), std::move(min)};
+    init.horizonSize = horizonSize;
+    new FakeVMeModel{init, callRecord};
+    new FakeVMeMinimizer{init, callRecord};
+    eng = new VMeNmpcEngine{init};
   }
   ~standardTestSetup() {
     delete eng;
@@ -23,7 +24,7 @@ struct standardTestSetup {
     return dynamic_cast<FakeVMeModel*>(eng->_getModelPointer_());
   }
   auto* minimizer() {
-    return dynamic_cast<FakeMinimizer*>(eng->_getMinimizerPointer_());
+    return dynamic_cast<FakeVMeMinimizer*>(eng->_getMinimizerPointer_());
   }
 };
 
@@ -31,13 +32,7 @@ bool isStopCmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
 bool isNullCmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
 bool isMoveCmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
-TEST_CASE("Throw appropriately if we try to attach the same observer twice.") {
-  standardTestSetup test;
-  FakeExecutor exec(test.eng);
-  // NB: the FakeExecutor's constructor does the first attach.
-  REQUIRE_THROWS_AS(test.eng->attachObserver(&exec),
-                    AttemptToAttachAlreadyAttachedObserver);
-}
+
 
 TEST_CASE(
     "When the robot is on the target the controller should return the command "
@@ -81,5 +76,5 @@ TEST_CASE(
       command = test.eng->nextCommand();
     }
   }
-  REQUIRE(countReturnedMotionCommands == standardTestHorizon);
+  REQUIRE(countReturnedMotionCommands == test.horizonSize);
 }

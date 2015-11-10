@@ -28,14 +28,14 @@ auto guranteedCompatibleModel(
   return modelToBeLogged;
 }
 
-JsonLogger::JsonLogger(VMeNmpcInitPkg &init) {
+JsonLogger::JsonLogger(AggregatorInitializer &init) {
   init.loggerBindingSafetyCheck();
   this->model = guranteedCompatibleModel(init.model);
   init.bindIntoAggregator(this);
   fprintf(fp_out, "[\n");
 }
 
-JsonLogger::JsonLogger(VMeNmpcInitPkg &init, FILE *outputFilePtr)
+JsonLogger::JsonLogger(AggregatorInitializer &init, FILE *outputFilePtr)
     : fp_out{outputFilePtr} {
   init.loggerBindingSafetyCheck();
   this->model = guranteedCompatibleModel(init.model);
@@ -43,7 +43,7 @@ JsonLogger::JsonLogger(VMeNmpcInitPkg &init, FILE *outputFilePtr)
   fprintf(fp_out, "[\n");
 }
 
-JsonLogger::JsonLogger(VMeNmpcInitPkg &init, std::string outputFilePath) {
+JsonLogger::JsonLogger(AggregatorInitializer &init, std::string outputFilePath) {
   init.loggerBindingSafetyCheck();
   this->model = guranteedCompatibleModel(init.model);
 

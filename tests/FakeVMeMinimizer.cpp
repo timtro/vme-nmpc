@@ -18,7 +18,7 @@
 
 #include "FakeVMeMinimizer.hpp"
 
-FakeVMeMinimizer::FakeVMeMinimizer(VMeNmpcInitPkg& init,
+FakeVMeMinimizer::FakeVMeMinimizer(AggregatorInitializer& init,
                                    std::string& historyString)
     : eventHistory(historyString) {
       init.bindIntoAggregator(this);

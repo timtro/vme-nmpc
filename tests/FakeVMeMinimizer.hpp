@@ -20,7 +20,7 @@
 #define VME_NMPC_TESTS_FAKEVMEMINIMIZER_HPP_
 
 #include "../src/NmpcMinimizer.hpp"
-#include "../src/VMeNmpcInitPkg.hpp"
+#include "../src/AggregatorInitializer.hpp"
 #include <string>
 
 class FakeVMeMinimizer : public NmpcMinimizer {
@@ -28,7 +28,7 @@ class FakeVMeMinimizer : public NmpcMinimizer {
   void recordEvent(char);
 
  public:
-  FakeVMeMinimizer(VMeNmpcInitPkg&, std::string&);
+  FakeVMeMinimizer(AggregatorInitializer&, std::string&);
   virtual MinimizerCode solveOptimalControlHorizon() noexcept;
   std::string getEventHistory();
 };

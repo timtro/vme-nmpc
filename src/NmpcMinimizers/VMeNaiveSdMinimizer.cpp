@@ -18,7 +18,7 @@
 
 #include "VMeNaiveSdMinimizer.hpp"
 
-VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(VMeNmpcInitPkg& init) {
+VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(AggregatorInitializer& init) {
   init.minimizerBindingSafetyCheck();
   model = dynamic_cast<VMeModel*>(init.model);
   init.bindIntoAggregator(this);

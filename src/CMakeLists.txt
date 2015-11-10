@@ -11,8 +11,8 @@ add_library (Nav2Robot Nav2Robot.cpp)
 add_library (VMeModel NmpcModels/VMeModel.cpp VMeCommand.cpp)
   target_link_libraries(VMeModel Nav2Robot)
 
-add_library (VMeNmpcInitPkg VMeNmpcInitPkg.cpp)
-  target_link_libraries(VMeNmpcInitPkg VMeModel)
+add_library (AggregatorInitializer AggregatorInitializer.cpp)
+  target_link_libraries(AggregatorInitializer VMeModel)
 
 add_executable (vme-nmpc vme-nmpc.cpp ClArgs.cpp InputFileData.cpp)
 target_link_libraries (vme-nmpc Obstacle VMeNmpcEngine VMeModel)

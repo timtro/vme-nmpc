@@ -16,9 +16,9 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "VMeNmpcInitPkg.hpp"
+#include "AggregatorInitializer.hpp"
 
-bool VMeNmpcInitPkg::modelBindingSafetyCheck() {
+bool AggregatorInitializer::modelBindingSafetyCheck() {
   if ((minimizer != nullptr) || (logger != nullptr))
     throw ModelMustBeInitializedBeforeMinimizerOrLogger();
   else if (model != nullptr)
@@ -27,12 +27,12 @@ bool VMeNmpcInitPkg::modelBindingSafetyCheck() {
     return true;
 }
 
-void VMeNmpcInitPkg::bindIntoAggregator(
+void AggregatorInitializer::bindIntoAggregator(
     NmpcModel<xyth, fp_point2d, up_VMeCommand>* caller) {
   model = caller;
 }
 
-bool VMeNmpcInitPkg::minimizerBindingSafetyCheck() {
+bool AggregatorInitializer::minimizerBindingSafetyCheck() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer != nullptr)
@@ -41,11 +41,11 @@ bool VMeNmpcInitPkg::minimizerBindingSafetyCheck() {
     return true;
 }
 
-void VMeNmpcInitPkg::bindIntoAggregator(NmpcMinimizer* caller) {
+void AggregatorInitializer::bindIntoAggregator(NmpcMinimizer* caller) {
   minimizer = caller;
 }
 
-bool VMeNmpcInitPkg::loggerBindingSafetyCheck() {
+bool AggregatorInitializer::loggerBindingSafetyCheck() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer == nullptr)
@@ -54,11 +54,11 @@ bool VMeNmpcInitPkg::loggerBindingSafetyCheck() {
     return true;
 }
 
-void VMeNmpcInitPkg::bindIntoAggregator(VMeLogger* caller) {
+void AggregatorInitializer::bindIntoAggregator(VMeLogger* caller) {
   logger = caller;
 }
 
-bool VMeNmpcInitPkg::aggregatorCompletionSafetyCheck() {
+bool AggregatorInitializer::aggregatorCompletionSafetyCheck() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer == nullptr)

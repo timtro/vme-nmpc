@@ -21,7 +21,7 @@
 
 #include "../VMeLogger.hpp"
 #include "../CFileContainer.hpp"
-#include "../VMeNmpcInitPkg.hpp"
+#include "../AggregatorInitializer.hpp"
 
 class VMeModel;
 class VMeNaiveSdMinimizer;
@@ -33,9 +33,9 @@ class JsonLogger : public VMeLogger {
   mutable bool printedFirstObject{false};
 
  public:
-  JsonLogger(VMeNmpcInitPkg&);
-  JsonLogger(VMeNmpcInitPkg&, FILE*);
-  JsonLogger(VMeNmpcInitPkg&, std::string);
+  JsonLogger(AggregatorInitializer&);
+  JsonLogger(AggregatorInitializer&, FILE*);
+  JsonLogger(AggregatorInitializer&, std::string);
   ~JsonLogger();
   virtual void logPositionAndError() const noexcept;
 };

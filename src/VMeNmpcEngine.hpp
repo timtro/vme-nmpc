@@ -25,7 +25,7 @@
 #include "NmpcMinimizer.hpp"
 #include "NmpcModel.hpp"
 #include "VMeLogger.hpp"
-#include "VMeNmpcInitPkg.hpp"
+#include "AggregatorInitializer.hpp"
 
 class NmpcMinimizer;
 
@@ -44,7 +44,7 @@ class VMeNmpcEngine : public Subject {
  public:
   fp_point2d currentTarget;
 
-  VMeNmpcEngine(VMeNmpcInitPkg&);
+  VMeNmpcEngine(AggregatorInitializer&);
   void setTarget(fp_point2d point);
   up_VMeCommand nextCommand();
   void seed(xyth, fp_point2d);

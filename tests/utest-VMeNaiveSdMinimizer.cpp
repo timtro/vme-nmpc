@@ -19,7 +19,7 @@ class TestObject {
   float convergenceTolerance{0.1};
   unsigned maxSteps{1000};
 
-  VMeNmpcInitPkg init;
+  AggregatorInitializer init;
   unique_ptr<VMeModel> model{nullptr};
   unique_ptr<VMeNaiveSdMinimizer> minimizer{nullptr};
   std::string callRecord;
@@ -40,14 +40,14 @@ TEST_CASE(
     "Throw appropriately if the initPkg hasn't already initialized a model "
     "(and therefore doesn't contain a unique_ptr to a model to which we "
     "bind)") {
-  VMeNmpcInitPkg badInit;
+  AggregatorInitializer badInit;
   REQUIRE_THROWS_AS(make_unique<VMeNaiveSdMinimizer>(badInit),
                     InitPkgDoesNotContainPointerToAModel);
 }
 
 TEST_CASE(
     "Throw appropriately if initPkg has already been bound to a minimizer") {
-  VMeNmpcInitPkg badInit;
+  AggregatorInitializer badInit;
   std::string callRecord;
 
   badInit.horizonSize = 3;

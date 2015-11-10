@@ -16,7 +16,7 @@ struct TestSetup {
   float timeInterval = 0.1f;
   float speed = .4;
 
-  VMeNmpcInitPkg init;
+  AggregatorInitializer init;
   unique_ptr<VMeModel> model{nullptr};
   unique_ptr<VMeNaiveSdMinimizer> minimizer{nullptr};
   unique_ptr<JsonLogger> logger{nullptr};

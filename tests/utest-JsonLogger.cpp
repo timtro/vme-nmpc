@@ -15,7 +15,7 @@ struct TestObject {
   float timeInterval = 0.1f;
   float speed = .4;
 
-  VMeNmpcInitPkg init;
+  AggregatorInitializer init;
   unique_ptr<VMeModel> model{nullptr};
   unique_ptr<VMeNaiveSdMinimizer> minimizer{nullptr};
   unique_ptr<JsonLogger> logger{nullptr};
@@ -50,7 +50,7 @@ TEST_CASE(
     "Throw LoggerIsIncompatibleWithModelType if I try to pass an unfamilliar "
     "model to the logger initializer") {
   std::string notUsed;
-  VMeNmpcInitPkg init;
+  AggregatorInitializer init;
   init.horizonSize = 5;
   // Must name these since scope only applies to named objects.
   auto tmpModel = make_unique<FakeVMeModel>(init, notUsed);

@@ -14,7 +14,7 @@ class TestObject {
   unsigned horizonSize{50};
   float timeInterval{0.1f};
   float cruiseSpeed{0.4};
-  VMeNmpcInitPkg init;
+  AggregatorInitializer init;
   unique_ptr<VMeModel> model;
 
   TestObject() {
@@ -29,7 +29,7 @@ class TestObject {
 };
 
 TEST_CASE("Throw appropriately if horizon size is less than reasonable.") {
-  VMeNmpcInitPkg badInit;
+  AggregatorInitializer badInit;
   badInit.horizonSize = 0;
   REQUIRE_THROWS_AS(auto model = std::make_unique<VMeModel>(badInit),
                     HorizonSizeShouldBeSensiblyLarge);
@@ -38,7 +38,7 @@ TEST_CASE("Throw appropriately if horizon size is less than reasonable.") {
 TEST_CASE(
     "Must throw appropriately if the initPkg has been previously used to "
     "initialize a model") {
-  VMeNmpcInitPkg badInit;
+  AggregatorInitializer badInit;
   badInit.horizonSize = 3;
   make_unique<VMeModel>(badInit);
   REQUIRE_THROWS_AS(make_unique<VMeModel>(badInit),
@@ -48,7 +48,7 @@ TEST_CASE(
 TEST_CASE(
     "Throw appropriately if the initPkg has been previously used to initialize "
     "a minimizer (which shouldn't be possible if the minimizer is checking).") {
-  VMeNmpcInitPkg badInit;
+  AggregatorInitializer badInit;
   badInit.horizonSize = 3;
   std::string unusedStr;
   make_unique<FakeVMeMinimizer>(badInit, unusedStr);

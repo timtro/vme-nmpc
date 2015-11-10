@@ -29,7 +29,7 @@
 
 class ObstacleContainer;
 
-struct VMeNmpcInitPkg {
+struct AggregatorInitializer {
   unsigned int horizonSize{0};
   fptype timeInterval{0};
   fptype cruiseSpeed{0};

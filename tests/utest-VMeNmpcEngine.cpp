@@ -12,7 +12,7 @@ struct TestObject {
   std::string callRecord;
   unsigned horizonSize = 5;
 
-  VMeNmpcInitPkg init;
+  AggregatorInitializer init;
   unique_ptr<FakeVMeModel> model{nullptr};
   unique_ptr<FakeVMeMinimizer> minimizer{nullptr};
   unique_ptr<VMeNmpcEngine> engine{nullptr};

@@ -23,10 +23,10 @@
 
 #include "VMeModel.hpp"
 #include "../trig.hpp"
-#include "../VMeNmpcInitPkg.hpp"
+#include "../AggregatorInitializer.hpp"
 #include "../VMeCommand.hpp"
 
-VMeModel::VMeModel(VMeNmpcInitPkg& init)
+VMeModel::VMeModel(AggregatorInitializer& init)
     : N{init.horizonSize},
       T{init.timeInterval},
       cruiseSpeed{init.cruiseSpeed},

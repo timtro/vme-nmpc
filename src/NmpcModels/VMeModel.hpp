@@ -21,7 +21,7 @@
 
 #include "../NmpcModel.hpp"
 #include "../Obstacle.hpp"
-#include "../VMeNmpcInitPkg.hpp"
+#include "../AggregatorInitializer.hpp"
 
 class VMeModel
     : public NmpcModel<xyth, fp_point2d, up_VMeCommand> {
@@ -68,7 +68,7 @@ class VMeModel
   fp_array grad;
   fptype gradNorm{0};
 
-  VMeModel(VMeNmpcInitPkg &);
+  VMeModel(AggregatorInitializer &);
   virtual unsigned getHorizonSize() const noexcept;
   virtual fptype getTargetDistance() const noexcept;
   virtual void seed(xyth, fp_point2d);

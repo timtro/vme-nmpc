@@ -19,7 +19,7 @@
 #include "VMeNmpcEngine.hpp"
 #include "NmpcModel.hpp"
 
-VMeNmpcEngine::VMeNmpcEngine(VMeNmpcInitPkg& init) {
+VMeNmpcEngine::VMeNmpcEngine(AggregatorInitializer& init) {
   // TODO Safety checks
   init.aggregatorCompletionSafetyCheck();
   model = init.model;

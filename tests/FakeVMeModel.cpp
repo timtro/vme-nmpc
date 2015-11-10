@@ -18,7 +18,7 @@
 
 #include "FakeVMeModel.hpp"
 
-FakeVMeModel::FakeVMeModel(VMeNmpcInitPkg& init, std::string& historyString)
+FakeVMeModel::FakeVMeModel(AggregatorInitializer& init, std::string& historyString)
     : eventHistory(historyString), N(init.horizonSize) {
     init.bindIntoAggregator(this);
 }

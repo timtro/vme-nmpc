@@ -21,7 +21,7 @@
 
 #include "../NmpcMinimizer.hpp"
 #include "../NmpcModels/VMeModel.hpp"
-#include "../VMeNmpcInitPkg.hpp"
+#include "../AggregatorInitializer.hpp"
 
 class VMeNaiveSdMinimizer : public NmpcMinimizer {
   VMeModel* model{nullptr};
@@ -34,7 +34,7 @@ class VMeNaiveSdMinimizer : public NmpcMinimizer {
   bool iterate() noexcept;
 
  public:
-  VMeNaiveSdMinimizer(VMeNmpcInitPkg&);
+  VMeNaiveSdMinimizer(AggregatorInitializer&);
 
   virtual MinimizerCode solveOptimalControlHorizon() noexcept;
 };

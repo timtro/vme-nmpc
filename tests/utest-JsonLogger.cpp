@@ -7,12 +7,19 @@
 #include "FakeVMeMinimizer.hpp"
 #include "../src/CFileContainer.hpp"
 
+using std::unique_ptr;
+using std::make_unique;
+
 struct TestObject {
-  VMeNmpcEngine* eng{nullptr};
   unsigned int nmpcHorizon = 10;
   float timeInterval = 0.1f;
   float speed = .4;
+
   VMeNmpcInitPkg init;
+  unique_ptr<VMeModel> model{nullptr};
+  unique_ptr<VMeNaiveSdMinimizer> minimizer{nullptr};
+  unique_ptr<JsonLogger> logger{nullptr};
+  unique_ptr<VMeNmpcEngine> engine{nullptr};
 
   TestObject() {
     init.horizonSize = nmpcHorizon;
@@ -20,10 +27,10 @@ struct TestObject {
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
-    new VMeModel{init};
-    new VMeNaiveSdMinimizer{init};
-    new JsonLogger{init};
-    eng = new VMeNmpcEngine{init};
+    model = make_unique<VMeModel>(init);
+    minimizer = make_unique<VMeNaiveSdMinimizer>(init);
+    logger = make_unique<JsonLogger>(init);
+    engine = make_unique<VMeNmpcEngine>(init);
   }
 
   TestObject(std::string logFilePath) {
@@ -32,14 +39,11 @@ struct TestObject {
     init.cruiseSpeed = speed;
     init.Q = 1;
     init.Q0 = init.Q / 2;
-    new VMeModel{init};
-    new VMeNaiveSdMinimizer{init};
-    new JsonLogger{init, logFilePath};
-    eng = new VMeNmpcEngine{init};
+    model = make_unique<VMeModel>(init);
+    minimizer = make_unique<VMeNaiveSdMinimizer>(init);
+    logger = make_unique<JsonLogger>(init, logFilePath);
+    engine = make_unique<VMeNmpcEngine>(init);
   }
-  ~TestObject() { delete eng; }
-  auto* model() { return eng->_getModelPointer_(); }
-  auto* minimizer() { return eng->_getMinimizerPointer_(); }
 };
 
 TEST_CASE(
@@ -48,17 +52,19 @@ TEST_CASE(
   std::string notUsed;
   VMeNmpcInitPkg init;
   init.horizonSize = 5;
-  new FakeVMeModel{init, notUsed};
-  new FakeVMeMinimizer{init, notUsed};
-  REQUIRE_THROWS_AS(new JsonLogger(init), LoggerIsIncompatibleWithModelType);
+  // Must name these since scope only applies to named objects.
+  auto tmpModel = make_unique<FakeVMeModel>(init, notUsed);
+  auto tmpMinimizer = make_unique<FakeVMeMinimizer>(init, notUsed);
+  REQUIRE_THROWS_AS(make_unique<JsonLogger>(init),
+                    LoggerIsIncompatibleWithModelType);
 }
 
 TEST_CASE("Straightforward write to stdout with nothing to assert.") {
   TestObject test;
-  test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 0});
+  test.engine->seed(xyth{0, 0, 0}, fp_point2d{5, 0});
 }
 
 // TEST_CASE("Logger write to file. TODO: Assert against file contents.") {
 //   TestObject test("loggertest.log");
-//   test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 0});
+//   test.engine->seed(xyth{0, 0, 0}, fp_point2d{5, 0});
 // }

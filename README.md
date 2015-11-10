@@ -54,5 +54,10 @@ Code formatting was done with `clang-format -style=LLVM`, and an attempt is made
 * Rename VMeNmpcInitPkg to AggregatingInitPkg or something (much) better.
 * Rename VMeNmpcInitPkg::bindToAggregator().
 * Add minimizer logging to VMeNmpcEngine.
-* Change InitPkg safety checks from bool to void if I'm not going to check the return values.
 * Write utests for new VMeNmpcEngine initialization.
+* Add
+
+    using vMeModel = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+
+  to the top of files that would make good use of it.
+* Add `using std::unique_ptr` and `using std::make_uniquie` to the top of files that would make good use of it.

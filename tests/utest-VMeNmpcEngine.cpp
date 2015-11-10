@@ -5,23 +5,23 @@
 #include "FakeVMeMinimizer.hpp"
 #include "FakeExecutor.hpp"
 
+using std::unique_ptr;
+using std::make_unique;
+
 struct TestObject {
-  std::unique_ptr<VMeNmpcEngine> eng{nullptr};
   std::string callRecord;
-  VMeNmpcInitPkg init;
   unsigned horizonSize = 5;
+
+  VMeNmpcInitPkg init;
+  unique_ptr<FakeVMeModel> model{nullptr};
+  unique_ptr<FakeVMeMinimizer> minimizer{nullptr};
+  unique_ptr<VMeNmpcEngine> engine{nullptr};
 
   TestObject() {
     init.horizonSize = horizonSize;
-    new FakeVMeModel{init, callRecord};
-    new FakeVMeMinimizer{init, callRecord};
-    eng = std::make_unique<VMeNmpcEngine>(init);
-  }
-  auto* model() {
-    return dynamic_cast<FakeVMeModel*>(eng->_getModelPointer_());
-  }
-  auto* minimizer() {
-    return dynamic_cast<FakeVMeMinimizer*>(eng->_getMinimizerPointer_());
+    model = make_unique<FakeVMeModel>(init, callRecord);
+    minimizer = make_unique<FakeVMeMinimizer>(init, callRecord);
+    engine = make_unique<VMeNmpcEngine>(init);
   }
 };
 
@@ -33,13 +33,13 @@ TEST_CASE(
     "When the robot is on the target the controller should return the command "
     "to stop, and should have halted the model.") {
   TestObject test;
-  FakeExecutor exec(test.eng.get());
+  FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.eng->seed(xyth{1, 1, 0}, fp_point2d{1, 1});
-  // Should have called (S)eed (D)istanceToTarget and (H)alt:
+  test.engine->seed(xyth{1, 1, 0}, fp_point2d{1, 1});
+  // Should have called (S)eed (D)istanceToTarget:
   REQUIRE(test.callRecord == "SD");
   REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
-  REQUIRE(test.eng->isHalted());
+  REQUIRE(test.engine->isHalted());
 }
 
 TEST_CASE(
@@ -47,9 +47,9 @@ TEST_CASE(
     "orchestrate the minimization of the cost function over the NMPC horizon "
     "and notify observers of success.") {
   TestObject test;
-  FakeExecutor exec(test.eng.get());
+  FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
+  test.engine->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
   REQUIRE(test.callRecord == "SDOC");
   REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
 }
@@ -58,9 +58,9 @@ TEST_CASE(
     "If I ask for more commands than are available from the current horizon, "
     "then start returning null commands.") {
   TestObject test;
-  FakeExecutor exec(test.eng.get());
+  FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.eng->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
+  test.engine->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
   unsigned countReturnedMotionCommands = 0;
   auto command = std::move(exec.commandFromLastNotify);
   for (;;) {
@@ -68,7 +68,7 @@ TEST_CASE(
       break;
     else if (isMoveCmd(command.get())) {
       ++countReturnedMotionCommands;
-      command = test.eng->nextCommand();
+      command = test.engine->nextCommand();
     }
   }
   REQUIRE(countReturnedMotionCommands == test.horizonSize);

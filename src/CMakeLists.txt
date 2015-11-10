@@ -14,5 +14,5 @@ add_library (VMeModel NmpcModels/VMeModel.cpp VMeCommand.cpp)
 add_library (VMeNmpcInitPkg VMeNmpcInitPkg.cpp)
   target_link_libraries(VMeNmpcInitPkg VMeModel)
 
-# add_executable (vme-nmpc vme-nmpc.cpp)
-# target_link_libraries (vme-nmpc Obstacle VMeNmpcEngine VMeModel)
+add_executable (vme-nmpc vme-nmpc.cpp ClArgs.cpp InputFileData.cpp)
+target_link_libraries (vme-nmpc Obstacle VMeNmpcEngine VMeModel)

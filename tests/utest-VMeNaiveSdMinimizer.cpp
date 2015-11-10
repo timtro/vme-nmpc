@@ -7,6 +7,9 @@
 // TODO(Tim): Test that steps are reducing gradient.
 // TODO(Tim): Test that plain cases converge.
 
+using std::unique_ptr;
+using std::make_unique;
+
 class TestObject {
  public:
   unsigned horizonSize{50};
@@ -15,9 +18,10 @@ class TestObject {
   float sdStepFactor{.1};
   float convergenceTolerance{0.1};
   unsigned maxSteps{1000};
+
   VMeNmpcInitPkg init;
-  VMeModel *model;
-  VMeNaiveSdMinimizer *minimizer;
+  unique_ptr<VMeModel> model{nullptr};
+  unique_ptr<VMeNaiveSdMinimizer> minimizer{nullptr};
   std::string callRecord;
 
   TestObject() {
@@ -25,12 +29,10 @@ class TestObject {
     init.timeInterval = timeInterval;
     init.cruiseSpeed = cruiseSpeed;
 
-    new FakeVMeModel{init, callRecord};
-    new VMeNaiveSdMinimizer{init};
-    model = dynamic_cast<VMeModel *>(init.model.get());
+    model = make_unique<VMeModel>(init);
+    minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     model->seed(xyth{0, 0, 0});
     model->setV(cruiseSpeed);
-    minimizer = dynamic_cast<VMeNaiveSdMinimizer *>(init.minimizer.get());
   }
 };
 
@@ -39,7 +41,7 @@ TEST_CASE(
     "(and therefore doesn't contain a unique_ptr to a model to which we "
     "bind)") {
   VMeNmpcInitPkg badInit;
-  REQUIRE_THROWS_AS(new VMeNaiveSdMinimizer(badInit),
+  REQUIRE_THROWS_AS(make_unique<VMeNaiveSdMinimizer>(badInit),
                     InitPkgDoesNotContainPointerToAModel);
 }
 
@@ -47,8 +49,10 @@ TEST_CASE(
     "Throw appropriately if initPkg has already been bound to a minimizer") {
   VMeNmpcInitPkg badInit;
   std::string callRecord;
-  new FakeVMeModel{badInit, callRecord};
-  new VMeNaiveSdMinimizer(badInit);
-  REQUIRE_THROWS_AS(new VMeNaiveSdMinimizer(badInit),
+
+  badInit.horizonSize = 3;
+  auto tmpModel = make_unique<VMeModel>(badInit);
+  auto tmpMinimizer = make_unique<VMeNaiveSdMinimizer>(badInit);
+  REQUIRE_THROWS_AS(make_unique<VMeNaiveSdMinimizer>(badInit),
                     InitPkgAlreadyHasBoundMinimizer);
 }

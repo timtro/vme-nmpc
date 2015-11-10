@@ -32,9 +32,11 @@ class NmpcMinimizer;
 using vMeModel = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
 class VMeNmpcEngine : public Subject {
-  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model;
-  std::unique_ptr<NmpcMinimizer> minimizer;
-  std::unique_ptr<VMeLogger> logger;
+  NmpcModel<xyth, fp_point2d, up_VMeCommand>* model;
+  NmpcMinimizer* minimizer;
+  VMeLogger* logger;
+  std::unique_ptr<VMeLogger> noOpLogger{nullptr}; // Default log if none given.
+
   fptype targetDistanceTolerance{0.1};
   unsigned cmdsExecutedFromCurrentHorizon{0};
   bool machineIsHalted{true};

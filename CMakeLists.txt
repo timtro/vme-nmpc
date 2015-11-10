@@ -21,17 +21,30 @@ set(CMAKE_BUILD_TYPE debug)
 # set(EXECUTABLE_OUTPUT_PATH ${bld_dir} CACHE PATH "Build directory" FORCE)
 # set(LIBRARY_OUTPUT_PATH ${bld_dir} CACHE PATH "Build directory" FORCE)
 
-set(warnings "-Wall -Wextra -pedantic")
-set(optimizations "-O0") # -flto for perf: -fno-omit-frame-pointer
+set(c++std "-std=c++14")
+
+set(warnings_debug "-Wall -Wextra -pedantic")
+set(optimizations_debug "-O0")
 set(debug "-g")
-#-ffast-math -O3
+set(perf_bench "-fno-omit-frame-pointer")
+
+set(warnings_release "-Wall")
+set(optimizations_releast "-O3 -flto -ffast-math")
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${c++std} ${debug} \
+                           ${warnings_debug} ${optimizations_debug}")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${c++std}")
 
 # for clang++ use -fuse-ld=gold to avoid LD error "File format not recognized"
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold -fsanitize=address") # -fsanitize=address
+  set(sanitizer "-fsanitize=address")
+  # set(sanitizer "-fsanitize=memory")
+  # set(sanitizer "-fsanitize=memory -fsanitize-memory-track-origins")
+  # set(sanitizer "-fsanitize=thread")
+  # set(sanitizer "-fsanitize=cfi") # ctrl flow integrity checks. Requires -flto
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${sanitizer}")
 endif()
-
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -std=c++14 ${warnings} ${optimizations} ${debug}")
 
 enable_testing()
 

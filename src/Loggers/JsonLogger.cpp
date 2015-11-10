@@ -20,30 +20,32 @@
 #include "../NmpcModels/VMeModel.hpp"
 #include <cstdio>
 
-auto guranteedCompatibleModel(NmpcModel<xyth, fp_point2d, up_VMeCommand>* model) {
-  auto modelToBeLogged = dynamic_cast<VMeModel*>(model);
-  if (modelToBeLogged == nullptr) throw LoggerIsIncompatibleWithModelType();
+auto guranteedCompatibleModel(
+    NmpcModel<xyth, fp_point2d, up_VMeCommand> *model) {
+  auto modelToBeLogged = dynamic_cast<VMeModel *>(model);
+  if (modelToBeLogged == nullptr)
+    throw LoggerIsIncompatibleWithModelType();
   return modelToBeLogged;
 }
 
-JsonLogger::JsonLogger(VMeNmpcInitPkg& init) {
+JsonLogger::JsonLogger(VMeNmpcInitPkg &init) {
   init.loggerBindingSafetyCheck();
-  this->model = guranteedCompatibleModel(init.model.get());
+  this->model = guranteedCompatibleModel(init.model);
   init.bindIntoAggregator(this);
   fprintf(fp_out, "[\n");
 }
 
-JsonLogger::JsonLogger(VMeNmpcInitPkg& init, FILE* outputFilePtr)
+JsonLogger::JsonLogger(VMeNmpcInitPkg &init, FILE *outputFilePtr)
     : fp_out{outputFilePtr} {
   init.loggerBindingSafetyCheck();
-  this->model = guranteedCompatibleModel(init.model.get());
+  this->model = guranteedCompatibleModel(init.model);
   init.bindIntoAggregator(this);
   fprintf(fp_out, "[\n");
 }
 
-JsonLogger::JsonLogger(VMeNmpcInitPkg& init, std::string outputFilePath) {
+JsonLogger::JsonLogger(VMeNmpcInitPkg &init, std::string outputFilePath) {
   init.loggerBindingSafetyCheck();
-  this->model = guranteedCompatibleModel(init.model.get());
+  this->model = guranteedCompatibleModel(init.model);
 
   logFile = std::make_unique<CFileContainer>(outputFilePath);
   fp_out = logFile->fd;
@@ -54,12 +56,12 @@ JsonLogger::JsonLogger(VMeNmpcInitPkg& init, std::string outputFilePath) {
 JsonLogger::~JsonLogger() { fprintf(fp_out, "\n]\n"); }
 
 // TODO: In GCC 5.3, change std::end() to std::cend();
-template <typename T>
-void jsonPrintArray(FILE* fd, T array) {
+template <typename T> void jsonPrintArray(FILE *fd, T array) {
   auto iter = std::begin(array);
   for (;;) {
     fprintf(fd, "%f", *iter);
-    if (++iter == std::end(array)) break;
+    if (++iter == std::end(array))
+      break;
     fprintf(fd, ",");
   }
 }

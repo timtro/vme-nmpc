@@ -22,13 +22,14 @@
 VMeNmpcEngine::VMeNmpcEngine(VMeNmpcInitPkg& init) {
   // TODO Safety checks
   init.aggregatorCompletionSafetyCheck();
-  model = std::move(init.model);
-  minimizer = std::move(init.minimizer);
+  model = init.model;
+  minimizer = init.minimizer;
 
-  if (init.logger.get() == nullptr)
-    logger = std::unique_ptr<VMeLogger>{new VMeLogger};
-  else
-    logger = std::move(init.logger);
+  if (init.logger == nullptr) {
+    noOpLogger = std::make_unique<VMeLogger>();
+    logger = noOpLogger.get();
+  } else
+    logger = init.logger;
 }
 
 void VMeNmpcEngine::setTarget(fp_point2d point) { currentTarget = point; }
@@ -70,8 +71,6 @@ void VMeNmpcEngine::seed(xyth pose) {
 
 bool VMeNmpcEngine::isHalted() { return machineIsHalted; }
 
-vMeModel* VMeNmpcEngine::_getModelPointer_() { return model.get(); }
+vMeModel* VMeNmpcEngine::_getModelPointer_() { return model; }
 
-NmpcMinimizer* VMeNmpcEngine::_getMinimizerPointer_() {
-  return minimizer.get();
-}
+NmpcMinimizer* VMeNmpcEngine::_getMinimizerPointer_() { return minimizer; }

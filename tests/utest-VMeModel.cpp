@@ -6,21 +6,23 @@
 #include "FakeVMeMinimizer.hpp"
 #include "test_helpers.hpp"
 
+using std::unique_ptr;
+using std::make_unique;
+
 class TestObject {
  public:
   unsigned horizonSize{50};
   float timeInterval{0.1f};
   float cruiseSpeed{0.4};
   VMeNmpcInitPkg init;
-  VMeModel *model;
+  unique_ptr<VMeModel> model;
 
   TestObject() {
     init.horizonSize = horizonSize;
     init.timeInterval = timeInterval;
     init.cruiseSpeed = cruiseSpeed;
 
-    new VMeModel{init};
-    model = dynamic_cast<VMeModel *>(init.model.get());
+    model = make_unique<VMeModel>(init);
     model->seed(xyth{0, 0, 0});
     model->setV(cruiseSpeed);
   }
@@ -38,8 +40,8 @@ TEST_CASE(
     "initialize a model") {
   VMeNmpcInitPkg badInit;
   badInit.horizonSize = 3;
-  new VMeModel(badInit);
-  REQUIRE_THROWS_AS(new VMeModel(badInit),
+  make_unique<VMeModel>(badInit);
+  REQUIRE_THROWS_AS(make_unique<VMeModel>(badInit),
                     InitPkgCanOnlyBeUsedOnceToInitializeAModel);
 }
 
@@ -49,8 +51,8 @@ TEST_CASE(
   VMeNmpcInitPkg badInit;
   badInit.horizonSize = 3;
   std::string unusedStr;
-  new FakeVMeMinimizer{badInit, unusedStr};
-  REQUIRE_THROWS_AS(new VMeModel(badInit),
+  make_unique<FakeVMeMinimizer>(badInit, unusedStr);
+  REQUIRE_THROWS_AS(make_unique<VMeModel>(badInit),
                     ModelMustBeInitializedBeforeMinimizerOrLogger);
 }
 

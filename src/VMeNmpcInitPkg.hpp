@@ -38,10 +38,10 @@ struct VMeNmpcInitPkg {
   fptype R{0};
   fptype sdStepFactor{0};
   fptype sdConvergenceTolerance{0};
-  std::unique_ptr<NmpcModel<xyth, fp_point2d, up_VMeCommand>> model{nullptr};
-  std::unique_ptr<NmpcMinimizer> minimizer{nullptr};
-  std::unique_ptr<VMeLogger> logger{nullptr};
-  std::shared_ptr<ObstacleContainer> obstacles{nullptr};
+  NmpcModel<xyth, fp_point2d, up_VMeCommand>* model{nullptr};
+  NmpcMinimizer* minimizer{nullptr};
+  VMeLogger* logger{nullptr};
+  ObstacleContainer* obstacles{nullptr};
 
   bool modelBindingSafetyCheck();
   bool minimizerBindingSafetyCheck();

@@ -20,7 +20,7 @@
 
 VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(VMeNmpcInitPkg& init) {
   init.minimizerBindingSafetyCheck();
-  model = dynamic_cast<VMeModel*>(init.model.get());
+  model = dynamic_cast<VMeModel*>(init.model);
   init.bindIntoAggregator(this);
 }
 

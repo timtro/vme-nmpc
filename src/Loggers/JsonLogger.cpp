@@ -20,8 +20,10 @@
 #include "../NmpcModels/VMeModel.hpp"
 #include <cstdio>
 
+using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+
 auto guranteedCompatibleModel(
-    NmpcModel<xyth, fp_point2d, up_VMeCommand> *model) {
+    vMeModelType *model) {
   auto modelToBeLogged = dynamic_cast<VMeModel *>(model);
   if (modelToBeLogged == nullptr)
     throw LoggerIsIncompatibleWithModelType();

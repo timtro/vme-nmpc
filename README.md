@@ -56,7 +56,7 @@ Code formatting was done with `clang-format -style=LLVM`, and an attempt is made
 * Write utests for new VMeNmpcEngine initialization.
 * Add
 
-    using vMeModel = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+    using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
   to the top of files that would make good use of it.
 * Add `using std::unique_ptr` and `using std::make_uniquie` to the top of files that would make good use of it.

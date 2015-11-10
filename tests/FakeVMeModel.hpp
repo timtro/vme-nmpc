@@ -24,7 +24,7 @@
 #include "../src/AggregatorInitializer.hpp"
 
 class FakeVMeModel
-    : public NmpcModel<xyth, fp_point2d, up_VMeCommand> {
+    : public vMeModelType {
   std::string& eventHistory;
   fptype distanceToTarget;
   void recordEvent(char) const;

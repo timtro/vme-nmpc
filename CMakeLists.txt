@@ -26,10 +26,10 @@ set(c++std "-std=c++14")
 set(warnings_debug "-Wall -Wextra -pedantic")
 set(optimizations_debug "-O0")
 set(debug "-g")
-set(perf_bench "-fno-omit-frame-pointer")
 
 set(warnings_release "-Wall")
 set(optimizations_releast "-O3 -flto -ffast-math")
+set(perf_bench "-fno-omit-frame-pointer")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${c++std} ${debug} \
                            ${warnings_debug} ${optimizations_debug}")
@@ -41,7 +41,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   # set(sanitizer "-fsanitize=memory")
   # set(sanitizer "-fsanitize=memory -fsanitize-memory-track-origins")
   # set(sanitizer "-fsanitize=thread")
-  # set(sanitizer "-fsanitize=cfi") # ctrl flow integrity checks. Requires -flto
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${sanitizer}")
 endif()

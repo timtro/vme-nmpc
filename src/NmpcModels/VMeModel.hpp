@@ -23,8 +23,10 @@
 #include "../Obstacle.hpp"
 #include "../AggregatorInitializer.hpp"
 
+using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+
 class VMeModel
-    : public NmpcModel<xyth, fp_point2d, up_VMeCommand> {
+    : public vMeModelType {
   unsigned N;
   fptype T;
   fptype cruiseSpeed;

@@ -18,51 +18,45 @@
 
 #include "AggregatorInitializer.hpp"
 
-bool AggregatorInitializer::modelBindingSafetyCheck() {
+using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+
+void AggregatorInitializer::modelBindingSafetyCheck() {
   if ((minimizer != nullptr) || (logger != nullptr))
     throw ModelMustBeInitializedBeforeMinimizerOrLogger();
   else if (model != nullptr)
     throw InitPkgCanOnlyBeUsedOnceToInitializeAModel();
-  else
-    return true;
 }
 
 void AggregatorInitializer::bindIntoAggregator(
-    NmpcModel<xyth, fp_point2d, up_VMeCommand>* caller) {
+    vMeModelType* caller) {
   model = caller;
 }
 
-bool AggregatorInitializer::minimizerBindingSafetyCheck() {
+void AggregatorInitializer::minimizerBindingSafetyCheck() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer != nullptr)
     throw InitPkgAlreadyHasBoundMinimizer();
-  else
-    return true;
 }
 
 void AggregatorInitializer::bindIntoAggregator(NmpcMinimizer* caller) {
   minimizer = caller;
 }
 
-bool AggregatorInitializer::loggerBindingSafetyCheck() {
+void AggregatorInitializer::loggerBindingSafetyCheck() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer == nullptr)
     throw InitPkgDoesNotContainPointerToAMinimizer();
-  else
-    return true;
 }
 
 void AggregatorInitializer::bindIntoAggregator(VMeLogger* caller) {
   logger = caller;
 }
 
-bool AggregatorInitializer::aggregatorCompletionSafetyCheck() {
+void AggregatorInitializer::aggregatorCompletionSafetyCheck() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer == nullptr)
     throw InitPkgDoesNotContainPointerToAMinimizer();
-  else
-    return true;
 };

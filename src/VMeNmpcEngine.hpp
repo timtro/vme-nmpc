@@ -29,10 +29,10 @@
 
 class NmpcMinimizer;
 
-using vMeModel = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
 class VMeNmpcEngine : public Subject {
-  NmpcModel<xyth, fp_point2d, up_VMeCommand>* model;
+  vMeModelType* model;
   NmpcMinimizer* minimizer;
   VMeLogger* logger;
   std::unique_ptr<VMeLogger> noOpLogger{nullptr}; // Default log if none given.
@@ -50,7 +50,7 @@ class VMeNmpcEngine : public Subject {
   void seed(xyth, fp_point2d);
   void seed(xyth);
   bool isHalted();
-  vMeModel* _getModelPointer_();
+  vMeModelType* _getModelPointer_();
   NmpcMinimizer* _getMinimizerPointer_();
 };
 

@@ -29,6 +29,8 @@
 
 class ObstacleContainer;
 
+using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+
 struct AggregatorInitializer {
   unsigned int horizonSize{0};
   fptype timeInterval{0};
@@ -38,16 +40,16 @@ struct AggregatorInitializer {
   fptype R{0};
   fptype sdStepFactor{0};
   fptype sdConvergenceTolerance{0};
-  NmpcModel<xyth, fp_point2d, up_VMeCommand>* model{nullptr};
+  vMeModelType* model{nullptr};
   NmpcMinimizer* minimizer{nullptr};
   VMeLogger* logger{nullptr};
   ObstacleContainer* obstacles{nullptr};
 
-  bool modelBindingSafetyCheck();
-  bool minimizerBindingSafetyCheck();
-  bool loggerBindingSafetyCheck();
-  bool aggregatorCompletionSafetyCheck();
-  void bindIntoAggregator(NmpcModel<xyth, fp_point2d, up_VMeCommand>*);
+  void modelBindingSafetyCheck();
+  void minimizerBindingSafetyCheck();
+  void loggerBindingSafetyCheck();
+  void aggregatorCompletionSafetyCheck();
+  void bindIntoAggregator(vMeModelType*);
   void bindIntoAggregator(NmpcMinimizer*);
   void bindIntoAggregator(VMeLogger*);
 };

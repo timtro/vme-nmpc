@@ -19,6 +19,8 @@
 #include "VMeNmpcEngine.hpp"
 #include "NmpcModel.hpp"
 
+using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+
 VMeNmpcEngine::VMeNmpcEngine(AggregatorInitializer& init) {
   // TODO Safety checks
   init.aggregatorCompletionSafetyCheck();
@@ -71,6 +73,6 @@ void VMeNmpcEngine::seed(xyth pose) {
 
 bool VMeNmpcEngine::isHalted() { return machineIsHalted; }
 
-vMeModel* VMeNmpcEngine::_getModelPointer_() { return model; }
+vMeModelType* VMeNmpcEngine::_getModelPointer_() { return model; }
 
 NmpcMinimizer* VMeNmpcEngine::_getMinimizerPointer_() { return minimizer; }

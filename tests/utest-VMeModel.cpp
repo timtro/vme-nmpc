@@ -4,7 +4,7 @@
 #include "../src/ObstacleTypes/PointObstacle.hpp"
 #include "../src/trig.hpp"
 #include "FakeVMeMinimizer.hpp"
-#include "test_helpers.hpp" // thlp:: namespace.
+#include "test_helpers.hpp"  // thlp:: namespace.
 
 using std::unique_ptr;
 using std::make_unique;
@@ -57,6 +57,16 @@ TEST_CASE(
 }
 
 TEST_CASE(
+    "After seeding, the target metrics (such as distance to target) should be "
+    "consistent with the new seed") {
+  TestObject m;
+  m.model->seed(xyth{0, 0, 0}, fp_point2d{1, 0});
+  REQUIRE(m.model->getTargetDistance() == Approx(1));
+  m.model->seed(xyth{-1, 0, 0});
+  REQUIRE(m.model->getTargetDistance() == Approx(2));
+}
+
+TEST_CASE(
     "A machine starting at the origin with no control input and velocity "
     "should remain stationary throughout the forecast horizon.") {
   TestObject m;
@@ -73,8 +83,7 @@ T linearTravelDistance(T cruiseSpeed, T time_interval, int num_of_intervals) {
 
 TEST_CASE(
     "A machine posed at the origin pointing in +x with a constant cruiseSpeed "
-    "should "
-    "drive a straight line along the +x-axis in a forecast horizon.") {
+    "should drive a straight line along the +x-axis in a forecast horizon.") {
   TestObject m;
   m.model->setV(0.0);
   REQUIRE(
@@ -88,8 +97,7 @@ TEST_CASE(
 
 TEST_CASE(
     "A machine posed at the origin pointing in +y with a constant cruiseSpeed "
-    "should "
-    "drive a straight line along the +y-axis in a forecast horizon") {
+    "should drive a straight line along the +y-axis in a forecast horizon") {
   TestObject m;
   m.model->seed(xyth{0, 0, degToRad(90.f)});
   m.model->computeForecast();

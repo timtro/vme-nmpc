@@ -52,4 +52,4 @@ Code formatting was done with `clang-format -style=LLVM`, and an attempt is made
 
 ##TODO
 * Think about passing a lambda as a message handler for Daemon.
-* Remove duplicate code in VMeModel and VMeNmpcEngine by defining target setter and allow the seed(pose, target) call seed(pose) and the target setter.
+* Tests to see if the aggregator throws should be in an aggregator test. The VMeModel unit test shouldn't need a FakeMinimizer.

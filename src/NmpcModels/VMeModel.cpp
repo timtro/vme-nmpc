@@ -70,14 +70,11 @@ unsigned VMeModel::getHorizonSize() const noexcept { return N; }
 
 fptype VMeModel::getTargetDistance() const noexcept { return distanceToTarget; }
 
-void VMeModel::seed(xyth pose, fp_point2d target) {
+void VMeModel::setTarget(fp_point2d target){
   absoluteTarget = target;
-  x[0] = pose.x;
-  y[0] = pose.y;
-  th[0] = pose.th;
-  Dx[0] = v[0] * std::cos(th[0]);
-  Dy[0] = v[0] * std::sin(th[0]);
+}
 
+void VMeModel::computeTargetMetrics() {
   targetUnitVector.x = absoluteTarget.x - x[0];
   targetUnitVector.y = absoluteTarget.y - y[0];
   distanceToTarget = std::sqrt(dot(targetUnitVector, targetUnitVector));
@@ -90,11 +87,13 @@ void VMeModel::seed(xyth pose) {
   th[0] = pose.th;
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
+  computeTargetMetrics();
+}
 
-  targetUnitVector.x = absoluteTarget.x - x[0];
-  targetUnitVector.y = absoluteTarget.y - y[0];
-  distanceToTarget = std::sqrt(dot(targetUnitVector, targetUnitVector));
-  targetUnitVector /= distanceToTarget;
+void VMeModel::seed(xyth pose, fp_point2d target) {
+  seed(pose);
+  setTarget(target);
+  computeTargetMetrics();
 }
 
 void VMeModel::computeForecast() noexcept {

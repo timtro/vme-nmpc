@@ -25,8 +25,7 @@
 
 using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
-class VMeModel
-    : public vMeModelType {
+class VMeModel : public vMeModelType {
   unsigned N;
   fptype T;
   fptype cruiseSpeed;
@@ -64,6 +63,9 @@ class VMeModel
   fptype distanceToTarget;
   fp_point2d targetUnitVector;
 
+  void setTarget(fp_point2d);
+  void computeTargetMetrics();
+
  public:
   //! The steering rate. That is, the time rate-of-change of th.
   fp_array Dth;
@@ -73,8 +75,8 @@ class VMeModel
   VMeModel(AggregatorInitializer &);
   virtual unsigned getHorizonSize() const noexcept;
   virtual fptype getTargetDistance() const noexcept;
-  virtual void seed(xyth, fp_point2d);
   virtual void seed(xyth);
+  virtual void seed(xyth, fp_point2d);
   virtual void computeForecast() noexcept;
   virtual void computeTrackingErrors() noexcept;
   virtual void computePathPotentialGradient(

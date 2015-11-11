@@ -51,7 +51,8 @@ void VMeNmpcEngine::seed(xyth pose, fp_point2d target) {
   if (model->getTargetDistance() > targetDistanceTolerance) {
     machineIsHalted = false;
     minimizer->solveOptimalControlHorizon();
-    logger->logPositionAndError();
+    logger->logModelState();
+    logger->logMinimizerState();
   } else
     machineIsHalted = true;
   notify();
@@ -65,7 +66,8 @@ void VMeNmpcEngine::seed(xyth pose) {
     auto minimizerStatus = minimizer->solveOptimalControlHorizon();
     if (minimizerStatus == MinimizerCode::reachedIterationLimit)
       throw MinimizerReachedIterationLimit();
-    logger->logPositionAndError();
+    logger->logModelState();
+    logger->logMinimizerState();
   } else
     machineIsHalted = true;
   notify();

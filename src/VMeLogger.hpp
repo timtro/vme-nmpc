@@ -31,7 +31,8 @@ class NmpcModel;
 class VMeLogger {
  public:
   virtual ~VMeLogger() = default;
-  virtual void logPositionAndError() const noexcept {};
+  virtual void logModelState() const noexcept {};
+  virtual void logMinimizerState() const noexcept {};
 };
 
 #endif  // VME_NMPC_SRC_DATALOGGER_HPP_

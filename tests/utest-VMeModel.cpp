@@ -4,7 +4,7 @@
 #include "../src/ObstacleTypes/PointObstacle.hpp"
 #include "../src/trig.hpp"
 #include "FakeVMeMinimizer.hpp"
-#include "test_helpers.hpp"
+#include "test_helpers.hpp" // thlp:: namespace.
 
 using std::unique_ptr;
 using std::make_unique;
@@ -31,7 +31,7 @@ class TestObject {
 TEST_CASE("Throw appropriately if horizon size is less than reasonable.") {
   AggregatorInitializer badInit;
   badInit.horizonSize = 0;
-  REQUIRE_THROWS_AS(auto model = std::make_unique<VMeModel>(badInit),
+  REQUIRE_THROWS_AS(auto model = make_unique<VMeModel>(badInit),
                     HorizonSizeShouldBeSensiblyLarge);
 }
 
@@ -133,8 +133,8 @@ TEST_CASE(
   m.model->computeForecast();
   ObstacleContainer obs;
   obs.pushObstacleUniquePtr(
-      std::unique_ptr<Obstacle>{new PointObstacle{fp_point2d{10, 10}, 2, .12}});
+      unique_ptr<Obstacle>{new PointObstacle{fp_point2d{10, 10}, 2, .12}});
   obs.pushObstacleUniquePtr(
-      std::unique_ptr<Obstacle>{new PointObstacle{fp_point2d{5, 5}, 2, .12}});
+      unique_ptr<Obstacle>{new PointObstacle{fp_point2d{5, 5}, 2, .12}});
   m.model->computePathPotentialGradient(obs);
 }

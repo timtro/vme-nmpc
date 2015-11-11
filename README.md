@@ -51,13 +51,5 @@ List of dependencies other than standard libraries:
 Code formatting was done with `clang-format -style=LLVM`, and an attempt is made to conform to the [LLVM Coding Standards](http://llvm.org/docs/CodingStandards.html).
 
 ##TODO
-* Rename VMeNmpcInitPkg::bindToAggregator().
-* Add minimizer logging to VMeNmpcEngine.
-* Write utests for new VMeNmpcEngine initialization.
-* Add
-
-    using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
-
-  to the top of files that would make good use of it.
-* Add `using std::unique_ptr` and `using std::make_uniquie` to the top of files that would make good use of it.
 * Think about passing a lambda as a message handler for Daemon.
+* Remove duplicate code in VMeModel and VMeNmpcEngine by defining target setter and allow the seed(pose, target) call seed(pose) and the target setter.

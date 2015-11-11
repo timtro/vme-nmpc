@@ -37,7 +37,7 @@ class JsonLogger : public VMeLogger {
   JsonLogger(AggregatorInitializer&, FILE*);
   JsonLogger(AggregatorInitializer&, std::string);
   ~JsonLogger();
-  virtual void logPositionAndError() const noexcept;
+  virtual void logModelState() const noexcept;
 };
 
 class LoggerIsIncompatibleWithModelType : public std::exception {};

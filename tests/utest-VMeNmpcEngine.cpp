@@ -29,6 +29,24 @@ bool isStopCmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
 bool isNullCmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
 bool isMoveCmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
+TEST_CASE("Throw appropriately if AggregatorInitializer is missing a model") {
+  std::string callRecord;
+  AggregatorInitializer init;
+  // Fake minimizer let's us cheat and initialize without model.
+  auto minimizer = make_unique<FakeVMeMinimizer>(init, callRecord);
+  REQUIRE_THROWS_AS(make_unique<VMeNmpcEngine>(init),
+                    InitPkgDoesNotContainPointerToAModel);
+}
+
+TEST_CASE(
+    "Throw appropriately if AggregatorInitializer is missing a minimizer") {
+  std::string callRecord;
+  AggregatorInitializer init;
+  auto model = make_unique<FakeVMeModel>(init, callRecord);
+  REQUIRE_THROWS_AS(make_unique<VMeNmpcEngine>(init),
+                    InitPkgDoesNotContainPointerToAMinimizer);
+}
+
 TEST_CASE(
     "When the robot is on the target the controller should return the command "
     "to stop, and should have halted the model.") {

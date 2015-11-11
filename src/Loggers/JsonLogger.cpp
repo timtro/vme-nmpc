@@ -68,7 +68,7 @@ template <typename T> void jsonPrintArray(FILE *fd, T array) {
   }
 }
 
-void JsonLogger::logPositionAndError() const noexcept {
+void JsonLogger::logModelState() const noexcept {
   if (printedFirstObject) {
     fprintf(fp_out, ",\n");
   } else {

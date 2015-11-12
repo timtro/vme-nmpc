@@ -37,3 +37,6 @@ var/
 *.egg
 *.sublime-project
 *.sublime-workspace
+
+#Local overhead.
+non-catch-test.cpp

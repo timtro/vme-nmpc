@@ -82,20 +82,20 @@ class VMeModel : public vMeModelType {
   virtual void computePathPotentialGradient(
       ObstacleContainer &obstacles) noexcept;
   virtual void computeGradient() noexcept;
-  virtual up_VMeCommand getCommand(int) const;
+  virtual up_VMeCommand retrieveCommand(int) const;
 
-  fp_array const &getX() const noexcept;
-  fp_array const &getDx() const noexcept;
-  fp_array const &getEx() const noexcept;
-  fp_array const &getY() const noexcept;
-  fp_array const &getDy() const noexcept;
-  fp_array const &getEy() const noexcept;
-  fp_array const &getV() const noexcept;
-  fp_array const &getTh() const noexcept;
-  fp_array const &getDth() const noexcept;
-  fp_array const &getGrad() const noexcept;
+  fp_array const &get_x() const noexcept;
+  fp_array const &get_Dx() const noexcept;
+  fp_array const &get_ex() const noexcept;
+  fp_array const &get_y() const noexcept;
+  fp_array const &get_Dy() const noexcept;
+  fp_array const &get_ey() const noexcept;
+  fp_array const &get_v() const noexcept;
+  fp_array const &get_th() const noexcept;
+  fp_array const &get_Dth() const noexcept;
+  fp_array const &get_grad() const noexcept;
 
-  void setV(fptype);
+  void set_v(fptype);
 };
 
 class HorizonSizeShouldBeSensiblyLarge : public std::exception {};

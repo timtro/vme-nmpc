@@ -24,7 +24,7 @@ class TestObject {
 
     model = make_unique<VMeModel>(init);
     model->seed(xyth{0, 0, 0});
-    model->setV(cruiseSpeed);
+    model->set_v(cruiseSpeed);
   }
 };
 
@@ -70,10 +70,10 @@ TEST_CASE(
     "A machine starting at the origin with no control input and velocity "
     "should remain stationary throughout the forecast horizon.") {
   TestObject m;
-  m.model->setV(0.);
+  m.model->set_v(0.);
   m.model->computeForecast();
-  REQUIRE(thlp::eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
-  REQUIRE(thlp::eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
+  REQUIRE(thlp::eachInArrayIsApprox(m.model->get_x(), 0.0f, 1e-5f));
+  REQUIRE(thlp::eachInArrayIsApprox(m.model->get_y(), 0.0f, 1e-5f));
 }
 
 template <typename T>
@@ -85,14 +85,14 @@ TEST_CASE(
     "A machine posed at the origin pointing in +x with a constant cruiseSpeed "
     "should drive a straight line along the +x-axis in a forecast horizon.") {
   TestObject m;
-  m.model->setV(0.0);
+  m.model->set_v(0.0);
   REQUIRE(
-      thlp::eachInArrayIsApprox(m.model->getV(), m.model->getV()[0], 1e-5f));
+      thlp::eachInArrayIsApprox(m.model->get_v(), m.model->get_v()[0], 1e-5f));
   m.model->computeForecast();
-  REQUIRE(m.model->getX()[m.model->getHorizonSize() - 1] ==
-          Approx(linearTravelDistance(m.model->getV()[0], m.timeInterval,
+  REQUIRE(m.model->get_x()[m.model->getHorizonSize() - 1] ==
+          Approx(linearTravelDistance(m.model->get_v()[0], m.timeInterval,
                                       m.nmpcHorizon)));
-  REQUIRE(thlp::eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
+  REQUIRE(thlp::eachInArrayIsApprox(m.model->get_y(), 0.0f, 1e-5f));
 }
 
 TEST_CASE(
@@ -101,10 +101,10 @@ TEST_CASE(
   TestObject m;
   m.model->seed(xyth{0, 0, degToRad(90.f)});
   m.model->computeForecast();
-  REQUIRE(m.model->getY()[m.nmpcHorizon - 1] ==
+  REQUIRE(m.model->get_y()[m.nmpcHorizon - 1] ==
           Approx(linearTravelDistance(m.cruiseSpeed, m.timeInterval,
                                       m.nmpcHorizon)));
-  REQUIRE(thlp::eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
+  REQUIRE(thlp::eachInArrayIsApprox(m.model->get_x(), 0.0f, 1e-5f));
 }
 
 template <typename T>
@@ -129,9 +129,9 @@ TEST_CASE(
   fp_point2d tgt{0, m.cruiseSpeed * m.timeInterval * m.nmpcHorizon};
   m.model->seed(xyth{0, 0, 0}, tgt);
   m.model->computeTrackingErrors();
-  REQUIRE(thlp::arraysAreAbsEqual(m.model->getX(), m.model->getEx(), 1e-6));
-  REQUIRE(thlp::arraysAreAbsEqual(m.model->getX(), m.model->getEy(), 1e-6));
-  REQUIRE(thlp::arraysAreAbsEqual(m.model->getEx(), m.model->getEy(), 1e-6));
+  REQUIRE(thlp::arraysAreAbsEqual(m.model->get_x(), m.model->get_ex(), 1e-6));
+  REQUIRE(thlp::arraysAreAbsEqual(m.model->get_x(), m.model->get_ey(), 1e-6));
+  REQUIRE(thlp::arraysAreAbsEqual(m.model->get_ex(), m.model->get_ey(), 1e-6));
 }
 
 TEST_CASE(

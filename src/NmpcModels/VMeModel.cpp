@@ -154,31 +154,31 @@ void VMeModel::computeGradient() noexcept {
   gradNorm = sqrt(gradNorm);
 }
 
-up_VMeCommand VMeModel::getCommand(int n) const {
+up_VMeCommand VMeModel::retrieveCommand(int n) const {
   return up_VMeCommand{new VMeV{0, v[n], Dth[n]}};
 }
 
-fp_array const& VMeModel::getX() const noexcept { return x; }
+fp_array const& VMeModel::get_x() const noexcept { return x; }
 
-fp_array const& VMeModel::getDx() const noexcept { return Dx; }
+fp_array const& VMeModel::get_Dx() const noexcept { return Dx; }
 
-fp_array const& VMeModel::getEx() const noexcept { return ex; }
+fp_array const& VMeModel::get_ex() const noexcept { return ex; }
 
-fp_array const& VMeModel::getY() const noexcept { return y; }
+fp_array const& VMeModel::get_y() const noexcept { return y; }
 
-fp_array const& VMeModel::getDy() const noexcept { return Dy; }
+fp_array const& VMeModel::get_Dy() const noexcept { return Dy; }
 
-fp_array const& VMeModel::getEy() const noexcept { return ey; }
+fp_array const& VMeModel::get_ey() const noexcept { return ey; }
 
-fp_array const& VMeModel::getV() const noexcept { return v; }
+fp_array const& VMeModel::get_v() const noexcept { return v; }
 
-fp_array const& VMeModel::getTh() const noexcept { return th; }
+fp_array const& VMeModel::get_th() const noexcept { return th; }
 
-fp_array const& VMeModel::getDth() const noexcept { return Dth; }
+fp_array const& VMeModel::get_Dth() const noexcept { return Dth; }
 
-fp_array const& VMeModel::getGrad() const noexcept { return grad; }
+fp_array const& VMeModel::get_grad() const noexcept { return grad; }
 
-void VMeModel::setV(fptype velocity) {
+void VMeModel::set_v(fptype velocity) {
   v = velocity;
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);

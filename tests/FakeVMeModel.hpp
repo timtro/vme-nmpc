@@ -42,7 +42,7 @@ class FakeVMeModel
   virtual void computeTrackingErrors() noexcept;
   virtual void computePathPotentialGradient(ObstacleContainer&) noexcept;
   virtual void computeGradient() noexcept;
-  virtual up_VMeCommand getCommand(int) const;
+  virtual up_VMeCommand retrieveCommand(int) const;
   std::string getEventHistory() const;
 };
 

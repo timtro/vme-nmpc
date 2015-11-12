@@ -76,16 +76,4 @@ class InitPkgDoesNotContainPointerToAModel : public std::exception {};
 class InitPkgDoesNotContainPointerToAMinimizer : public std::exception {};
 class InitPkgAlreadyHasBoundMinimizer : public std::exception {};
 
-unsigned get_nmpcHorizon();
-fptype get_timeInterval();
-fptype get_cruiseSpeed();
-fptype get_Q();
-fptype get_Q0();
-fptype get_R();
-fptype get_sdStepFactor();
-fptype get_sdConvergenceTolerance();
-unsigned get_maxSdSteps();
-fptype get_targetDistanceTolerance();
-std::string get_jsonLogPath();
-
 #endif  // VME_NMPC_NMPCINITPKG_HPP_

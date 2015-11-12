@@ -32,7 +32,7 @@ class TestObject {
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     model->seed(xyth{0, 0, 0});
-    model->setV(cruiseSpeed);
+    model->set_v(cruiseSpeed);
   }
 };
 

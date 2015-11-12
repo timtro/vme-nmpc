@@ -53,7 +53,7 @@ void FakeVMeModel::computePathPotentialGradient(
 
 void FakeVMeModel::computeGradient() noexcept { recordEvent('G'); }
 
-up_VMeCommand FakeVMeModel::getCommand(int) const {
+up_VMeCommand FakeVMeModel::retrieveCommand(int) const {
   recordEvent('C');
   return up_VMeCommand{new VMeV{0, 0, 0}};
 }

@@ -63,8 +63,8 @@ TEST_CASE("Whatever") {
   test.engine->seed(xyth{0, 0, 0}, fp_point2d{3, 4});
   while (isMoveCmd(exec.commandFromLastNotify.get())) {
     test.engine->seed(xyth{
-        test.model->getX()[1], test.model->getY()[1],
-        test.model->getTh()[1],
+        test.model->get_x()[1], test.model->get_y()[1],
+        test.model->get_th()[1],
     });
   }
 }

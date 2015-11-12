@@ -43,7 +43,7 @@ up_VMeCommand VMeNmpcEngine::nextCommand() {
   else if (cmdsExecutedFromCurrentHorizon++ >= model->getHorizonSize())
     return up_VMeCommand{new VMeNullCmd()};
   else
-    return model->getCommand(cmdsExecutedFromCurrentHorizon);
+    return model->retrieveCommand(cmdsExecutedFromCurrentHorizon);
 }
 
 void VMeNmpcEngine::seed(xyth pose, fp_point2d target) {

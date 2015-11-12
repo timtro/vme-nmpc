@@ -87,19 +87,19 @@ void JsonLogger::logModelState() const noexcept {
   fprintf(fp_out, "{\n    ");
 
   fprintf(fp_out, "\"x\" : [");
-  jsonPrintArray(fp_out, model->getX());
+  jsonPrintArray(fp_out, model->get_x());
   fprintf(fp_out, "],\n");
 
   fprintf(fp_out, "    \"y\" : [");
-  jsonPrintArray(fp_out, model->getY());
+  jsonPrintArray(fp_out, model->get_y());
   fprintf(fp_out, "],\n");
 
   fprintf(fp_out, "    \"ex\" : [");
-  jsonPrintArray(fp_out, model->getEx());
+  jsonPrintArray(fp_out, model->get_ex());
   fprintf(fp_out, "],\n");
 
   fprintf(fp_out, "    \"ey\" : [");
-  jsonPrintArray(fp_out, model->getEy());
+  jsonPrintArray(fp_out, model->get_ey());
   fprintf(fp_out, "],\n");
 
   fprintf(fp_out, "    \"Dth\" : [");

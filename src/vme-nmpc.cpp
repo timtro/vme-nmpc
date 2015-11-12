@@ -16,11 +16,7 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "vme-nmpc.h"
-#include "Daemon.hpp"
-#include "Nav2Robot.hpp"
-#include "ClArgs.hpp"
-#include "InputFileData.hpp"
+// #define BOOST_LOG_DYN_LINK
 
 #include <chrono>
 #include <cstdio>
@@ -29,12 +25,26 @@
 #include <tuple>
 
 #include <boost/program_options.hpp>
-
+#include <boost/log/trivial.hpp>
 #include <unistd.h>
+
+#include "Daemon.hpp"
+#include "Nav2Robot.hpp"
+#include "ClArgs.hpp"
+#include "InputFileData.hpp"
+#include "VMeNmpcEngine.hpp"
+#include "NmpcModels/VMeModel.hpp"
+#include "NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
+#include "Loggers/JsonLogger.hpp"
 
 // TODO(T.T.): Use Boost property_tree and JSON as input files.
 // TODO(T.T.): Use Boost scoped threads that assure that all paths out of a
 //             make the thread unjoinable. (As per the advice of Scott Mayers)
+
+// namespace logging = boost::log;
+
+using std::unique_ptr;
+using std::make_unique;
 
 void request_handler(int sockfd) {
   char buff[80];
@@ -47,13 +57,29 @@ void request_handler(int sockfd) {
   return;
 }
 
+// // Consider composing the Initializer with InputFileData
+// AggregatorInitializer makeInitializerFromInputData(InputFileData& src) {
+//   AggregatorInitializer init;
+//   init.nmpcHorizon = src.nmpcHorizon;
+//   init.timeInterval = src.timeInterval;
+//   init.cruiseSpeed = src.cruiseSpeed;
+//   init.Q = src.Q;
+//   init.Q0 = src.Q0;
+//   init.R = src.R;
+//   init.sdStepFactor = src.sdStepFactor;
+//   init.sdConvergenceTolerance = src.sdConvergenceTolerance;
+//   init.maxSdSteps = src.maxSdSteps;
+//   init.targetDistanceTolerance = src.targetDistanceTolerance;
+//   return init;
+// }
+
 int main(int argc, char** argv) {
-  ClArgs cmdln_args(argc, argv);
+  ClArgs cmdlnArgs(argc, argv);
 
-  InputFileData input_data;
-  input_data.load(cmdln_args.infile);
+  InputFileData inputData;
+  inputData.load(cmdlnArgs.infile);
 
-  Nav2Robot vme(cmdln_args.host, cmdln_args.port);
+  Nav2Robot vme(cmdlnArgs.host, cmdlnArgs.port);
 
   try {
     vme.connect();
@@ -72,6 +98,16 @@ int main(int argc, char** argv) {
   int q;
   std::tie(x, y, n, q) = vme.q();
   printf("%f %f %f %d\n", x, y, n, q);
+
+  std::string logFilePath{"here.txt"};
+
+
+  AggregatorInitializer init(inputData);
+  auto model = make_unique<VMeModel>(init);
+  auto minimizer = make_unique<VMeNaiveSdMinimizer>(init);
+  auto logger = make_unique<JsonLogger>(init, logFilePath);
+  auto engine = make_unique<VMeNmpcEngine>(init);
+
   // for(;;) {
   //   std::this_thread::sleep_for(std::chrono::seconds(10));
   // }

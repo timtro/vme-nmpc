@@ -19,20 +19,24 @@
 #ifndef VME_NMPC_SRC_INPUTFILEDATA_HPP_
 #define VME_NMPC_SRC_INPUTFILEDATA_HPP_
 
-#include "typedefs.h"
 #include <string>
+#include "typedefs.h"
+#include "linear.hpp"
 
 struct InputFileData {
-  int N;
-  int m;
-  int n;
-  fptype T;
-  fptype tgttol;
-  fptype dg;
-  fptype cruising_speed;
+  unsigned nmpcHorizon;
+  fptype timeInterval;
+  fptype cruiseSpeed;
   fptype Q;
   fptype Q0;
   fptype R;
+  fptype sdStepFactor;
+  fptype sdConvergenceTolerance;
+  unsigned maxSdSteps;
+  fptype targetDistanceTolerance;
+  std::string jsonLogPath;
+  fp_point2d target;
+
   void load(const std::string &);
   // void save(const std::string &);
 };

@@ -27,13 +27,13 @@
 #include "../VMeCommand.hpp"
 
 VMeModel::VMeModel(AggregatorInitializer& init)
-    : N{init.horizonSize},
-      T{init.timeInterval},
-      cruiseSpeed{init.cruiseSpeed},
-      Q{init.Q},
-      Q0{init.Q0},
-      R{init.R} {
-  if (init.horizonSize <= 2) throw HorizonSizeShouldBeSensiblyLarge();
+    : N{init.get_nmpcHorizon()},
+      T{init.get_timeInterval()},
+      cruiseSpeed{init.get_cruiseSpeed()},
+      Q{init.get_Q()},
+      Q0{init.get_Q0()},
+      R{init.get_R()} {
+  if (N <= 2) throw HorizonSizeShouldBeSensiblyLarge();
 
   init.modelBindingSafetyCheck();
 

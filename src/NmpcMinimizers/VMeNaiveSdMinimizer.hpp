@@ -26,16 +26,18 @@
 class VMeNaiveSdMinimizer : public NmpcMinimizer {
   VMeModel* model{nullptr};
   unsigned sdLoopCount{0};
-  unsigned maxSteps{1000};
-  fptype sdStepFactor{.1};
-  fptype convergenceTolerance{.1};
+  unsigned maxSdSteps{0};
+  fptype sdStepFactor{0};
+  fptype sdConvergenceTolerance{0};
   MinimizerCode status{MinimizerCode::idle};
 
   bool iterate() noexcept;
 
  public:
+  int lastSdLoopCount{0};
   VMeNaiveSdMinimizer(AggregatorInitializer&);
-
+  VMeNaiveSdMinimizer(const VMeNaiveSdMinimizer&) = delete;
+  VMeNaiveSdMinimizer& operator=(const VMeNaiveSdMinimizer&) = delete;
   virtual MinimizerCode solveOptimalControlHorizon() noexcept;
 };
 

@@ -37,7 +37,6 @@
 #include "NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include "Loggers/JsonLogger.hpp"
 
-// TODO(T.T.): Use Boost property_tree and JSON as input files.
 // TODO(T.T.): Use Boost scoped threads that assure that all paths out of a
 //             make the thread unjoinable. (As per the advice of Scott Mayers)
 
@@ -56,22 +55,6 @@ void request_handler(int sockfd) {
   printf("Recieved Message: %s", buff);
   return;
 }
-
-// // Consider composing the Initializer with InputFileData
-// AggregatorInitializer makeInitializerFromInputData(InputFileData& src) {
-//   AggregatorInitializer init;
-//   init.nmpcHorizon = src.nmpcHorizon;
-//   init.timeInterval = src.timeInterval;
-//   init.cruiseSpeed = src.cruiseSpeed;
-//   init.Q = src.Q;
-//   init.Q0 = src.Q0;
-//   init.R = src.R;
-//   init.sdStepFactor = src.sdStepFactor;
-//   init.sdConvergenceTolerance = src.sdConvergenceTolerance;
-//   init.maxSdSteps = src.maxSdSteps;
-//   init.targetDistanceTolerance = src.targetDistanceTolerance;
-//   return init;
-// }
 
 int main(int argc, char** argv) {
   ClArgs cmdlnArgs(argc, argv);

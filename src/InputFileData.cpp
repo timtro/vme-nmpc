@@ -28,18 +28,33 @@
 
 namespace pt = boost::property_tree;
 
+class ErrorReadingNmpcHorizonSizeFromInputFile : public std::exception {};
+
 void InputFileData::load(const std::string& filename) {
   pt::ptree tree;
   pt::read_json(filename, tree);
 
-  N = tree.get<int>("N");
-  m = tree.get<int>("m");
-  n = tree.get<int>("n");
-  T = tree.get<float>("T");
-  dg = tree.get<float>("dg");
-  tgttol = tree.get<float>("tgttol");
-  cruising_speed = tree.get<float>("cruising_speed");
+  try {
+    nmpcHorizon = tree.get<unsigned>("nmpcHorizon");
+  } catch (...) {
+    throw ErrorReadingNmpcHorizonSizeFromInputFile();
+  }
+  timeInterval = tree.get<float>("timeInterval");
+  cruiseSpeed = tree.get<float>("cruiseSpeed");
   Q = tree.get<float>("Q");
   Q0 = tree.get<float>("Q0");
   R = tree.get<float>("R");
+  sdStepFactor = tree.get<float>("sdStepFactor");
+  maxSdSteps = tree.get<unsigned>("maxSdSteps");
+  targetDistanceTolerance = tree.get<float>("targetDistanceTolerance");
+  try {
+    jsonLogPath = tree.get<std::string>("JsonLogPath");
+  } catch (...) {
+    jsonLogPath = "";
+  }
+  int i = 0;
+  for ( auto& c : tree.get_child("target")) {
+    // printf("FROM THING: %s\n", c.second.get_child(value);
+  }
+  printf("TARGET: (%f, %f)\n", target.x, target.y);
 }

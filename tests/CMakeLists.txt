@@ -55,8 +55,12 @@ set(testname itest-VMe-Model_NaiveSdMinimizer)
         CATCH VMeNmpcEngine VMeModel AggregatorInitializer Obstacle fakes)
     create_test(${testname})
 
-# add_executable(non-catch-test non-catch-test.cpp ../src/Loggers/JsonLogger.cpp ../src/AggregatorInitializer.cpp)
-# target_link_libraries (non-catch-test VMeModel Obstacle fakes)
+# add_executable(non-catch-test non-catch-test.cpp
+#                 ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp
+#                 ../src/Loggers/JsonLogger.cpp
+#                 )
+# target_link_libraries (non-catch-test
+#     CATCH VMeNmpcEngine VMeModel AggregatorInitializer Obstacle fakes)
 
 #set(testname PathPlannerTest)
 #add_executable (${testname} ${testname}.cpp)

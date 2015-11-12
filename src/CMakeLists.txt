@@ -14,5 +14,12 @@ add_library (VMeModel NmpcModels/VMeModel.cpp VMeCommand.cpp)
 add_library (AggregatorInitializer AggregatorInitializer.cpp)
   target_link_libraries(AggregatorInitializer VMeModel)
 
-add_executable (vme-nmpc vme-nmpc.cpp ClArgs.cpp InputFileData.cpp)
-target_link_libraries (vme-nmpc Obstacle VMeNmpcEngine VMeModel)
+add_executable (vme-nmpc vme-nmpc.cpp
+                  ClArgs.cpp
+                  InputFileData.cpp
+                  NmpcMinimizers/VMeNaiveSdMinimizer.cpp
+                  Loggers/JsonLogger.cpp
+                  AggregatorInitializer.cpp
+                )
+target_link_libraries (vme-nmpc VMeNmpcEngine VMeModel Obstacle)
+set_source_files_properties(vme-nmpc.cpp PROPERTIES COMPILE_FLAGS -DBOOST_LOG_DYN_LINK)

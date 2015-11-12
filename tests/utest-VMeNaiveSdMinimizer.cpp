@@ -12,7 +12,7 @@ using std::make_unique;
 
 class TestObject {
  public:
-  unsigned horizonSize{50};
+  unsigned nmpcHorizon{50};
   float timeInterval{0.1f};
   float cruiseSpeed{0.4};
   float sdStepFactor{.1};
@@ -25,9 +25,9 @@ class TestObject {
   std::string callRecord;
 
   TestObject() {
-    init.horizonSize = horizonSize;
-    init.timeInterval = timeInterval;
-    init.cruiseSpeed = cruiseSpeed;
+    init.parameters->nmpcHorizon = nmpcHorizon;
+    init.parameters->timeInterval = timeInterval;
+    init.parameters->cruiseSpeed = cruiseSpeed;
 
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
@@ -50,7 +50,7 @@ TEST_CASE(
   AggregatorInitializer badInit;
   std::string callRecord;
 
-  badInit.horizonSize = 3;
+  badInit.parameters->nmpcHorizon = 3;
   auto tmpModel = make_unique<VMeModel>(badInit);
   auto tmpMinimizer = make_unique<VMeNaiveSdMinimizer>(badInit);
   REQUIRE_THROWS_AS(make_unique<VMeNaiveSdMinimizer>(badInit),

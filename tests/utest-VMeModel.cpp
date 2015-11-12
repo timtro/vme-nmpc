@@ -11,16 +11,16 @@ using std::make_unique;
 
 class TestObject {
  public:
-  unsigned horizonSize{50};
+  unsigned nmpcHorizon{50};
   float timeInterval{0.1f};
   float cruiseSpeed{0.4};
   AggregatorInitializer init;
   unique_ptr<VMeModel> model;
 
   TestObject() {
-    init.horizonSize = horizonSize;
-    init.timeInterval = timeInterval;
-    init.cruiseSpeed = cruiseSpeed;
+    init.parameters->nmpcHorizon = nmpcHorizon;
+    init.parameters->timeInterval = timeInterval;
+    init.parameters->cruiseSpeed = cruiseSpeed;
 
     model = make_unique<VMeModel>(init);
     model->seed(xyth{0, 0, 0});
@@ -30,7 +30,7 @@ class TestObject {
 
 TEST_CASE("Throw appropriately if horizon size is less than reasonable.") {
   AggregatorInitializer badInit;
-  badInit.horizonSize = 0;
+  badInit.parameters->nmpcHorizon = 0;
   REQUIRE_THROWS_AS(auto model = make_unique<VMeModel>(badInit),
                     HorizonSizeShouldBeSensiblyLarge);
 }
@@ -39,7 +39,7 @@ TEST_CASE(
     "Must throw appropriately if the initPkg has been previously used to "
     "initialize a model") {
   AggregatorInitializer badInit;
-  badInit.horizonSize = 3;
+  badInit.parameters->nmpcHorizon = 3;
   make_unique<VMeModel>(badInit);
   REQUIRE_THROWS_AS(make_unique<VMeModel>(badInit),
                     InitPkgCanOnlyBeUsedOnceToInitializeAModel);
@@ -49,7 +49,7 @@ TEST_CASE(
     "Throw appropriately if the initPkg has been previously used to initialize "
     "a minimizer (which shouldn't be possible if the minimizer is checking).") {
   AggregatorInitializer badInit;
-  badInit.horizonSize = 3;
+  badInit.parameters->nmpcHorizon = 3;
   std::string unusedStr;
   make_unique<FakeVMeMinimizer>(badInit, unusedStr);
   REQUIRE_THROWS_AS(make_unique<VMeModel>(badInit),
@@ -91,7 +91,7 @@ TEST_CASE(
   m.model->computeForecast();
   REQUIRE(m.model->getX()[m.model->getHorizonSize() - 1] ==
           Approx(linearTravelDistance(m.model->getV()[0], m.timeInterval,
-                                      m.horizonSize)));
+                                      m.nmpcHorizon)));
   REQUIRE(thlp::eachInArrayIsApprox(m.model->getY(), 0.0f, 1e-5f));
 }
 
@@ -101,9 +101,9 @@ TEST_CASE(
   TestObject m;
   m.model->seed(xyth{0, 0, degToRad(90.f)});
   m.model->computeForecast();
-  REQUIRE(m.model->getY()[m.horizonSize - 1] ==
+  REQUIRE(m.model->getY()[m.nmpcHorizon - 1] ==
           Approx(linearTravelDistance(m.cruiseSpeed, m.timeInterval,
-                                      m.horizonSize)));
+                                      m.nmpcHorizon)));
   REQUIRE(thlp::eachInArrayIsApprox(m.model->getX(), 0.0f, 1e-5f));
 }
 
@@ -126,7 +126,7 @@ TEST_CASE(
     "should form isosceles right triangles") {
   TestObject m;
   m.model->computeForecast();
-  fp_point2d tgt{0, m.cruiseSpeed * m.timeInterval * m.horizonSize};
+  fp_point2d tgt{0, m.cruiseSpeed * m.timeInterval * m.nmpcHorizon};
   m.model->seed(xyth{0, 0, 0}, tgt);
   m.model->computeTrackingErrors();
   REQUIRE(thlp::arraysAreAbsEqual(m.model->getX(), m.model->getEx(), 1e-6));

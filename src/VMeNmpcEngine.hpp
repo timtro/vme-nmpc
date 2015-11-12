@@ -37,7 +37,7 @@ class VMeNmpcEngine : public Subject {
   VMeLogger* logger;
   std::unique_ptr<VMeLogger> noOpLogger{nullptr}; // Default log if none given.
 
-  fptype targetDistanceTolerance{0.1};
+  fptype targetDistanceTolerance{0};
   unsigned cmdsExecutedFromCurrentHorizon{0};
   bool machineIsHalted{true};
 

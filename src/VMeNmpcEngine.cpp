@@ -21,7 +21,8 @@
 
 using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
-VMeNmpcEngine::VMeNmpcEngine(AggregatorInitializer& init) {
+VMeNmpcEngine::VMeNmpcEngine(AggregatorInitializer& init)
+    : targetDistanceTolerance(init.get_targetDistanceTolerance()) {
   // TODO Safety checks
   init.aggregatorCompletionSafetyCheck();
   model = init.model;

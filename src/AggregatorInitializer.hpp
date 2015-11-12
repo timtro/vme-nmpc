@@ -19,31 +19,30 @@
 #ifndef VME_NMPC_NMPCINITPKG_HPP_
 #define VME_NMPC_NMPCINITPKG_HPP_
 
+#include <memory>
+
 #include "typedefs.h"
 #include "linear.hpp"
 #include "NmpcModel.hpp"
 #include "NmpcMinimizer.hpp"
 #include "VMeLogger.hpp"
 #include "VMeCommand.hpp"
-#include <memory>
+#include "InputFileData.hpp"
 
 class ObstacleContainer;
 
 using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
 struct AggregatorInitializer {
-  unsigned int horizonSize{0};
-  fptype timeInterval{0};
-  fptype cruiseSpeed{0};
-  fptype Q{0};
-  fptype Q0{0};
-  fptype R{0};
-  fptype sdStepFactor{0};
-  fptype sdConvergenceTolerance{0};
+  InputFileData* parameters;
+
   vMeModelType* model{nullptr};
   NmpcMinimizer* minimizer{nullptr};
   VMeLogger* logger{nullptr};
   ObstacleContainer* obstacles{nullptr};
+
+  AggregatorInitializer();
+  AggregatorInitializer(InputFileData&);
 
   void modelBindingSafetyCheck();
   void minimizerBindingSafetyCheck();
@@ -52,6 +51,23 @@ struct AggregatorInitializer {
   void bindIntoAggregator(vMeModelType*);
   void bindIntoAggregator(NmpcMinimizer*);
   void bindIntoAggregator(VMeLogger*);
+
+  unsigned get_nmpcHorizon();
+  fptype get_timeInterval();
+  fptype get_cruiseSpeed();
+  fptype get_Q();
+  fptype get_Q0();
+  fptype get_R();
+  fptype get_sdStepFactor();
+  fptype get_sdConvergenceTolerance();
+  unsigned get_maxSdSteps();
+  fptype get_targetDistanceTolerance();
+  std::string get_jsonLogPath();
+
+private:
+  // only for default construction:
+  std::unique_ptr<InputFileData> defaultParameters_;
+
 };
 
 class ModelMustBeInitializedBeforeMinimizerOrLogger : public std::exception {};
@@ -59,5 +75,17 @@ class InitPkgCanOnlyBeUsedOnceToInitializeAModel : public std::exception {};
 class InitPkgDoesNotContainPointerToAModel : public std::exception {};
 class InitPkgDoesNotContainPointerToAMinimizer : public std::exception {};
 class InitPkgAlreadyHasBoundMinimizer : public std::exception {};
+
+unsigned get_nmpcHorizon();
+fptype get_timeInterval();
+fptype get_cruiseSpeed();
+fptype get_Q();
+fptype get_Q0();
+fptype get_R();
+fptype get_sdStepFactor();
+fptype get_sdConvergenceTolerance();
+unsigned get_maxSdSteps();
+fptype get_targetDistanceTolerance();
+std::string get_jsonLogPath();
 
 #endif  // VME_NMPC_NMPCINITPKG_HPP_

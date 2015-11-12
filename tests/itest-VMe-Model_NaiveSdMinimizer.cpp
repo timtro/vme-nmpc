@@ -12,7 +12,7 @@ using std::unique_ptr;
 using std::make_unique;
 
 struct TestSetup {
-  unsigned int nmpcHorizon = 50;
+  unsigned int nmpcHorizon = 30;
   float timeInterval = 0.1f;
   float speed = .4;
 
@@ -22,13 +22,21 @@ struct TestSetup {
   unique_ptr<JsonLogger> logger{nullptr};
   unique_ptr<VMeNmpcEngine> engine{nullptr};
 
+void setDefaultParams(InputFileData* parameters) {
+    parameters->nmpcHorizon = nmpcHorizon;
+    parameters->timeInterval = timeInterval;
+    parameters->cruiseSpeed = speed;
+    parameters->Q = 1;
+    parameters->Q0 = init.parameters->Q / 2;
+    parameters->R = init.parameters->Q / 4;
+    parameters->sdStepFactor = 0.1;
+    parameters->sdConvergenceTolerance = 0.1;
+    parameters->maxSdSteps = 1000;
+    parameters->targetDistanceTolerance = .1;
+}
+
   TestSetup() {
-    init.horizonSize = nmpcHorizon;
-    init.timeInterval = timeInterval;
-    init.cruiseSpeed = speed;
-    init.Q = 1;
-    init.Q0 = init.Q / 2;
-    init.R = init.Q / 4;
+    setDefaultParams(init.parameters);
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     logger = make_unique<JsonLogger>(init);
@@ -36,11 +44,7 @@ struct TestSetup {
   }
 
   TestSetup(std::string logFilePath) {
-    init.horizonSize = nmpcHorizon;
-    init.timeInterval = timeInterval;
-    init.cruiseSpeed = speed;
-    init.Q = 1;
-    init.Q0 = init.Q / 2;
+    setDefaultParams(init.parameters);
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     logger = make_unique<JsonLogger>(init, logFilePath);

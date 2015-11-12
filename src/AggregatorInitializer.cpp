@@ -20,6 +20,14 @@
 
 using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
+AggregatorInitializer::AggregatorInitializer() {
+  defaultParameters_ = std::make_unique<InputFileData>();
+  parameters = defaultParameters_.get();
+}
+
+AggregatorInitializer::AggregatorInitializer(InputFileData& in)
+    : parameters(&in) {}
+
 void AggregatorInitializer::modelBindingSafetyCheck() {
   if ((minimizer != nullptr) || (logger != nullptr))
     throw ModelMustBeInitializedBeforeMinimizerOrLogger();
@@ -27,8 +35,7 @@ void AggregatorInitializer::modelBindingSafetyCheck() {
     throw InitPkgCanOnlyBeUsedOnceToInitializeAModel();
 }
 
-void AggregatorInitializer::bindIntoAggregator(
-    vMeModelType* caller) {
+void AggregatorInitializer::bindIntoAggregator(vMeModelType* caller) {
   model = caller;
 }
 
@@ -59,4 +66,32 @@ void AggregatorInitializer::aggregatorCompletionSafetyCheck() {
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer == nullptr)
     throw InitPkgDoesNotContainPointerToAMinimizer();
+};
+
+unsigned AggregatorInitializer::get_nmpcHorizon() {
+  return parameters->nmpcHorizon;
+}
+fptype AggregatorInitializer::get_timeInterval() {
+  return parameters->timeInterval;
+}
+fptype AggregatorInitializer::get_cruiseSpeed() {
+  return parameters->cruiseSpeed;
+}
+fptype AggregatorInitializer::get_Q() { return parameters->Q; }
+fptype AggregatorInitializer::get_Q0() { return parameters->Q0; }
+fptype AggregatorInitializer::get_R() { return parameters->R; }
+fptype AggregatorInitializer::get_sdStepFactor() {
+  return parameters->sdStepFactor;
+}
+fptype AggregatorInitializer::get_sdConvergenceTolerance() {
+  return parameters->sdConvergenceTolerance;
+}
+unsigned AggregatorInitializer::get_maxSdSteps() {
+  return parameters->maxSdSteps;
+}
+fptype AggregatorInitializer::get_targetDistanceTolerance() {
+  return parameters->targetDistanceTolerance;
+}
+std::string AggregatorInitializer::get_jsonLogPath() {
+  return parameters->jsonLogPath;
 };

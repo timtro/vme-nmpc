@@ -18,10 +18,14 @@
 
 #include "VMeNaiveSdMinimizer.hpp"
 
-VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(AggregatorInitializer& init) {
+VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(AggregatorInitializer& init)
+    : maxSdSteps(init.get_maxSdSteps()),
+      sdStepFactor(init.get_sdStepFactor()),
+      sdConvergenceTolerance(init.get_sdConvergenceTolerance()) {
   init.minimizerBindingSafetyCheck();
   model = dynamic_cast<VMeModel*>(init.model);
   init.bindIntoAggregator(this);
+  printf("sdConvergenceTolerance: %f", sdConvergenceTolerance);
 }
 
 MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {
@@ -34,15 +38,16 @@ MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {
     ++sdLoopCount;
   } while (iterate());
 
+  lastSdLoopCount = sdLoopCount;
   return status;
 }
 
 bool VMeNaiveSdMinimizer::iterate() noexcept {
   model->Dth -= sdStepFactor * model->grad;
-  if (model->gradNorm < convergenceTolerance) {
+  if (model->gradNorm < sdConvergenceTolerance) {
     status = MinimizerCode::success;
     return false;
-  } else if (sdLoopCount >= maxSteps) {
+  } else if (sdLoopCount >= maxSdSteps) {
     status = MinimizerCode::reachedIterationLimit;
     return false;
   } else

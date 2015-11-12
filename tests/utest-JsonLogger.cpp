@@ -22,11 +22,11 @@ struct TestObject {
   unique_ptr<VMeNmpcEngine> engine{nullptr};
 
   TestObject() {
-    init.horizonSize = nmpcHorizon;
-    init.timeInterval = timeInterval;
-    init.cruiseSpeed = speed;
-    init.Q = 1;
-    init.Q0 = init.Q / 2;
+    init.parameters->nmpcHorizon = nmpcHorizon;
+    init.parameters->timeInterval = timeInterval;
+    init.parameters->cruiseSpeed = speed;
+    init.parameters->Q = 1;
+    init.parameters->Q0 = init.parameters->Q / 2;
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     logger = make_unique<JsonLogger>(init);
@@ -34,11 +34,11 @@ struct TestObject {
   }
 
   TestObject(std::string logFilePath) {
-    init.horizonSize = nmpcHorizon;
-    init.timeInterval = timeInterval;
-    init.cruiseSpeed = speed;
-    init.Q = 1;
-    init.Q0 = init.Q / 2;
+    init.parameters->nmpcHorizon = nmpcHorizon;
+    init.parameters->timeInterval = timeInterval;
+    init.parameters->cruiseSpeed = speed;
+    init.parameters->Q = 1;
+    init.parameters->Q0 = init.parameters->Q / 2;
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     logger = make_unique<JsonLogger>(init, logFilePath);
@@ -51,7 +51,7 @@ TEST_CASE(
     "model to the logger initializer") {
   std::string notUsed;
   AggregatorInitializer init;
-  init.horizonSize = 5;
+  init.parameters->nmpcHorizon = 5;
   // Must name these since scope only applies to named objects.
   auto tmpModel = make_unique<FakeVMeModel>(init, notUsed);
   auto tmpMinimizer = make_unique<FakeVMeMinimizer>(init, notUsed);

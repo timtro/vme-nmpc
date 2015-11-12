@@ -10,7 +10,7 @@ using std::make_unique;
 
 struct TestObject {
   std::string callRecord;
-  unsigned horizonSize = 5;
+  unsigned nmpcHorizon = 5;
 
   AggregatorInitializer init;
   unique_ptr<FakeVMeModel> model{nullptr};
@@ -18,7 +18,7 @@ struct TestObject {
   unique_ptr<VMeNmpcEngine> engine{nullptr};
 
   TestObject() {
-    init.horizonSize = horizonSize;
+    init.parameters->nmpcHorizon = nmpcHorizon;
     model = make_unique<FakeVMeModel>(init, callRecord);
     minimizer = make_unique<FakeVMeMinimizer>(init, callRecord);
     engine = make_unique<VMeNmpcEngine>(init);
@@ -89,5 +89,5 @@ TEST_CASE(
       command = test.engine->nextCommand();
     }
   }
-  REQUIRE(countReturnedMotionCommands == test.horizonSize);
+  REQUIRE(countReturnedMotionCommands == test.nmpcHorizon);
 }

@@ -49,7 +49,3 @@ List of dependencies other than standard libraries:
 
 ##Code Format
 Code formatting was done with `clang-format -style=LLVM`, and an attempt is made to conform to the [LLVM Coding Standards](http://llvm.org/docs/CodingStandards.html).
-
-##TODO
-* Think about passing a lambda as a message handler for Daemon.
-* Tests to see if the aggregator throws should be in an aggregator test. The VMeModel unit test shouldn't need a FakeMinimizer.

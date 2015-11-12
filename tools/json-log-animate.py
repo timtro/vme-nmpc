@@ -83,10 +83,12 @@ class AnimatedPlot:
 
 
 def updatePlotData(data):
-    jsonData = logParser.getNextObjectAsDict()
-
-    if not jsonData:
-        return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
+    while True:
+        jsonData = logParser.getNextObjectAsDict()
+        if not jsonData:
+            return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
+        if 'ex' in jsonData.keys():
+            break
 
     aniPlot.execPath[0].append(jsonData['x'][0])
     aniPlot.execPath[1].append(jsonData['y'][0])

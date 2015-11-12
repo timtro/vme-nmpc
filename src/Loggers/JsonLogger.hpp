@@ -28,6 +28,7 @@ class VMeNaiveSdMinimizer;
 
 class JsonLogger : public VMeLogger {
   VMeModel* model{nullptr};
+  VMeNaiveSdMinimizer* minimizer{nullptr};
   FILE* fp_out{stdout};
   std::unique_ptr<CFileContainer> logFile;
   mutable bool printedFirstObject{false};
@@ -38,8 +39,10 @@ class JsonLogger : public VMeLogger {
   JsonLogger(AggregatorInitializer&, std::string);
   ~JsonLogger();
   virtual void logModelState() const noexcept;
+  virtual void logMinimizerState() const noexcept;
 };
 
 class LoggerIsIncompatibleWithModelType : public std::exception {};
+class LoggerIsIncompatibleWithMinimizerType : public std::exception {};
 
 #endif  // VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_

@@ -18,21 +18,28 @@
 
 #include "JsonLogger.hpp"
 #include "../NmpcModels/VMeModel.hpp"
+#include "../NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include <cstdio>
 
 using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
-auto guranteedCompatibleModel(
-    vMeModelType *model) {
+auto guranteedCompatibleModel(vMeModelType *model) {
   auto modelToBeLogged = dynamic_cast<VMeModel *>(model);
-  if (modelToBeLogged == nullptr)
-    throw LoggerIsIncompatibleWithModelType();
+  if (modelToBeLogged == nullptr) throw LoggerIsIncompatibleWithModelType();
   return modelToBeLogged;
+}
+
+auto guranteedCompatibleMminimizer(NmpcMinimizer *model) {
+  auto minimizerToBeLogged = dynamic_cast<VMeNaiveSdMinimizer *>(model);
+  if (minimizerToBeLogged == nullptr)
+    throw LoggerIsIncompatibleWithMinimizerType();
+  return minimizerToBeLogged;
 }
 
 JsonLogger::JsonLogger(AggregatorInitializer &init) {
   init.loggerBindingSafetyCheck();
   this->model = guranteedCompatibleModel(init.model);
+  this->minimizer = guranteedCompatibleMminimizer(init.minimizer);
   init.bindIntoAggregator(this);
   fprintf(fp_out, "[\n");
 }
@@ -41,13 +48,16 @@ JsonLogger::JsonLogger(AggregatorInitializer &init, FILE *outputFilePtr)
     : fp_out{outputFilePtr} {
   init.loggerBindingSafetyCheck();
   this->model = guranteedCompatibleModel(init.model);
+  this->minimizer = guranteedCompatibleMminimizer(init.minimizer);
   init.bindIntoAggregator(this);
   fprintf(fp_out, "[\n");
 }
 
-JsonLogger::JsonLogger(AggregatorInitializer &init, std::string outputFilePath) {
+JsonLogger::JsonLogger(AggregatorInitializer &init,
+                       std::string outputFilePath) {
   init.loggerBindingSafetyCheck();
   this->model = guranteedCompatibleModel(init.model);
+  this->minimizer = guranteedCompatibleMminimizer(init.minimizer);
 
   logFile = std::make_unique<CFileContainer>(outputFilePath);
   fp_out = logFile->fd;
@@ -58,12 +68,12 @@ JsonLogger::JsonLogger(AggregatorInitializer &init, std::string outputFilePath) 
 JsonLogger::~JsonLogger() { fprintf(fp_out, "\n]\n"); }
 
 // TODO: In GCC 5.3, change std::end() to std::cend();
-template <typename T> void jsonPrintArray(FILE *fd, T array) {
+template <typename T>
+void jsonPrintArray(FILE *fd, T array) {
   auto iter = std::begin(array);
   for (;;) {
     fprintf(fd, "%f", *iter);
-    if (++iter == std::end(array))
-      break;
+    if (++iter == std::end(array)) break;
     fprintf(fd, ",");
   }
 }
@@ -96,6 +106,18 @@ void JsonLogger::logModelState() const noexcept {
   jsonPrintArray(fp_out, model->Dth);
   fprintf(fp_out, "]\n");
 
+  fprintf(fp_out, "}");
+  fflush(fp_out);
+}
+
+void JsonLogger::logMinimizerState() const noexcept {
+  if (printedFirstObject) {
+    fprintf(fp_out, ",\n");
+  } else {
+    printedFirstObject = true;
+  }
+  fprintf(fp_out, "{\n    ");
+  fprintf(fp_out, "  \"iterations:\" : %d", minimizer->lastSdLoopCount);
   fprintf(fp_out, "}");
   fflush(fp_out);
 }

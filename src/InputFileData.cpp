@@ -52,9 +52,4 @@ void InputFileData::load(const std::string& filename) {
   } catch (...) {
     jsonLogPath = "";
   }
-  int i = 0;
-  for ( auto& c : tree.get_child("target")) {
-    // printf("FROM THING: %s\n", c.second.get_child(value);
-  }
-  printf("TARGET: (%f, %f)\n", target.x, target.y);
 }

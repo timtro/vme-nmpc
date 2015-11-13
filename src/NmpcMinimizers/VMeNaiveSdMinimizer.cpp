@@ -25,7 +25,6 @@ VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(AggregatorInitializer& init)
   init.minimizerBindingSafetyCheck();
   model = dynamic_cast<VMeModel*>(init.model);
   init.bindIntoAggregator(this);
-  printf("sdConvergenceTolerance: %f", sdConvergenceTolerance);
 }
 
 MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {

@@ -84,25 +84,25 @@ void JsonLogger::logModelState() const noexcept {
   } else {
     printedFirstObject = true;
   }
-  fprintf(fp_out, "{\n    ");
+  fprintf(fp_out, "{\n");
 
-  fprintf(fp_out, "\"x\" : [");
+  fprintf(fp_out, "  \"x\" : [");
   jsonPrintArray(fp_out, model->get_x());
   fprintf(fp_out, "],\n");
 
-  fprintf(fp_out, "    \"y\" : [");
+  fprintf(fp_out, "  \"y\" : [");
   jsonPrintArray(fp_out, model->get_y());
   fprintf(fp_out, "],\n");
 
-  fprintf(fp_out, "    \"ex\" : [");
+  fprintf(fp_out, "  \"ex\" : [");
   jsonPrintArray(fp_out, model->get_ex());
   fprintf(fp_out, "],\n");
 
-  fprintf(fp_out, "    \"ey\" : [");
+  fprintf(fp_out, "  \"ey\" : [");
   jsonPrintArray(fp_out, model->get_ey());
   fprintf(fp_out, "],\n");
 
-  fprintf(fp_out, "    \"Dth\" : [");
+  fprintf(fp_out, "  \"Dth\" : [");
   jsonPrintArray(fp_out, model->Dth);
   fprintf(fp_out, "]\n");
 
@@ -116,8 +116,8 @@ void JsonLogger::logMinimizerState() const noexcept {
   } else {
     printedFirstObject = true;
   }
-  fprintf(fp_out, "{\n    ");
-  fprintf(fp_out, "  \"iterations:\" : %d", minimizer->lastSdLoopCount);
+  fprintf(fp_out, "{");
+  fprintf(fp_out, "  \"iterations:\" : %d  ", minimizer->lastSdLoopCount);
   fprintf(fp_out, "}");
   fflush(fp_out);
 }

@@ -24,8 +24,6 @@
 #include <iostream>
 #include <tuple>
 
-#include <boost/program_options.hpp>
-#include <boost/log/trivial.hpp>
 #include <unistd.h>
 
 #include "Daemon.hpp"

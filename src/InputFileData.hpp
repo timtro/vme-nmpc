@@ -24,18 +24,17 @@
 #include "linear.hpp"
 
 struct InputFileData {
-  unsigned nmpcHorizon;
-  fptype timeInterval;
-  fptype cruiseSpeed;
-  fptype Q;
-  fptype Q0;
-  fptype R;
-  fptype sdStepFactor;
-  fptype sdConvergenceTolerance;
-  unsigned maxSdSteps;
-  fptype targetDistanceTolerance;
-  std::string jsonLogPath;
-  fp_point2d target;
+  unsigned nmpcHorizon{0};
+  fptype timeInterval{0};
+  fptype cruiseSpeed{0};
+  fptype Q{0};
+  fptype Q0{0};
+  fptype R{0};
+  fptype sdStepFactor{0};
+  fptype sdConvergenceTolerance{0};
+  unsigned maxSdSteps{0};
+  fptype targetDistanceTolerance{0};
+  std::string jsonLogPath{""};
 
   void load(const std::string &);
   // void save(const std::string &);

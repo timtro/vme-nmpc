@@ -40,25 +40,20 @@
 // TODO(T.T.): Use Boost scoped threads that assure that all paths out of a
 //             make the thread unjoinable. (As per the advice of Scott Mayers)
 
-// namespace logging = boost::log;
-
 using std::unique_ptr;
 using std::make_unique;
 
 void request_handler(int sockfd) {
   char buff[80];
-
   if (read(sockfd, &buff, 80) < 1) return;
-
   if (strstr(buff, "exit")) std::exit(0);
-
   printf("Recieved Message: %s", buff);
   return;
 }
 
 int main(int argc, char** argv) {
-  ClArgs cmdlnArgs(argc, argv);
 
+  ClArgs cmdlnArgs(argc, argv);
   InputFileData inputData;
   inputData.load(cmdlnArgs.infile);
 
@@ -82,13 +77,10 @@ int main(int argc, char** argv) {
   std::tie(x, y, n, q) = vme.q();
   printf("%f %f %f %d\n", x, y, n, q);
 
-  std::string logFilePath{"here.txt"};
-
-
   AggregatorInitializer init(inputData);
   auto model = make_unique<VMeModel>(init);
   auto minimizer = make_unique<VMeNaiveSdMinimizer>(init);
-  auto logger = make_unique<JsonLogger>(init, logFilePath);
+  auto logger = make_unique<JsonLogger>(init, inputData.jsonLogPath);
   auto engine = make_unique<VMeNmpcEngine>(init);
 
   // for(;;) {

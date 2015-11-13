@@ -66,6 +66,7 @@ void Nav2Robot::connect() {
                          &hints, &servinfo);
 
     if (rv != 0) {
+      freeaddrinfo(servinfo);
       throw std::runtime_error(
           std::string{"Function getaddrinfo() returned error: "} +
           gai_strerror(rv));
@@ -78,6 +79,7 @@ void Nav2Robot::connect() {
   for (p = servinfo; p != nullptr; p = p->ai_next) {
     if ((sockfd_ = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) ==
         -1) {
+      freeaddrinfo(servinfo);
       throw std::runtime_error(
           std::string{"Function socket() returned error: "} + strerror(errno));
     }
@@ -91,6 +93,7 @@ void Nav2Robot::connect() {
   }
 
   if (p == nullptr) {
+    freeaddrinfo(servinfo);
     throw std::runtime_error(
         std::string{"Function connect() returned error: "} + strerror(errno));
   }

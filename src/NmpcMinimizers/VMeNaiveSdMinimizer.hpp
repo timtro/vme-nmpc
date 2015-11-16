@@ -34,10 +34,12 @@ class VMeNaiveSdMinimizer : public NmpcMinimizer {
   bool iterate() noexcept;
 
  public:
-  int lastSdLoopCount{0};
-  VMeNaiveSdMinimizer(AggregatorInitializer&);
   VMeNaiveSdMinimizer(const VMeNaiveSdMinimizer&) = delete;
   VMeNaiveSdMinimizer& operator=(const VMeNaiveSdMinimizer&) = delete;
+
+  int lastSdLoopCount{0};
+
+  VMeNaiveSdMinimizer(AggregatorInitializer&);
   virtual MinimizerCode solveOptimalControlHorizon() noexcept;
 };
 

@@ -67,12 +67,14 @@ class VMeModel : public vMeModelType {
   void computeTargetMetrics();
 
  public:
-  //! The steering rate. That is, the time rate-of-change of th.
+  VMeModel(const VMeModel &) = delete;
+  VMeModel &operator=(const VMeModel &) = delete;
+  VMeModel(AggregatorInitializer &);
+
   fp_array Dth;
   fp_array grad;
   fptype gradNorm{0};
 
-  VMeModel(AggregatorInitializer &);
   virtual unsigned getHorizonSize() const noexcept;
   virtual fptype getTargetDistance() const noexcept;
   virtual void seed(xyth);

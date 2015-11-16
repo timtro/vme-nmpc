@@ -44,7 +44,10 @@ class VMeNmpcEngine : public Subject {
  public:
   fp_point2d currentTarget;
 
+  VMeNmpcEngine(const VMeNmpcEngine&) = delete;
+  VMeNmpcEngine& operator=(const VMeNmpcEngine&) = delete;
   VMeNmpcEngine(AggregatorInitializer&);
+
   void setTarget(fp_point2d point);
   up_VMeCommand nextCommand();
   void seed(xyth, fp_point2d);

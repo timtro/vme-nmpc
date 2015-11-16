@@ -30,6 +30,8 @@ class ErrorOpeningFileWithFopen : public std::runtime_error {
 
 struct CFileContainer {
   FILE* fd;
+  CFileContainer(const CFileContainer&) = delete;
+  CFileContainer& operator=(const CFileContainer&) = delete;
   CFileContainer(std::string filepath) {
     fd = fopen(filepath.c_str(), "w");
     if (fd == nullptr)

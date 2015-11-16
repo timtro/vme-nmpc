@@ -82,6 +82,8 @@ class Daemon {
   friend class RequestTicket;
 
  public:
+  Daemon(const Daemon&) = delete;
+  Daemon& operator=(const Daemon&) = delete;
   Daemon(int port, std::function<void(int)>);
   ~Daemon();
 };

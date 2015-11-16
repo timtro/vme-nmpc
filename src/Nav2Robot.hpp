@@ -27,10 +27,9 @@ class Nav2Robot {
   float pose_[3];
   bool is_connected_{false};
 
+ public:
   Nav2Robot& operator=(const Nav2Robot&) = delete;
   Nav2Robot(const Nav2Robot&) = delete;
-
- public:
   Nav2Robot();
   Nav2Robot(std::string, unsigned int);
   ~Nav2Robot();

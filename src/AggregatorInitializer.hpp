@@ -34,15 +34,17 @@ class ObstacleContainer;
 using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
 
 struct AggregatorInitializer {
-  InputFileData* parameters;
 
+  AggregatorInitializer(const AggregatorInitializer&) = delete;
+  AggregatorInitializer& operator=(const AggregatorInitializer&) = delete;
+  AggregatorInitializer();
+  AggregatorInitializer(InputFileData&);
+
+  InputFileData* parameters;
   vMeModelType* model{nullptr};
   NmpcMinimizer* minimizer{nullptr};
   VMeLogger* logger{nullptr};
   ObstacleContainer* obstacles{nullptr};
-
-  AggregatorInitializer();
-  AggregatorInitializer(InputFileData&);
 
   void modelBindingSafetyCheck();
   void minimizerBindingSafetyCheck();

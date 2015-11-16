@@ -34,10 +34,13 @@ class JsonLogger : public VMeLogger {
   mutable bool printedFirstObject{false};
 
  public:
+  JsonLogger(const JsonLogger&) = delete;
+  JsonLogger& operator=(const JsonLogger&) = delete;
   JsonLogger(AggregatorInitializer&);
   JsonLogger(AggregatorInitializer&, FILE*);
   JsonLogger(AggregatorInitializer&, std::string);
   ~JsonLogger();
+
   virtual void logModelState() const noexcept;
   virtual void logMinimizerState() const noexcept;
 };

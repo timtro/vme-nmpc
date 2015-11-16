@@ -73,7 +73,7 @@
 #include <thread>
 
 class Daemon {
-  void (*server_child_)(int);
+  std::function<void(int)> server_child_;
   bool shutdown_flag;
   int sockfd_;
   std::thread daemon_thread_;
@@ -82,7 +82,7 @@ class Daemon {
   friend class RequestTicket;
 
  public:
-  Daemon(int port, void(int));
+  Daemon(int port, std::function<void(int)>);
   ~Daemon();
 };
 
@@ -91,7 +91,7 @@ class RequestTicket {
   int connectionfd_;
   std::thread server_thread_;
   friend void server_child_wrapper(RequestTicket*);
-  void (*get_server_child())(int) { return parent_daemon_->server_child_; }
+  auto get_server_child() { return parent_daemon_->server_child_; }
 
  public:
   bool done;

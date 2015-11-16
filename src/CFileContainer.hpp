@@ -32,7 +32,9 @@ struct CFileContainer {
   FILE* fd;
   CFileContainer(std::string filepath) {
     fd = fopen(filepath.c_str(), "w");
-    if (fd == nullptr) throw ErrorOpeningFileWithFopen(filepath);
+    if (fd == nullptr)
+      throw ErrorOpeningFileWithFopen(std::string{"File path: '"} + filepath +
+                                      "'.");
   }
   ~CFileContainer() { fclose(fd); }
 };

@@ -56,7 +56,7 @@ void daemon_threadfn(const Daemon* parent_daemon) {
   return;
 }
 
-Daemon::Daemon(int port, void (*server_child)(int))
+Daemon::Daemon(int port, std::function<void(int)> server_child)
     : server_child_{server_child}, shutdown_flag{false}, sockfd_{-1} {
   char buf[80];
   struct addrinfo* ai;

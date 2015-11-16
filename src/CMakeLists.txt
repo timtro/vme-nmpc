@@ -17,6 +17,7 @@ add_library (AggregatorInitializer AggregatorInitializer.cpp)
 add_executable (vme-nmpc vme-nmpc.cpp
                   ClArgs.cpp
                   InputFileData.cpp
+                  Daemon.cpp
                   NmpcMinimizers/VMeNaiveSdMinimizer.cpp
                   Loggers/JsonLogger.cpp
                   AggregatorInitializer.cpp

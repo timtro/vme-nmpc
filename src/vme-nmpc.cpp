@@ -16,12 +16,12 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// #define BOOST_LOG_DYN_LINK
-
 #include <chrono>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <locale>  // std::locale, std::tolower
+#include <string>
 #include <tuple>
 
 #include <unistd.h>
@@ -31,6 +31,7 @@
 #include "ClArgs.hpp"
 #include "InputFileData.hpp"
 #include "VMeNmpcEngine.hpp"
+#include "PathPlanner.hpp"
 #include "NmpcModels/VMeModel.hpp"
 #include "NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include "Loggers/JsonLogger.hpp"
@@ -41,16 +42,43 @@
 using std::unique_ptr;
 using std::make_unique;
 
-void request_handler(int sockfd) {
-  char buff[80];
-  if (read(sockfd, &buff, 80) < 1) return;
-  if (strstr(buff, "exit")) std::exit(0);
-  printf("Recieved Message: %s", buff);
-  return;
+std::string detachToken(std::string& line) {
+  unsigned begin = 0;
+  while (begin < line.length() && std::isspace(line[begin])) ++begin;
+  unsigned end = begin;
+  while (end < line.length() && !std::isspace(line[end])) ++end;
+  std::string token = line.substr(begin, end - begin);
+  line = line.substr(end, line.length() - end);
+  return token;
 }
 
-int main(int argc, char** argv) {
+std::string fetchMessageString(int sockfd) {
+  char buff[80];
+  if (read(sockfd, &buff, 80) < 1) return "";
+  return std::string{buff};
+}
 
+void makeLowerCase(std::string& s) {
+  for (auto& elem : s) elem = std::tolower(elem);
+  // std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+}
+
+struct CLIExecutor {
+  TargetStack* targets{nullptr};
+  ObstacleContainer* obstacles{nullptr};
+
+  void operator()(int sockfd) {
+    std::string line = fetchMessageString(sockfd);
+    auto cmd = detachToken(line);
+    makeLowerCase(cmd);
+    if (cmd == "at") {
+      std::cout << "GOT AT!" << std::endl;
+      // targets->pushFinalTarget(Target{1, 1, 1});
+    }
+  }
+};
+
+int main(int argc, char** argv) {
   ClArgs cmdlnArgs(argc, argv);
   InputFileData inputData;
   inputData.load(cmdlnArgs.infile);
@@ -65,7 +93,11 @@ int main(int argc, char** argv) {
     std::exit(1);
   }
 
-  // Daemon command_server(5111, request_handler);
+  ObstacleContainer obstacles;
+  TargetStack targets;
+  std::function<void(int)> commandHandler = CLIExecutor();
+
+  Daemon command_server(5111, commandHandler);
 
   vme.originate();
   vme.fd(1);
@@ -81,11 +113,17 @@ int main(int argc, char** argv) {
   auto logger = make_unique<JsonLogger>(init, inputData.jsonLogPath);
   auto engine = make_unique<VMeNmpcEngine>(init);
 
-  // for(;;) {
-  //   std::this_thread::sleep_for(std::chrono::seconds(10));
-  // }
+  for (;;) {
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    // test.engine->seed(xyth{0, 0, 0}, fp_point2d{3, 4});
+    // while (isMoveCmd(exec.commandFromLastNotify.get())) {
+    //   test.engine->seed(xyth{
+    //       test.model->get_x()[1], test.model->get_y()[1],
+    //       test.model->get_th()[1],
+    //   });
+    }
 
-  printf("Shutting down!\n");
-  fflush(stdout);
-  return 0;
-}
+    printf("Shutting down!\n");
+    fflush(stdout);
+    return 0;
+  }

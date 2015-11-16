@@ -23,12 +23,12 @@
 
 struct Target {
   fp_point2d locus;
-  decltype(locus.x) tolerance;
   decltype(locus.x)& x;
   decltype(locus.x)& y;
+  decltype(locus.x) tolerance;
 
   Target(float x, float y, float tol)
-      : locus{x, y}, tolerance{tol}, x{locus.x}, y{locus.y} {}
+      : locus{x, y}, x{locus.x}, y{locus.y}, tolerance{tol} {}
 };
 
 class TargetStack {

@@ -8,6 +8,5 @@
     "sdStepFactor" : 0.1,
     "maxSdSteps" : 1000,
     "targetDistanceTolerance" : 0.1,
-    "jsonLogPath" : "maintest.json",
-    "target" : [5, 5]
+    "jsonLogPath" : "maintest.json"
 }

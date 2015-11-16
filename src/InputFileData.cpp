@@ -47,9 +47,5 @@ void InputFileData::load(const std::string& filename) {
   sdStepFactor = tree.get<float>("sdStepFactor");
   maxSdSteps = tree.get<unsigned>("maxSdSteps");
   targetDistanceTolerance = tree.get<float>("targetDistanceTolerance");
-  try {
-    jsonLogPath = tree.get<std::string>("JsonLogPath");
-  } catch (...) {
-    jsonLogPath = "";
-  }
+  jsonLogPath = tree.get<std::string>("jsonLogPath");
 }

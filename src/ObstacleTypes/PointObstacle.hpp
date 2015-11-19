@@ -40,13 +40,11 @@
  * The obstacle may be a single point, or my be a list of nodes which are
  * assumed to be connected by walls. If a point is repeated in the list,
  * then the obstacle will have some sort of closed geometry.
-  */
-class PointObstacle : public Obstacle {
+ */
 
-  fp_point2d position; // Why is this not inherited?
+struct PointObstacle : public Obstacle {
 
- public:
-
+  fp_point2d position;
   fptype pwr, eps;
 
   PointObstacle(fp_point2d, fptype, fptype);

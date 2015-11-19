@@ -36,8 +36,6 @@
  * useful for future add-ons, such as a global path planner.
  */
 struct Obstacle {
-  fp_point2d position;
-
   virtual fptype dist(fp_point2d) = 0;
   virtual fptype phi(fp_point2d) = 0;
   virtual fp_point2d gradPhi(fp_point2d) = 0;

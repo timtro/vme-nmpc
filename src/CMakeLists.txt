@@ -21,6 +21,7 @@ add_executable (vme-nmpc vme-nmpc.cpp
                   NmpcMinimizers/VMeNaiveSdMinimizer.cpp
                   Loggers/JsonLogger.cpp
                   AggregatorInitializer.cpp
+                  CliHandler.cpp
                 )
 target_link_libraries (vme-nmpc VMeNmpcEngine VMeModel Obstacle)
 set_source_files_properties(vme-nmpc.cpp PROPERTIES COMPILE_FLAGS -DBOOST_LOG_DYN_LINK)

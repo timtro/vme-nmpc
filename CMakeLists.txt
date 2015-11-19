@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.3)
+cmake_minimum_required (VERSION 3.2)
 macro(listAllVariables)
 get_cmake_property(_variableNames VARIABLES)
 foreach (_variableName ${_variableNames})

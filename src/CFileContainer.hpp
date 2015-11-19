@@ -32,8 +32,8 @@ struct CFileContainer {
   FILE* fd;
   CFileContainer(const CFileContainer&) = delete;
   CFileContainer& operator=(const CFileContainer&) = delete;
-  CFileContainer(std::string filepath) {
-    fd = fopen(filepath.c_str(), "w");
+  CFileContainer(std::string filepath, std::string rw) {
+    fd = fopen(filepath.c_str(), rw.c_str());
     if (fd == nullptr)
       throw ErrorOpeningFileWithFopen(std::string{"File path: '"} + filepath +
                                       "'.");

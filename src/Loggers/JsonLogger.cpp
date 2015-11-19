@@ -59,7 +59,7 @@ JsonLogger::JsonLogger(AggregatorInitializer &init,
   this->model = guranteedCompatibleModel(init.model);
   this->minimizer = guranteedCompatibleMminimizer(init.minimizer);
 
-  logFile = std::make_unique<CFileContainer>(outputFilePath);
+  logFile = std::make_unique<CFileContainer>(outputFilePath, "w");
   fp_out = logFile->fd;
   init.bindIntoAggregator(this);
   fprintf(fp_out, "[\n");

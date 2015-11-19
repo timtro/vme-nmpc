@@ -46,6 +46,14 @@ set(testname utest-VMeNaiveSdMinimizer)
         CATCH VMeModel Obstacle AggregatorInitializer fakes)
     create_test(${testname})
 
+set(testname iutest-CliHandler-Daemon)
+    add_executable (${testname} ${testname}.cpp
+                        ../src/CliHandler.cpp
+                        ../src/Daemon.cpp
+                    )
+    target_link_libraries (${testname} CATCH Obstacle)
+    create_test(${testname})
+
 set(testname itest-VMe-Model_NaiveSdMinimizer)
     add_executable (${testname} ${testname}.cpp
                         ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp

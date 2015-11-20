@@ -56,11 +56,16 @@ void CliHandler::addTarget(std::string line) {
 
 void CliHandler::addObstacle(std::string line) {
   auto obstacleType = detachToken(line);
+  fptype x{0}, y{0}, pwr{0}, eps{0};
   if (obstacleType == "PointObstacle") {
-    fptype x = std::stof(detachToken(line));
-    fptype y = std::stof(detachToken(line));
-    fptype pwr = std::stof(detachToken(line));
-    fptype eps = std::stof(detachToken(line));
+    try {
+      x = std::stof(detachToken(line));
+      y = std::stof(detachToken(line));
+      pwr = std::stof(detachToken(line));
+      eps = std::stof(detachToken(line));
+    } catch (std::invalid_argument) {
+      return;
+    }
     obstacles->pushObstacle(new PointObstacle{fp_point2d{x, y}, pwr, eps});
   }
 }

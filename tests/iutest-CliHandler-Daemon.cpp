@@ -124,7 +124,7 @@ TEST_CASE(
 
   REQUIRE(obstacles.hasObstacles() == false);
   fakeClient.connect();
-  fakeClient.sendString("ao PointObstacle 3.5 4.0 2 .1 \n");
+  fakeClient.sendString("ao PointObstacle 3.5 4.0 2 .1\n");
   std::this_thread::sleep_for(networkTimeout);
 
   REQUIRE(obstacles.numberOfObstacles() == 1);
@@ -136,4 +136,36 @@ TEST_CASE(
   REQUIRE(dynamic_cast<PointObstacle*>(obstacles[0].get())->pwr == 2);
   REQUIRE(dynamic_cast<PointObstacle*>(obstacles[0].get())->eps ==
           Approx(0.1));
+}
+
+TEST_CASE(
+    "Sending the 'ao' command with too few arguments should result in no "
+    "changes made to the ObstacleContainer") {
+  ObstacleContainer obstacles;
+  std::deque<Target*> targets;
+  std::function<void(int)> commandHandler{CliHandler(&targets, &obstacles)};
+  Daemon command_server(testPort, commandHandler);
+  SocketSender fakeClient(testHost, testPort);
+
+  REQUIRE(obstacles.hasObstacles() == false);
+  fakeClient.connect();
+  fakeClient.sendString("ao PointObstacle 3.5 4.0 2\n");
+  std::this_thread::sleep_for(networkTimeout);
+  REQUIRE(obstacles.hasObstacles() == false);
+}
+
+TEST_CASE(
+    "Sending the 'ao' command with a bad argument should result in no changes "
+    "made to the ObstacleContainer") {
+  ObstacleContainer obstacles;
+  std::deque<Target*> targets;
+  std::function<void(int)> commandHandler{CliHandler(&targets, &obstacles)};
+  Daemon command_server(testPort, commandHandler);
+  SocketSender fakeClient(testHost, testPort);
+
+  REQUIRE(obstacles.hasObstacles() == false);
+  fakeClient.connect();
+  fakeClient.sendString("ao PointObstacle 3.5 HELLO 2 0.1\n");
+  std::this_thread::sleep_for(networkTimeout);
+  REQUIRE(obstacles.hasObstacles() == false);
 }

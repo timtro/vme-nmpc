@@ -51,7 +51,7 @@ set(testname iutest-CliHandler-Daemon)
                         ../src/CliHandler.cpp
                         ../src/Daemon.cpp
                     )
-    target_link_libraries (${testname} CATCH Obstacle)
+    target_link_libraries (${testname} CATCH Obstacle ${CMAKE_THREAD_LIBS_INIT})
     create_test(${testname})
 
 set(testname itest-VMe-Model_NaiveSdMinimizer)

@@ -169,3 +169,24 @@ TEST_CASE(
   std::this_thread::sleep_for(networkTimeout);
   REQUIRE(obstacles.hasObstacles() == false);
 }
+
+TEST_CASE(
+    "After an obstacle is added, sending 'clear obstacles' sould empty the "
+    "obstacle container") {
+  ObstacleContainer obstacles;
+  std::deque<Target*> targets;
+  std::function<void(int)> commandHandler{CliHandler(&targets, &obstacles)};
+  Daemon command_server(testPort, commandHandler);
+  SocketSender fakeClient(testHost, testPort);
+
+  REQUIRE(obstacles.hasObstacles() == false);
+  fakeClient.connect();
+  fakeClient.sendString("ao PointObstacle 3.5 4.0 2 .1\n");
+  std::this_thread::sleep_for(networkTimeout);
+  REQUIRE(obstacles.hasObstacles() == true);
+
+  fakeClient.connect();
+  fakeClient.sendString("clear obstacles");
+  std::this_thread::sleep_for(networkTimeout);
+  REQUIRE(obstacles.hasObstacles() == false);
+}

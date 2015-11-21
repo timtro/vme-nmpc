@@ -36,6 +36,7 @@ struct CliHandler {
   void operator()(const int);
   void addTarget(std::string);
   void addObstacle(std::string);
+  void clear(std::string);
 };
 
 #endif  // VME_NMPC_SRC_CLIHANDLER_HPP__

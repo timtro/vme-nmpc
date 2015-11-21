@@ -48,6 +48,11 @@ void CliHandler::operator()(const int sockfd) {
     addTarget(line);
   else if (cmd == "ao")
     addObstacle(line);
+  else if (cmd == "clear") {
+    printf("CAUGHT CLEAR COMMAND\n");
+
+    clear(line);
+  }
 }
 
 void CliHandler::addTarget(std::string line) {
@@ -67,6 +72,18 @@ void CliHandler::addObstacle(std::string line) {
       return;
     }
     obstacles->pushObstacle(new PointObstacle{fp_point2d{x, y}, pwr, eps});
+  }
+}
+
+void CliHandler::clear(std::string line) {
+  auto whatToClear = detachToken(line);
+  if (whatToClear == "targets")
+    targets->clear();
+  if (whatToClear == "obstacles")
+    obstacles->clearObstacleContainer();
+  if (whatToClear == "all") {
+    targets->clear();
+    obstacles->clearObstacleContainer();
   }
 }
 

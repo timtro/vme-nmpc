@@ -185,7 +185,6 @@ TEST_CASE(
   std::this_thread::sleep_for(networkTimeout);
   REQUIRE(obstacles.hasObstacles() == true);
 
-  fakeClient.connect();
   fakeClient.sendString("clear obstacles");
   std::this_thread::sleep_for(networkTimeout);
   REQUIRE(obstacles.hasObstacles() == false);

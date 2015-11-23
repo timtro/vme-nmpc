@@ -41,17 +41,18 @@ CliHandler::CliHandler(const CliHandler& old) {
 }
 
 void CliHandler::operator()(const int sockfd) {
-  std::string line = fetchMessageString(sockfd);
-  auto cmd = detachToken(line);
-  makeLowerCase(cmd);
-  if (cmd == "at")
-    addTarget(line);
-  else if (cmd == "ao")
-    addObstacle(line);
-  else if (cmd == "clear") {
-    printf("CAUGHT CLEAR COMMAND\n");
-
-    clear(line);
+  for (;;) {
+    std::string line = fetchMessageString(sockfd);
+    auto cmd = detachToken(line);
+    makeLowerCase(cmd);
+    if (cmd == "at")
+      addTarget(line);
+    else if (cmd == "ao")
+      addObstacle(line);
+    else if (cmd == "clear")
+      clear(line);
+    else if (cmd == "eot")
+      return;
   }
 }
 
@@ -77,10 +78,8 @@ void CliHandler::addObstacle(std::string line) {
 
 void CliHandler::clear(std::string line) {
   auto whatToClear = detachToken(line);
-  if (whatToClear == "targets")
-    targets->clear();
-  if (whatToClear == "obstacles")
-    obstacles->clearObstacleContainer();
+  if (whatToClear == "targets") targets->clear();
+  if (whatToClear == "obstacles") obstacles->clearObstacleContainer();
   if (whatToClear == "all") {
     targets->clear();
     obstacles->clearObstacleContainer();
@@ -99,7 +98,7 @@ std::string detachToken(std::string& line) {
 
 std::string fetchMessageString(const int sockfd) {
   char buff[120];
-  if (read(sockfd, &buff, 80) < 1) return "";
+  if (read(sockfd, &buff, 80) < 1) return "eot";
   return std::string{buff};
 }
 

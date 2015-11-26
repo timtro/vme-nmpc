@@ -38,14 +38,13 @@ def getDataFromDevice(device):
 
 	jRad = hypot(lx, ly)
 	jAng = degrees(atan2(ly, lx))
+  rRad = hypot(rx, ry)
 	rAng = degrees(atan2(ry, rx))
 
 	if abs(jRad) < 0.1:
 		jRad = 0.
 		jAng = 0.
-	if abs(jAng) < 5.:
-		jAng = 0.
-	if abs(rAng) < 8.:
+	if abs(rRad) < 0.1:
 		rAng = 0.
 	return jRad, jAng, rAng
 

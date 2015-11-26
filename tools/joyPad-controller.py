@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-# To be run on Intel Edision board.
-
 from argparse import ArgumentParser
 import sys, signal
 import socket
@@ -16,9 +14,8 @@ def getDataFromDevice(device):
   lx = device.lx()
   ly = -device.ly()
   rx = device.rx()
-  ry = device.ry()
 
-
+  # Push R-thumb to assign origin to currebt position.
   if device.buttonStates['base6']:
     vme.originate()
 
@@ -44,7 +41,7 @@ def haltAndDie():
   curses.endwin()
   joyPad.cancel()
 
-def signal_handler(signal, frame):
+def signalHandler(signal, frame):
   haltAndDie()
   sys.exit(0)
 
@@ -69,15 +66,19 @@ def mainLoop(stdscr): # Curses main loop.
 
 parser = ArgumentParser(description='Connects a Wii Nunchuck to a VirtualME')
 parser.add_argument('-o', '--host', dest='hostname', default='localhost',
-    help='Address of turtle server.',
-    metavar='HOST')
+  help='Address of turtle server.',
+  metavar='HOST')
 parser.add_argument('-p', '--port', dest='hostport', type=int, default=5010,
-    help='Turtle is listening on this port.',
-    metavar='PORT')
+  help='Turtle is listening on this port.',
+  metavar='PORT')
+parser.add_argument('-j', '--joydev', dest='joyStickDevicePath',
+  default='/dev/input/js0', help='Path to joystick device.',
+  metavar='DEV')
 
 args = parser.parse_args()
 
-signal.signal(signal.SIGINT, signal_handler)
+# Handle Ctrl+C gracefully.
+signal.signal(signal.SIGINT, signalHandler)
 
 print("Initializing connection to VirualME...")
 vme = Nav2Robot(args.hostname, args.hostport)
@@ -85,7 +86,7 @@ vme.connect()
 print("  done.")
 
 print("Initializing Joy Pad...")
-joyPad = JoyPad()
+joyPad = JoyPad(args.joyStickDevicePath)
 joyPad.start()
 print("  done.")
 

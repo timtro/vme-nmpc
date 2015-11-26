@@ -92,7 +92,7 @@ class JoyPad(Thread):
     self.joyStickFd = open(joyStickDevicePath, 'rb')
 
     # Get the device name.
-    buf = array.array('c', ['\0'] * 64)
+    buf = array.array('u', ['\0'] * 64)
     ioctl(self.joyStickFd, 0x80006a13 + (0x10000 * len(buf)), buf) # JSIOCGNAME(len)
     self.joyStickName = buf.tostring()
 

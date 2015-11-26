@@ -20,6 +20,7 @@
 #define VME_NMPC_SRC_TARGET_HPP_
 
 #include "linear.hpp"
+#include <memory>
 
 struct Target {
   fp_point2d locus;
@@ -29,6 +30,19 @@ struct Target {
 
   Target(float x, float y, float tol)
       : locus{x, y}, x{locus.x}, y{locus.y}, tolerance{tol} {}
+};
+
+class TargetContainer {
+  std::vector<std::unique_ptr<Target>> targets;
+;
+ public:
+  fp_point2d gradPhi(fp_point2d);
+  void push(Target*);
+  void pop();
+  size_t numberOfTargets();
+  void clearContainer();
+  bool hasTargets();
+  Target* &operator[](const int i);
 };
 
 #endif  // VME_NMPC_SRC_TARGET_HPP_

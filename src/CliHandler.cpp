@@ -28,16 +28,16 @@ void makeLowerCase(std::string&);
 CliHandler::CliHandler(std::deque<Target*>* tgt, ObstacleContainer* obs)
     : targets(tgt), obstacles(obs) {}
 
-CliHandler::CliHandler(CliHandler&& old) {
-  targets = old.targets;
-  old.targets = nullptr;
-  obstacles = old.obstacles;
-  old.obstacles = nullptr;
+CliHandler::CliHandler(CliHandler&& source) {
+  targets = source.targets;
+  source.targets = nullptr;
+  obstacles = source.obstacles;
+  source.obstacles = nullptr;
 }
 
-CliHandler::CliHandler(const CliHandler& old) {
-  targets = old.targets;
-  obstacles = old.obstacles;
+CliHandler::CliHandler(const CliHandler& source) {
+  targets = source.targets;
+  obstacles = source.obstacles;
 }
 
 void CliHandler::operator()(const int sockfd) {
@@ -102,6 +102,6 @@ std::string fetchMessageString(const int sockfd) {
   return std::string{buff};
 }
 
-void makeLowerCase(std::string& s) {
-  for (auto& elem : s) elem = std::tolower(elem);
+void makeLowerCase(std::string& string) {
+  for (auto& each : string) each = std::tolower(each);
 }

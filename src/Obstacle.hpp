@@ -19,11 +19,9 @@
 #ifndef VME_NMPC_SRC_OBSTACLE_HPP_
 #define VME_NMPC_SRC_OBSTACLE_HPP_
 
-#include <bits/unique_ptr.h>
 #include "linear.hpp"
 
 #include <memory>
-#include <utility>  // for std::pair
 
 /**
  * An abstract base class defining the interface that will be required for the
@@ -42,8 +40,7 @@ struct Obstacle {
 };
 
 class ObstacleContainer {
-  std::vector<std::unique_ptr<Obstacle>> obstacles
-;
+  std::vector<std::unique_ptr<Obstacle>> obstacles;
  public:
   fp_point2d gradPhi(fp_point2d);
   void pushObstacle(Obstacle *obs);

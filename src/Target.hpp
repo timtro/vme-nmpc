@@ -34,15 +34,14 @@ struct Target {
 
 class TargetContainer {
   std::vector<std::unique_ptr<Target>> targets;
-;
+
  public:
-  fp_point2d gradPhi(fp_point2d);
   void push(Target*);
   void pop();
-  size_t numberOfTargets();
+  size_t size();
   void clearContainer();
   bool hasTargets();
-  Target* &operator[](const int i);
+  Target& operator[](const int i);
 };
 
 #endif  // VME_NMPC_SRC_TARGET_HPP_

@@ -9,12 +9,12 @@ add_library (fakes FakeVMeModel.cpp
     FakeExecutor.cpp
     )
 
-set(testname utest-VMeNmpcEngine)
+set(testname utest-VMeNmpcKernel)
     add_executable (${testname} ${testname}.cpp
                         ../src/VMeCommand.cpp
                     )
     target_link_libraries (${testname}
-        CATCH VMeNmpcEngine Nav2Robot fakes AggregatorInitializer)
+        CATCH VMeNmpcKernel Nav2Robot fakes AggregatorInitializer)
     create_test(${testname})
 
 set(testname utest-ObstacleContainer)
@@ -35,7 +35,7 @@ set(testname utest-JsonLogger)
                         ../src/Loggers/JsonLogger.cpp
                     )
     target_link_libraries (${testname}
-        CATCH VMeNmpcEngine VMeModel Obstacle AggregatorInitializer fakes)
+        CATCH VMeNmpcKernel VMeModel Obstacle AggregatorInitializer fakes)
     create_test(${testname})
 
 set(testname utest-VMeNaiveSdMinimizer)
@@ -60,7 +60,7 @@ set(testname itest-VMe-Model_NaiveSdMinimizer)
                         ../src/Loggers/JsonLogger.cpp
                     )
     target_link_libraries (${testname}
-        CATCH VMeNmpcEngine VMeModel AggregatorInitializer Obstacle fakes)
+        CATCH VMeNmpcKernel VMeModel AggregatorInitializer Obstacle fakes)
     create_test(${testname})
 
 # add_executable(non-catch-test non-catch-test.cpp
@@ -68,9 +68,9 @@ set(testname itest-VMe-Model_NaiveSdMinimizer)
 #                 ../src/Loggers/JsonLogger.cpp
 #                 )
 # target_link_libraries (non-catch-test
-#     CATCH VMeNmpcEngine VMeModel AggregatorInitializer Obstacle fakes)
+#     CATCH VMeNmpcKernel VMeModel AggregatorInitializer Obstacle fakes)
 
 #set(testname PathPlannerTest)
 #add_executable (${testname} ${testname}.cpp)
-#target_link_libraries (${testname} VMeNmpcEngine Obstacle)
+#target_link_libraries (${testname} VMeNmpcKernel Obstacle)
 #create_test(${testname})

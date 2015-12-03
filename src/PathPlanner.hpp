@@ -16,14 +16,14 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FakeExecutor.hpp"
+#ifndef VME_NMPC_SRC_PATHPLANNER_HPP_
+#define VME_NMPC_SRC_PATHPLANNER_HPP_
 
-FakeExecutor::FakeExecutor(VMeNmpcKernel* s) {
-  subjectKernel = s;
-  s->attachObserver(this);
-}
-FakeExecutor::~FakeExecutor() { subjectKernel->detachObserver(this); }
-void FakeExecutor::update(Subject* s) {
-  if (s == dynamic_cast<Subject*>(subjectKernel))
-    commandFromLastNotify = subjectKernel->nextCommand();
-}
+
+template<typename SeedType>
+class PathPlanner {
+ public:
+  virtual SeedType& getSeed();
+};
+
+#endif // VME_NMPC_SRC_PATHPLANNER_HPP_

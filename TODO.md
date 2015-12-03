@@ -5,3 +5,6 @@
 * FIXME: ObstacleContainer and TargetContainer should both derive from a container interface.
 * FIXME: Investigate simple_linux_js.py technique.
 * FIXME: Model shouldn't know about targets and x^ref. Both of these should be the responsibility of the path planner. NmpcModel should have a set xref() method.
+* Test mechanism for setting and computing tracking errors in VMeModel.
+* Mike's commoent on strange behaviour switching waypoints is solved by stringing waypoints together in path planner via xref.
+* Homogenize the interface of TargetContainer and ObstacleContainer

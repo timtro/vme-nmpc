@@ -237,23 +237,6 @@ std::string Nav2Robot::send_recv(std::string msg, int buffer_size) {
  * into the first element of the state array, seeding the NMPC calculation
  * with up-to-date data.
  */
-// void Nav2Robot::update_pose() {
-//   // As much as I hate inconsistency, I can't justify using std::string for
-//   the
-//   // read buffer
-//   const int buff_size = 48;
-//   char buff[buff_size] {};
-//   if(sendstr("q\n") < 0)
-//     throw std::runtime_error(
-//       "Failed to write to Nav2 machine during pose update"
-//     );
-//   if(read(sockfd_, buff, buff_size) < 0)
-//     throw std::runtime_error(
-//       "Failed to read from Nav2 machine during pose update"
-//     );
-//   sscanf(buff, "%f %f %f", &pose_[0], &pose_[1], &pose_[2]);
-//   //TODO return a tuple of the coordinates.
-// }
 
 std::tuple<float, float, float> Nav2Robot::update_pose() {
   std::string q_response = send_recv("q\n");

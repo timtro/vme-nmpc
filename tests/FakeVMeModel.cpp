@@ -27,7 +27,7 @@ void FakeVMeModel::recordEvent(char eventCode) const {
   eventHistory += eventCode;
 }
 
-unsigned FakeVMeModel::getHorizonSize() const { return N; }
+unsigned FakeVMeModel::get_horizonSize() const { return N; }
 
 fptype FakeVMeModel::getTargetDistance() const noexcept {
   recordEvent('D');
@@ -35,12 +35,6 @@ fptype FakeVMeModel::getTargetDistance() const noexcept {
 }
 
 void FakeVMeModel::seed(xyth) { recordEvent('S'); }
-
-void FakeVMeModel::seed(xyth position, fp_point2d target) {
-  auto displacement = target - fp_point2d{position.x, position.y};
-  distanceToTarget = std::sqrt(dot(displacement, displacement));
-  recordEvent('S');
-}
 
 void FakeVMeModel::computeForecast() noexcept { recordEvent('F'); }
 

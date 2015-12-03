@@ -16,14 +16,11 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FakeExecutor.hpp"
+#include "SeedPackage.hpp"
 
-FakeExecutor::FakeExecutor(VMeNmpcKernel* s) {
-  subjectKernel = s;
-  s->attachObserver(this);
-}
-FakeExecutor::~FakeExecutor() { subjectKernel->detachObserver(this); }
-void FakeExecutor::update(Subject* s) {
-  if (s == dynamic_cast<Subject*>(subjectKernel))
-    commandFromLastNotify = subjectKernel->nextCommand();
+SeedPackage::SeedPackage(AggregatorInitializer& init) {
+  pose = xyth(0.f, 0.f, 0.f);
+  vref = fp_array(0.f, init.get_nmpcHorizon() - 1);
+  xref = fp_array(0.f, init.get_nmpcHorizon() - 1);
+  yref = fp_array(0.f, init.get_nmpcHorizon() - 1);
 }

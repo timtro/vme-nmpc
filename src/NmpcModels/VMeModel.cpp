@@ -62,38 +62,19 @@ VMeModel::VMeModel(AggregatorInitializer& init)
   // Gradients:
   grad = fp_array(0.f, horizonSize - 1);
 
+  xref = fp_array(0.f, horizonSize-1);
+  yref = fp_array(0.f, horizonSize-1);
+
   //Must be last or destruction of init's unique_ptr causes double destruction.
   init.bindIntoAggregator(this);
 }
 
-unsigned VMeModel::getHorizonSize() const noexcept { return N; }
-
-fptype VMeModel::getTargetDistance() const noexcept { return distanceToTarget; }
-
-void VMeModel::setTarget(fp_point2d target){
-  absoluteTarget = target;
-}
-
-void VMeModel::computeTargetMetrics() {
-  targetUnitVector.x = absoluteTarget.x - x[0];
-  targetUnitVector.y = absoluteTarget.y - y[0];
-  distanceToTarget = std::sqrt(dot(targetUnitVector, targetUnitVector));
-  targetUnitVector /= distanceToTarget;
-}
-
-void VMeModel::seed(xyth pose) {
-  x[0] = pose.x;
-  y[0] = pose.y;
-  th[0] = pose.th;
+void VMeModel::seed(SeedPackage& seed) {
+  x[0] = seed.pose.x;
+  y[0] = seed.pose.y;
+  th[0] = seed.pose.th;
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
-  computeTargetMetrics();
-}
-
-void VMeModel::seed(xyth pose, fp_point2d target) {
-  seed(pose);
-  setTarget(target);
-  computeTargetMetrics();
 }
 
 void VMeModel::computeForecast() noexcept {
@@ -106,13 +87,10 @@ void VMeModel::computeForecast() noexcept {
   }
 }
 
-/*!
- * This is vanilla, and just tracks the straight line at the cruising speed.
- */
 void VMeModel::computeTrackingErrors() noexcept {
-  for (unsigned k = 1; k < N; ++k) {
-    ex[k] = x[k] - (x[0] + v[k] * targetUnitVector.x * k * T);
-    ey[k] = y[k] - (y[0] + v[k] * targetUnitVector.y * k * T);
+  for (unsigned k = 1; k < N-1; ++k) {
+    ex[k] = x[k] - xref[k];
+    ey[k] = y[k] - yref[k];
   }
 }
 
@@ -158,6 +136,8 @@ up_VMeCommand VMeModel::retrieveCommand(int n) const {
   return up_VMeCommand{new VMeV{0, v[n], Dth[n]}};
 }
 
+unsigned VMeModel::get_horizonSize() const noexcept { return N; }
+
 fp_array const& VMeModel::get_x() const noexcept { return x; }
 
 fp_array const& VMeModel::get_Dx() const noexcept { return Dx; }
@@ -183,3 +163,9 @@ void VMeModel::set_v(fptype velocity) {
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
 }
+
+void VMeModel::setTrackingReferences(fp_array& ex, fp_array& ey) {
+  this->ex = ex;
+  this->ey = ey;
+}
+

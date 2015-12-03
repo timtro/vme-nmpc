@@ -25,13 +25,17 @@
 #include "linear.hpp"
 #include "NmpcModel.hpp"
 #include "NmpcMinimizer.hpp"
+#include "PathPlanner.hpp"
 #include "VMeLogger.hpp"
 #include "VMeCommand.hpp"
 #include "InputFileData.hpp"
+#include "Target.hpp"
+#include "PathPlanner.hpp"
+#include "SeedPackage.hpp"
 
 class ObstacleContainer;
 
-using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
 struct AggregatorInitializer {
 
@@ -44,7 +48,9 @@ struct AggregatorInitializer {
   vMeModelType* model{nullptr};
   NmpcMinimizer* minimizer{nullptr};
   VMeLogger* logger{nullptr};
+  PathPlanner<SeedPackage>* planner{nullptr};
   ObstacleContainer* obstacles{nullptr};
+  TargetContainer* targets{nullptr};
 
   void modelBindingSafetyCheck();
   void minimizerBindingSafetyCheck();
@@ -53,6 +59,7 @@ struct AggregatorInitializer {
   void bindIntoAggregator(vMeModelType*);
   void bindIntoAggregator(NmpcMinimizer*);
   void bindIntoAggregator(VMeLogger*);
+  void bindIntoAggregator(PathPlanner<SeedPackage>*);
 
   unsigned get_nmpcHorizon();
   fptype get_timeInterval();
@@ -77,5 +84,6 @@ class InitPkgCanOnlyBeUsedOnceToInitializeAModel : public std::exception {};
 class InitPkgDoesNotContainPointerToAModel : public std::exception {};
 class InitPkgDoesNotContainPointerToAMinimizer : public std::exception {};
 class InitPkgAlreadyHasBoundMinimizer : public std::exception {};
+class InitPkgDoesNotContainPointerToAPathPlanner : public std::exception{};
 
 #endif  // VME_NMPC_NMPCINITPKG_HPP_

@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "../src/VMeNmpcEngine.hpp"
+#include "../src/VMeNmpcKernel.hpp"
 #include "FakeVMeModel.hpp"
 #include "FakeVMeMinimizer.hpp"
 #include "FakeExecutor.hpp"
@@ -15,13 +15,13 @@ struct TestObject {
   AggregatorInitializer init;
   unique_ptr<FakeVMeModel> model{nullptr};
   unique_ptr<FakeVMeMinimizer> minimizer{nullptr};
-  unique_ptr<VMeNmpcEngine> engine{nullptr};
+  unique_ptr<VMeNmpcKernel> engine{nullptr};
 
   TestObject() {
     init.parameters->nmpcHorizon = nmpcHorizon;
     model = make_unique<FakeVMeModel>(init, callRecord);
     minimizer = make_unique<FakeVMeMinimizer>(init, callRecord);
-    engine = make_unique<VMeNmpcEngine>(init);
+    engine = make_unique<VMeNmpcKernel>(init);
   }
 };
 
@@ -34,7 +34,7 @@ TEST_CASE("Throw appropriately if AggregatorInitializer is missing a model") {
   AggregatorInitializer init;
   // Fake minimizer let's us cheat and initialize without model.
   auto minimizer = make_unique<FakeVMeMinimizer>(init, callRecord);
-  REQUIRE_THROWS_AS(make_unique<VMeNmpcEngine>(init),
+  REQUIRE_THROWS_AS(make_unique<VMeNmpcKernel>(init),
                     InitPkgDoesNotContainPointerToAModel);
 }
 
@@ -43,7 +43,7 @@ TEST_CASE(
   std::string callRecord;
   AggregatorInitializer init;
   auto model = make_unique<FakeVMeModel>(init, callRecord);
-  REQUIRE_THROWS_AS(make_unique<VMeNmpcEngine>(init),
+  REQUIRE_THROWS_AS(make_unique<VMeNmpcKernel>(init),
                     InitPkgDoesNotContainPointerToAMinimizer);
 }
 
@@ -53,11 +53,11 @@ TEST_CASE(
   TestObject test;
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.engine->seed(xyth{1, 1, 0}, fp_point2d{1, 1});
+  test.engine->seed(xyth{1, 1, 0});
   // Should have called (S)eed (D)istanceToTarget:
   REQUIRE(test.callRecord == "SD");
   REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
-  REQUIRE(test.engine->isHalted());
+  // REQUIRE(test.engine->isHalted());
 }
 
 TEST_CASE(
@@ -67,7 +67,7 @@ TEST_CASE(
   TestObject test;
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.engine->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
+  test.engine->seed(xyth{0, 0, 0});
   REQUIRE(test.callRecord == "SDOC");
   REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
 }
@@ -78,7 +78,7 @@ TEST_CASE(
   TestObject test;
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.engine->seed(xyth{0, 0, 0}, fp_point2d{5, 5});
+  test.engine->seed(xyth{0, 0, 0});
   unsigned countReturnedMotionCommands = 0;
   auto command = std::move(exec.commandFromLastNotify);
   for (;;) {

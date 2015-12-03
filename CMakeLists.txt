@@ -6,8 +6,8 @@ foreach (_variableName ${_variableNames})
 endforeach()
 endmacro()
 
-# set(CMAKE_C_COMPILER /usr/bin/clang)
-# set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+set(CMAKE_C_COMPILER /usr/bin/clang)
+set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 
 project(vme-nmpc)
 set(CMAKE_BUILD_TYPE debug)
@@ -16,10 +16,13 @@ set(CMAKE_BUILD_TYPE debug)
 find_package (Threads)
 # link_libraries(${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 # set(bld_dir ${CMAKE_CURRENT_SOURCE_DIR}/build)
 # set(EXECUTABLE_OUTPUT_PATH ${bld_dir} CACHE PATH "Build directory" FORCE)
 # set(LIBRARY_OUTPUT_PATH ${bld_dir} CACHE PATH "Build directory" FORCE)
+
+
 
 set(c++std "-std=c++14")
 

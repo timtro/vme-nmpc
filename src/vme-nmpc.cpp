@@ -27,7 +27,7 @@
 #include "Loggers/JsonLogger.hpp"
 #include "NmpcModels/VMeModel.hpp"
 #include "NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
-#include "VMeNmpcEngine.hpp"
+#include "VMeNmpcKernel.hpp"
 
 // TODO(T.T.): Use Boost scoped threads that assure that all paths out of a
 //             make the thread unjoinable. (As per the advice of Scott Mayers)
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   auto model = make_unique<VMeModel>(init);
   auto minimizer = make_unique<VMeNaiveSdMinimizer>(init);
   auto logger = make_unique<JsonLogger>(init, inputFileData.jsonLogPath);
-  auto engine = make_unique<VMeNmpcEngine>(init);
+  auto engine = make_unique<VMeNmpcKernel>(init);
 
   for (;;) {
     std::this_thread::sleep_for(std::chrono::seconds(1));

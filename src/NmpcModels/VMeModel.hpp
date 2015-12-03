@@ -22,10 +22,9 @@
 #include "../NmpcModel.hpp"
 #include "../Obstacle.hpp"
 #include "../AggregatorInitializer.hpp"
+#include "../SeedPackage.hpp"
 
-using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
-
-class VMeModel : public vMeModelType {
+class VMeModel : public NmpcModel<SeedPackage, up_VMeCommand> {
   unsigned N;
   fptype T;
   fptype cruiseSpeed;
@@ -60,11 +59,7 @@ class VMeModel : public vMeModelType {
   fp_array pth;
 
   fp_point2d absoluteTarget;
-  fptype distanceToTarget;
   fp_point2d targetUnitVector;
-
-  void setTarget(fp_point2d);
-  void computeTargetMetrics();
 
  public:
   VMeModel(const VMeModel &) = delete;
@@ -74,18 +69,18 @@ class VMeModel : public vMeModelType {
   fp_array Dth;
   fp_array grad;
   fptype gradNorm{0};
+  fp_array xref;
+  fp_array yref;
 
-  virtual unsigned getHorizonSize() const noexcept;
-  virtual fptype getTargetDistance() const noexcept;
-  virtual void seed(xyth);
-  virtual void seed(xyth, fp_point2d);
+  virtual void seed(SeedPackage&);
   virtual void computeForecast() noexcept;
-  virtual void computeTrackingErrors() noexcept;
   virtual void computePathPotentialGradient(
       ObstacleContainer &obstacles) noexcept;
   virtual void computeGradient() noexcept;
   virtual up_VMeCommand retrieveCommand(int) const;
 
+  virtual unsigned get_horizonSize() const noexcept;
+  virtual void computeTrackingErrors() noexcept;
   fp_array const &get_x() const noexcept;
   fp_array const &get_Dx() const noexcept;
   fp_array const &get_ex() const noexcept;
@@ -98,6 +93,7 @@ class VMeModel : public vMeModelType {
   fp_array const &get_grad() const noexcept;
 
   void set_v(fptype);
+  void setTrackingReferences(fp_array&, fp_array&);
 };
 
 class HorizonSizeShouldBeSensiblyLarge : public std::exception {};

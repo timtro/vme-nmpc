@@ -21,7 +21,7 @@
 #include "../NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include <cstdio>
 
-using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
 auto guranteedCompatibleModel(vMeModelType *model) {
   auto modelToBeLogged = dynamic_cast<VMeModel *>(model);

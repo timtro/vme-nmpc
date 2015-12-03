@@ -18,7 +18,7 @@
 
 #include "AggregatorInitializer.hpp"
 
-using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
 AggregatorInitializer::AggregatorInitializer() {
   defaultParameters_ = std::make_unique<InputFileData>();
@@ -61,12 +61,19 @@ void AggregatorInitializer::bindIntoAggregator(VMeLogger* caller) {
   logger = caller;
 }
 
+void AggregatorInitializer::bindIntoAggregator(
+    PathPlanner<SeedPackage>* caller) {
+  planner = caller;
+}
+
 void AggregatorInitializer::aggregatorCompletionSafetyCheck() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer == nullptr)
     throw InitPkgDoesNotContainPointerToAMinimizer();
-};
+  else if (planner == nullptr)
+    throw InitPkgDoesNotContainPointerToAPathPlanner();
+}
 
 unsigned AggregatorInitializer::get_nmpcHorizon() {
   return parameters->nmpcHorizon;

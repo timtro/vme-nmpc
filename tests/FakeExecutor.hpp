@@ -20,17 +20,17 @@
 #define VME_NMPC_TESTS_FAKEEXECUTOR_HPP_
 
 #include "../src/Observer.hpp"
-#include "../src/VMeNmpcEngine.hpp"
+#include "../src/VMeNmpcKernel.hpp"
 
 
 class FakeExecutor : public Observer {
-  VMeNmpcEngine* subjectEngine = nullptr;
+  VMeNmpcKernel* subjectKernel = nullptr;
 
  public:
   up_VMeCommand commandFromLastNotify;
   bool loopback = false;
 
-  FakeExecutor(VMeNmpcEngine*);
+  FakeExecutor(VMeNmpcKernel*);
   ~FakeExecutor();
   void update(Subject*);
 };

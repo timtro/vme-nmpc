@@ -3,9 +3,9 @@
 #include "catch.hpp"
 #include <iostream>
 
-TEST_CASE("A newly minted NmpcEngine should have an empty stack of targets") {
+TEST_CASE("A newly minted NmpcKernel should have an empty stack of targets") {
   NmpcInitPkg init_a{20, 1, 5, .12, .1, .4, 10, 10, 5};
-  NmpcEngine e(init_a);
+  NmpcKernel e(init_a);
 
   REQUIRE(e.numberOfTargets() == 0);
   e.pushFinalTarget(Target{5., 5., .1});

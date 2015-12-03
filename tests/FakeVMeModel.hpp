@@ -34,16 +34,16 @@ class FakeVMeModel
 
   FakeVMeModel(AggregatorInitializer&, std::string&);
   virtual ~FakeVMeModel() = default;
-  virtual unsigned getHorizonSize() const;
+  virtual unsigned get_horizonSize() const;
   virtual fptype getTargetDistance() const noexcept;
   virtual void seed(xyth);
-  virtual void seed(xyth, fp_point2d);
   virtual void computeForecast() noexcept;
   virtual void computeTrackingErrors() noexcept;
   virtual void computePathPotentialGradient(ObstacleContainer&) noexcept;
   virtual void computeGradient() noexcept;
   virtual up_VMeCommand retrieveCommand(int) const;
   std::string getEventHistory() const;
+  void setTrackingReferences(fp_array&, fp_array&);
 };
 
 #endif  // VME_NMPC_TESTS_FAKEVIRTUALMEMODEL_HPP_

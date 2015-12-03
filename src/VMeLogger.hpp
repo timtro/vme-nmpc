@@ -25,7 +25,7 @@
 struct VMeCommand;
 using up_VMeCommand = std::unique_ptr<VMeCommand>;
 
-template <typename seedType, typename tgtType, typename cmdType>
+template <typename seedType, typename cmdType>
 class NmpcModel;
 
 class VMeLogger {

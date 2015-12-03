@@ -16,8 +16,8 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VME_NMPC_SRC_NMPCENGINE_HPP_
-#define VME_NMPC_SRC_NMPCENGINE_HPP_
+#ifndef VME_NMPC_SRC_NMPCKERNEL_HPP_
+#define VME_NMPC_SRC_NMPCKERNEL_HPP_
 
 #include "linear.hpp"
 #include "Subject.hpp"
@@ -29,9 +29,9 @@
 
 class NmpcMinimizer;
 
-using vMeModelType = NmpcModel<xyth, fp_point2d, up_VMeCommand>;
+using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
-class VMeNmpcEngine : public Subject {
+class VMeNmpcKernel : public Subject {
   vMeModelType* model;
   NmpcMinimizer* minimizer;
   VMeLogger* logger;
@@ -39,24 +39,18 @@ class VMeNmpcEngine : public Subject {
 
   fptype targetDistanceTolerance{0};
   unsigned cmdsExecutedFromCurrentHorizon{0};
-  bool machineIsHalted{true};
 
  public:
-  fp_point2d currentTarget;
+  VMeNmpcKernel(const VMeNmpcKernel&) = delete;
+  VMeNmpcKernel& operator=(const VMeNmpcKernel&) = delete;
+  VMeNmpcKernel(AggregatorInitializer&);
 
-  VMeNmpcEngine(const VMeNmpcEngine&) = delete;
-  VMeNmpcEngine& operator=(const VMeNmpcEngine&) = delete;
-  VMeNmpcEngine(AggregatorInitializer&);
-
-  void setTarget(fp_point2d point);
   up_VMeCommand nextCommand();
-  void seed(xyth, fp_point2d);
   void seed(xyth);
-  bool isHalted();
   vMeModelType* _getModelPointer_();
   NmpcMinimizer* _getMinimizerPointer_();
 };
 
 class MinimizerReachedIterationLimit : public std::exception {};
 
-#endif  // VME_NMPC_SRC_NMPCENGINE_HPP_
+#endif  // VME_NMPC_SRC_NMPCKERNEL_HPP_

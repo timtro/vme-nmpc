@@ -16,14 +16,8 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FakeExecutor.hpp"
+#include "Target.hpp"
 
-FakeExecutor::FakeExecutor(VMeNmpcKernel* s) {
-  subjectKernel = s;
-  s->attachObserver(this);
-}
-FakeExecutor::~FakeExecutor() { subjectKernel->detachObserver(this); }
-void FakeExecutor::update(Subject* s) {
-  if (s == dynamic_cast<Subject*>(subjectKernel))
-    commandFromLastNotify = subjectKernel->nextCommand();
+Target& TargetContainer::operator[](const int i) {
+  return *targets[0];
 }

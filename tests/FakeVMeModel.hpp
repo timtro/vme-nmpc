@@ -23,8 +23,7 @@
 #include "../src/VMeCommand.hpp"
 #include "../src/AggregatorInitializer.hpp"
 
-class FakeVMeModel
-    : public vMeModelType {
+class FakeVMeModel : public vMeModelType {
   std::string& eventHistory;
   fptype distanceToTarget;
   void recordEvent(char) const;
@@ -36,7 +35,7 @@ class FakeVMeModel
   virtual ~FakeVMeModel() = default;
   virtual unsigned get_horizonSize() const;
   virtual fptype getTargetDistance() const noexcept;
-  virtual void seed(xyth);
+  virtual void seed(SeedPackage&);
   virtual void computeForecast() noexcept;
   virtual void computeTrackingErrors() noexcept;
   virtual void computePathPotentialGradient(ObstacleContainer&) noexcept;

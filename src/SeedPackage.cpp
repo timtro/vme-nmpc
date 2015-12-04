@@ -17,6 +17,7 @@
  */
 
 #include "SeedPackage.hpp"
+#include "AggregatorInitializer.hpp"
 
 SeedPackage::SeedPackage(AggregatorInitializer& init) {
   pose = xyth(0.f, 0.f, 0.f);

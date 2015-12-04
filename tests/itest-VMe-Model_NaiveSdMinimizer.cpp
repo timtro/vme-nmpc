@@ -2,6 +2,7 @@
 
 #include "../src/VMeNmpcKernel.hpp"
 #include "../src/NmpcModels/VMeModel.hpp"
+#include "../src/PathPlanners/VMePathPlanner.hpp"
 #include "../src/NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include "../src/Loggers/JsonLogger.hpp"
 #include "FakeExecutor.hpp"
@@ -23,7 +24,7 @@ struct TestSetup {
   unique_ptr<VMeNaiveSdMinimizer> minimizer{nullptr};
   unique_ptr<JsonLogger> logger{nullptr};
   unique_ptr<VMeNmpcKernel> engine{nullptr};
-  unique_ptr<VMePathPlanner> planner{nullptr};
+  unique_ptr<PathPlanner<SeedPackage>> planner{nullptr};
 
   void setDefaultParams(InputFileData* parameters) {
     parameters->nmpcHorizon = nmpcHorizon;
@@ -48,7 +49,7 @@ struct TestSetup {
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     logger = make_unique<JsonLogger>(init);
     engine = make_unique<VMeNmpcKernel>(init);
-    planner = make_unique<VMePathPlanner>(engine.get(), init);
+    planner = make_unique<VMePathPlanner>(init);
   }
 
   TestSetup(std::string logFilePath) {
@@ -64,14 +65,14 @@ bool isStopCmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
 bool isNullCmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
 bool isMoveCmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
-TEST_CASE("Whatever") {
-  TestSetup test{"itest.log.json"};
-  FakeExecutor exec(test.engine.get());
+// TEST_CASE("Whatever") {
+//   TestSetup test{"itest.log.json"};
+//   FakeExecutor exec(test.engine.get());
 
-  test.engine->seed(xyth{0, 0, 0});
-  while (isMoveCmd(exec.commandFromLastNotify.get())) {
-    test.engine->seed(xyth{
-        test.model->get_x()[1], test.model->get_y()[1], test.model->get_th()[1],
-    });
-  }
-}
+//   test.engine->seed(xyth{0, 0, 0});
+//   while (isMoveCmd(exec.commandFromLastNotify.get())) {
+//     test.engine->seed(xyth{
+//         test.model->get_x()[1], test.model->get_y()[1], test.model->get_th()[1],
+//     });
+//   }
+// }

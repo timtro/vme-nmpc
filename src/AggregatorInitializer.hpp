@@ -79,11 +79,45 @@ private:
 
 };
 
-class ModelMustBeInitializedBeforeMinimizerOrLogger : public std::exception {};
-class InitPkgCanOnlyBeUsedOnceToInitializeAModel : public std::exception {};
-class InitPkgDoesNotContainPointerToAModel : public std::exception {};
-class InitPkgDoesNotContainPointerToAMinimizer : public std::exception {};
-class InitPkgAlreadyHasBoundMinimizer : public std::exception {};
-class InitPkgDoesNotContainPointerToAPathPlanner : public std::exception{};
+class ModelMustBeInitializedBeforeMinimizerOrLogger : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "A model must be initialized with the AggregatorInitializer before "
+           "a minimizer.";
+  }
+};
+
+class InitPkgCanOnlyBeUsedOnceToInitializeAModel : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "An attempt was made to initialize a model with an "
+           "AggregatorInitializer that is already bound to one.";
+  }
+};
+
+class InitPkgDoesNotContainPointerToAModel : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "AggregatorInitializer contains no pointer to model at a time when "
+           "it should.";
+  }
+};
+
+class InitPkgDoesNotContainPointerToAMinimizer : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "AggregatorInitializer contains no pointer to a minimizer at a time "
+           "when it should.";
+  }
+};
+
+class InitPkgAlreadyHasBoundMinimizer : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "An attempt was made to initialize a minimizer with an "
+           "AggregatorInitializer that is already bound to one.";
+  }
+};
+
+class InitPkgDoesNotContainPointerToAPathPlanner : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "AggregatorInitializer contains no PathPlanner at finalization.";
+  }
+};
 
 #endif  // VME_NMPC_NMPCINITPKG_HPP_

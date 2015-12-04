@@ -1,7 +1,7 @@
 #include "catch.hpp"
 
 #include "../src/Loggers/JsonLogger.hpp"
-#include "../src/VMeNmpcKernel.hpp"
+// #include "../src/VMeNmpcKernel.hpp"
 #include "../src/NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include "FakeVMeModel.hpp"
 #include "FakeVMeMinimizer.hpp"
@@ -19,7 +19,8 @@ struct TestObject {
   unique_ptr<VMeModel> model{nullptr};
   unique_ptr<VMeNaiveSdMinimizer> minimizer{nullptr};
   unique_ptr<JsonLogger> logger{nullptr};
-  unique_ptr<VMeNmpcKernel> engine{nullptr};
+  // unique_ptr<PathPlanner<SeedPackage>> planner{nullptr};
+  // unique_ptr<VMeNmpcKernel> engine{nullptr};
 
   TestObject() {
     init.parameters->nmpcHorizon = nmpcHorizon;
@@ -30,7 +31,8 @@ struct TestObject {
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     logger = make_unique<JsonLogger>(init);
-    engine = make_unique<VMeNmpcKernel>(init);
+    // planner = make_unique<FakePathPlanner>(init);
+    // engine = make_unique<VMeNmpcKernel>(init);
   }
 
   TestObject(std::string logFilePath) {
@@ -42,7 +44,8 @@ struct TestObject {
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     logger = make_unique<JsonLogger>(init, logFilePath);
-    engine = make_unique<VMeNmpcKernel>(init);
+    // planner = make_unique<FakePathPlanner>(init);
+    // engine = make_unique<VMeNmpcKernel>(init);
   }
 };
 
@@ -61,7 +64,12 @@ TEST_CASE(
 
 TEST_CASE("Straightforward write to stdout with nothing to assert.") {
   TestObject test;
-  test.engine->seed(xyth{0, 0, 0});
+  SeedPackage seed(test.init);
+  seed.pose = xyth{0, 0, 0};
+  seed.vref = 1;
+  seed.xref = seed.yref = 10;
+  test.model->seed(seed);
+  test.logger->logModelState();
 }
 
 // TEST_CASE("Logger write to file. TODO: Assert against file contents.") {

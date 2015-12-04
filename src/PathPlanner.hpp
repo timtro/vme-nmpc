@@ -23,7 +23,8 @@
 template<typename SeedType>
 class PathPlanner {
  public:
-  virtual SeedType& getSeed();
+  virtual SeedType& getSeed() = 0;
+  virtual ~PathPlanner() = default;
 };
 
 #endif // VME_NMPC_SRC_PATHPLANNER_HPP_

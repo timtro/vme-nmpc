@@ -42,8 +42,8 @@ up_VMeCommand VMeNmpcKernel::nextCommand() {
     return model->retrieveCommand(cmdsExecutedFromCurrentHorizon);
 }
 
-void VMeNmpcKernel::seed(xyth pose) {
-  model->seed(pose);
+void VMeNmpcKernel::seed(SeedPackage seed) {
+  model->seed(seed);
   cmdsExecutedFromCurrentHorizon = 0;
   auto minimizerStatus = minimizer->solveOptimalControlHorizon();
   if (minimizerStatus == MinimizerCode::reachedIterationLimit)

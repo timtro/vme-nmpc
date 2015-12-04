@@ -8,7 +8,7 @@ add_library (VMeNmpcKernel VMeNmpcKernel.cpp
 
 add_library (Nav2Robot Nav2Robot.cpp)
 
-add_library (VMeModel NmpcModels/VMeModel.cpp VMeCommand.cpp)
+add_library (VMeModel NmpcModels/VMeModel.cpp VMeCommand.cpp SeedPackage.cpp)
   target_link_libraries(VMeModel Nav2Robot)
 
 add_library (AggregatorInitializer AggregatorInitializer.cpp)

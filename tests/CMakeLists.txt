@@ -41,6 +41,8 @@ set(testname utest-JsonLogger)
 set(testname utest-VMeNaiveSdMinimizer)
     add_executable (${testname} ${testname}.cpp
                         ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp
+                        ../src/PathPlanners/VMePathPlanner.cpp
+                        ../src/Target.cpp
                     )
     target_link_libraries (${testname}
         CATCH VMeModel Obstacle AggregatorInitializer fakes)
@@ -58,6 +60,9 @@ set(testname itest-VMe-Model_NaiveSdMinimizer)
     add_executable (${testname} ${testname}.cpp
                         ../src/NmpcMinimizers/VMeNaiveSdMinimizer.cpp
                         ../src/Loggers/JsonLogger.cpp
+                        ../src/PathPlanners/VMePathPlanner.cpp
+                        ../src/Target.cpp
+                        ../src/SeedPackage.cpp
                     )
     target_link_libraries (${testname}
         CATCH VMeNmpcKernel VMeModel AggregatorInitializer Obstacle fakes)

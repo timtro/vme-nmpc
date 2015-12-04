@@ -4,6 +4,7 @@
 #include "FakeVMeModel.hpp"
 #include "FakeVMeMinimizer.hpp"
 #include "FakeExecutor.hpp"
+#include "FakePathPlanner.hpp"
 
 using std::unique_ptr;
 using std::make_unique;
@@ -15,12 +16,14 @@ struct TestObject {
   AggregatorInitializer init;
   unique_ptr<FakeVMeModel> model{nullptr};
   unique_ptr<FakeVMeMinimizer> minimizer{nullptr};
+  unique_ptr<PathPlanner<SeedPackage>> planner{nullptr};
   unique_ptr<VMeNmpcKernel> engine{nullptr};
 
   TestObject() {
     init.parameters->nmpcHorizon = nmpcHorizon;
     model = make_unique<FakeVMeModel>(init, callRecord);
     minimizer = make_unique<FakeVMeMinimizer>(init, callRecord);
+    planner = make_unique<FakePathPlanner>(init);
     engine = make_unique<VMeNmpcKernel>(init);
   }
 };
@@ -53,7 +56,10 @@ TEST_CASE(
   TestObject test;
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.engine->seed(xyth{1, 1, 0});
+
+  SeedPackage seed(test.init);
+  seed.pose = xyth{1, 1, 0};
+  test.engine->seed(seed);
   // Should have called (S)eed (D)istanceToTarget:
   REQUIRE(test.callRecord == "SD");
   REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
@@ -67,7 +73,10 @@ TEST_CASE(
   TestObject test;
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.engine->seed(xyth{0, 0, 0});
+
+  SeedPackage seed(test.init);
+  seed.pose = xyth{0, 0, 0};
+  test.engine->seed(seed);
   REQUIRE(test.callRecord == "SDOC");
   REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
 }
@@ -78,7 +87,10 @@ TEST_CASE(
   TestObject test;
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-  test.engine->seed(xyth{0, 0, 0});
+
+  SeedPackage seed(test.init);
+  seed.pose = xyth{0, 0, 0};
+  test.engine->seed(seed);
   unsigned countReturnedMotionCommands = 0;
   auto command = std::move(exec.commandFromLastNotify);
   for (;;) {

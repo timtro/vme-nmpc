@@ -23,8 +23,8 @@ class TestObject {
     init.parameters->cruiseSpeed = cruiseSpeed;
 
     model = make_unique<VMeModel>(init);
-    model->seed(xyth{0, 0, 0});
-    model->set_v(cruiseSpeed);
+    SeedPackage seed(init);
+    model->seed(seed);
   }
 };
 
@@ -57,16 +57,6 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "After seeding, the target metrics (such as distance to target) should be "
-    "consistent with the new seed") {
-  TestObject m;
-  m.model->seed(xyth{0, 0, 0});
-  // REQUIRE(m.model->getTargetDistance() == Approx(1));
-  m.model->seed(xyth{-1, 0, 0});
-  // REQUIRE(m.model->getTargetDistance() == Approx(2));
-}
-
-TEST_CASE(
     "A machine starting at the origin with no control input and velocity "
     "should remain stationary throughout the forecast horizon.") {
   TestObject m;
@@ -85,13 +75,13 @@ TEST_CASE(
     "A machine posed at the origin pointing in +x with a constant cruiseSpeed "
     "should drive a straight line along the +x-axis in a forecast horizon.") {
   TestObject m;
-  m.model->set_v(0.0);
+  m.model->set_v(1);
   REQUIRE(
       thlp::eachInArrayIsApprox(m.model->get_v(), m.model->get_v()[0], 1e-5f));
   m.model->computeForecast();
-  // REQUIRE(m.model->get_x()[m.model->getHorizonSize() - 1] ==
-  //         Approx(linearTravelDistance(m.model->get_v()[0], m.timeInterval,
-  //                                     m.nmpcHorizon)));
+  REQUIRE(m.model->get_x()[m.model->get_horizonSize() - 1] ==
+          Approx(linearTravelDistance(m.model->get_v()[0], m.timeInterval,
+                                      m.nmpcHorizon)));
   REQUIRE(thlp::eachInArrayIsApprox(m.model->get_y(), 0.0f, 1e-5f));
 }
 
@@ -99,7 +89,9 @@ TEST_CASE(
     "A machine posed at the origin pointing in +y with a constant cruiseSpeed "
     "should drive a straight line along the +y-axis in a forecast horizon") {
   TestObject m;
-  m.model->seed(xyth{0, 0, degToRad(90.f)});
+  SeedPackage seed(m.init);
+  seed.pose = xyth{0, 0, degToRad(90.f)};
+  m.model->seed(seed);
   m.model->computeForecast();
   REQUIRE(m.model->get_y()[m.nmpcHorizon - 1] ==
           Approx(linearTravelDistance(m.cruiseSpeed, m.timeInterval,

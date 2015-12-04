@@ -34,7 +34,7 @@ fptype FakeVMeModel::getTargetDistance() const noexcept {
   return distanceToTarget;
 }
 
-void FakeVMeModel::seed(xyth) { recordEvent('S'); }
+void FakeVMeModel::seed(SeedPackage&) { recordEvent('S'); }
 
 void FakeVMeModel::computeForecast() noexcept { recordEvent('F'); }
 

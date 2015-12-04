@@ -92,10 +92,15 @@ class VMeModel : public NmpcModel<SeedPackage, up_VMeCommand> {
   fp_array const &get_Dth() const noexcept;
   fp_array const &get_grad() const noexcept;
 
-  void set_v(fptype);
+  [[deprecated]] void set_v(fptype);
   void setTrackingReferences(fp_array&, fp_array&);
 };
 
-class HorizonSizeShouldBeSensiblyLarge : public std::exception {};
+class HorizonSizeShouldBeSensiblyLarge : public std::exception {
+  const char* what() const noexcept override {
+    return "An attempt was made to initialize a model with a nonsensically "
+           "small NMPC horizon.";
+  }
+};
 
 #endif  // VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP_

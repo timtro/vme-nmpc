@@ -31,27 +31,12 @@ class VMePathPlanner : public PathPlanner<SeedPackage> {
   float timeInterval{0.0};
 
  public:
-  VMePathPlanner(AggregatorInitializer& init) : seed(init) {
-    timeInterval = init.get_timeInterval();
-    seed.vref = init.get_cruiseSpeed();
-  }
+  VMePathPlanner(AggregatorInitializer&);
+  ~VMePathPlanner() = default;
 
-  void computeTargetMetrics() {
-    targetUnitVector.x = targets[0].x - seed.pose.x;
-    targetUnitVector.y = targets[0].y - seed.pose.y;
-    distanceToTarget = std::sqrt(dot(targetUnitVector, targetUnitVector));
-    targetUnitVector /= distanceToTarget;
-  }
-
-  void computeTrackingErrors() noexcept {
-    point2d targetUnitVector;
-    for (unsigned k = 1; k < seed.xref.size(); ++k) {
-      seed.xref[k] =
-          seed.pose.x + seed.vref[k] * targetUnitVector.x * k * timeInterval;
-      seed.yref[k] =
-          seed.pose.y + seed.vref[k] * targetUnitVector.y * k * timeInterval;
-    }
-  }
+  void computeTargetMetrics();
+  void computeTrackingErrors() noexcept;
+  virtual SeedPackage& getSeed();
 
 };
 

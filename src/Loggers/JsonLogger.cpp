@@ -67,13 +67,13 @@ JsonLogger::JsonLogger(AggregatorInitializer &init,
 
 JsonLogger::~JsonLogger() { fprintf(fp_out, "\n]\n"); }
 
-// TODO: In GCC 5.3, change std::end() to std::cend();
+// In GCC < 5.3, change std::cend() to std::end();
 template <typename T>
 void jsonPrintArray(FILE *fd, T array) {
-  auto iter = std::begin(array);
+  auto iter = std::cbegin(array);
   for (;;) {
     fprintf(fd, "%f", *iter);
-    if (++iter == std::end(array)) break;
+    if (++iter == std::cend(array)) break;
     fprintf(fd, ",");
   }
 }

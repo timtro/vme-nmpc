@@ -6,8 +6,8 @@
  * it under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.
- *
- * vme-nmpc is distributed in the hope that it will be useful,
+
+* * vme-nmpc is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
  * Public License for more details.
@@ -35,7 +35,7 @@ class VMeNmpcKernel : public Subject {
   vMeModelType* model;
   NmpcMinimizer* minimizer;
   VMeLogger* logger;
-  std::unique_ptr<VMeLogger> noOpLogger{nullptr}; // Default log if none given.
+  std::unique_ptr<VMeLogger> noOpLogger{nullptr};  // Default log if none given.
 
   fptype targetDistanceTolerance{0};
   unsigned cmdsExecutedFromCurrentHorizon{0};
@@ -46,11 +46,15 @@ class VMeNmpcKernel : public Subject {
   VMeNmpcKernel(AggregatorInitializer&);
 
   up_VMeCommand nextCommand();
-  void seed(xyth);
+  void seed(SeedPackage);
   vMeModelType* _getModelPointer_();
   NmpcMinimizer* _getMinimizerPointer_();
 };
 
-class MinimizerReachedIterationLimit : public std::exception {};
+class MinimizerReachedIterationLimit : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "Minimizer reached its specified iteration limit.";
+  }
+};
 
 #endif  // VME_NMPC_SRC_NMPCKERNEL_HPP_

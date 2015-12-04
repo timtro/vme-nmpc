@@ -45,7 +45,16 @@ class JsonLogger : public VMeLogger {
   virtual void logMinimizerState() const noexcept;
 };
 
-class LoggerIsIncompatibleWithModelType : public std::exception {};
-class LoggerIsIncompatibleWithMinimizerType : public std::exception {};
+class LoggerIsIncompatibleWithModelType : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "The logger is not familliar with the model type.";
+  }
+};
+
+class LoggerIsIncompatibleWithMinimizerType : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "The logger is not familliar with the minimizer type.";
+  }
+};
 
 #endif  // VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_

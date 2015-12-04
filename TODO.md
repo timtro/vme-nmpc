@@ -8,3 +8,6 @@
 * Test mechanism for setting and computing tracking errors in VMeModel.
 * Mike's commoent on strange behaviour switching waypoints is solved by stringing waypoints together in path planner via xref.
 * Homogenize the interface of TargetContainer and ObstacleContainer
+* Define what() for all custom exceptions.
+* Remove usages of VMeModel::set_v, now that the seed contains it.
+* Write a test for VMeModel that checks for pythagorean relationship in ex, ey, x and y when the x/yref is perpandicular to the model trajectory.

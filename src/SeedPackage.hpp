@@ -30,7 +30,8 @@ struct SeedPackage {
   fp_array xref;
   fp_array yref;
 
-  SeedPackage(AggregatorInitializer&);
+  SeedPackage() = default;
+  SeedPackage(int);
 };
 
 #endif  // VME_NMPC_SRC_SEEDPACKAGE_HPP_

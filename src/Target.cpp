@@ -18,6 +18,13 @@
 
 #include "Target.hpp"
 
+using std::unique_ptr;
+using std::make_unique;
+
+void TargetContainer::push_back(unique_ptr<Target> tgt) {
+  targets.push_back(std::move(tgt));
+}
+
 Target& TargetContainer::operator[](const int i) {
   return *targets[0];
 }

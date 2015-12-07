@@ -24,6 +24,7 @@
 #include "VMeCommand.hpp"
 #include "NmpcMinimizer.hpp"
 #include "NmpcModel.hpp"
+#include "PathPlanner.hpp"
 #include "VMeLogger.hpp"
 #include "AggregatorInitializer.hpp"
 
@@ -35,6 +36,7 @@ class VMeNmpcKernel : public Subject {
   vMeModelType* model;
   NmpcMinimizer* minimizer;
   VMeLogger* logger;
+  PathPlanner<SeedPackage>* planner;
   std::unique_ptr<VMeLogger> noOpLogger{nullptr};  // Default log if none given.
 
   fptype targetDistanceTolerance{0};
@@ -46,7 +48,9 @@ class VMeNmpcKernel : public Subject {
   VMeNmpcKernel(AggregatorInitializer&);
 
   up_VMeCommand nextCommand();
-  void seed(SeedPackage);
+  void seed(SeedPackage&);
+  void nmpcStep(SeedPackage&);
+  void run();
   vMeModelType* _getModelPointer_();
   NmpcMinimizer* _getMinimizerPointer_();
 };

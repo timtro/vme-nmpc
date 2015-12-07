@@ -22,7 +22,9 @@ FakeExecutor::FakeExecutor(VMeNmpcKernel* s) {
   subjectKernel = s;
   s->attachObserver(this);
 }
+
 FakeExecutor::~FakeExecutor() { subjectKernel->detachObserver(this); }
+
 void FakeExecutor::update(Subject* s) {
   if (s == dynamic_cast<Subject*>(subjectKernel))
     commandFromLastNotify = subjectKernel->nextCommand();

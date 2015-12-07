@@ -23,7 +23,7 @@ class TestObject {
     init.parameters->cruiseSpeed = cruiseSpeed;
 
     model = make_unique<VMeModel>(init);
-    SeedPackage seed(init);
+    SeedPackage seed(init.get_nmpcHorizon());
     model->seed(seed);
   }
 };
@@ -89,7 +89,7 @@ TEST_CASE(
     "A machine posed at the origin pointing in +y with a constant cruiseSpeed "
     "should drive a straight line along the +y-axis in a forecast horizon") {
   TestObject m;
-  SeedPackage seed(m.init);
+  SeedPackage seed(m.nmpcHorizon);
   seed.pose = xyth{0, 0, degToRad(90.f)};
   m.model->seed(seed);
   m.model->computeForecast();

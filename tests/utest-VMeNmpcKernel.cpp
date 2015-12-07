@@ -57,7 +57,7 @@ TEST_CASE(
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
 
-  SeedPackage seed(test.init);
+  SeedPackage seed(test.nmpcHorizon);
   seed.pose = xyth{1, 1, 0};
   test.engine->seed(seed);
   // Should have called (S)eed (D)istanceToTarget:
@@ -74,7 +74,7 @@ TEST_CASE(
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
 
-  SeedPackage seed(test.init);
+  SeedPackage seed(test.nmpcHorizon);
   seed.pose = xyth{0, 0, 0};
   test.engine->seed(seed);
   REQUIRE(test.callRecord == "SDOC");
@@ -88,7 +88,7 @@ TEST_CASE(
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
 
-  SeedPackage seed(test.init);
+  SeedPackage seed(test.nmpcHorizon);
   seed.pose = xyth{0, 0, 0};
   test.engine->seed(seed);
   unsigned countReturnedMotionCommands = 0;

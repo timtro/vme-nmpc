@@ -25,19 +25,27 @@
 
 class VMePathPlanner : public PathPlanner<SeedPackage> {
   SeedPackage seed;
-  TargetContainer targets;
+  TargetContainer* targets;
   point2d targetUnitVector{0.0, 0.0};
   float distanceToTarget{0.0};
   float timeInterval{0.0};
+  std::function<SeedPackage()> poseRetriever = [](){
+    SeedPackage defaultSeed;
+    return defaultSeed;
+  };
 
  public:
   VMePathPlanner(AggregatorInitializer&);
   ~VMePathPlanner() = default;
 
+  virtual SeedPackage& getSeed();
+  virtual bool isContinuing();
+
   void computeTargetMetrics();
   void computeTrackingErrors() noexcept;
-  virtual SeedPackage& getSeed();
+
+  void set_poseRetriever(std::function<SeedPackage()>);
 
 };
 
-#endif // VME_NMPC_SRC_VMEPATHPLANNER_HPP_
+#endif  // VME_NMPC_SRC_VMEPATHPLANNER_HPP_

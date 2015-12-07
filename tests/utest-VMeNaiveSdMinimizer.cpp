@@ -31,7 +31,7 @@ class TestObject {
 
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
-    SeedPackage seed(init);
+    SeedPackage seed(init.get_nmpcHorizon());
     model->seed(seed);
   }
 };

@@ -27,11 +27,12 @@ class FakePathPlanner : public PathPlanner<SeedPackage> {
   SeedPackage seed;
 
  public:
-  FakePathPlanner(AggregatorInitializer& init) : seed(init) {
+  FakePathPlanner(AggregatorInitializer& init) : seed(init.get_nmpcHorizon()) {
     init.bindIntoAggregator(this);
   }
   ~FakePathPlanner() = default;
   SeedPackage& getSeed() { return this->seed; }
+  bool isContinuing() { return true; }
 };
 
 #endif  // VME_NMPC_TESTS_FAKEPATHPLANNER_HPP_

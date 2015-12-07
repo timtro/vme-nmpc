@@ -49,23 +49,24 @@ VMeModel::VMeModel(AggregatorInitializer& init)
   Dth = fp_array(0.f, horizonSize - 1);
   // Other:
   v = fp_array(cruiseSpeed, horizonSize);
-  ex = fp_array(0.f, horizonSize);
-  ey = fp_array(0.f, horizonSize);
-  DPhiX = fp_array(0.f, horizonSize);
-  DPhiY = fp_array(0.f, horizonSize);
+  ex = fp_array(0.f, horizonSize - 1);
+  ey = fp_array(0.f, horizonSize - 1);
+  DPhiX = fp_array(0.f, horizonSize - 1);
+  DPhiY = fp_array(0.f, horizonSize - 1);
   // Lagrange Multipliers:
-  px = fp_array(0.f, horizonSize);
-  pDx = fp_array(0.f, horizonSize);
-  py = fp_array(0.f, horizonSize);
-  pDy = fp_array(0.f, horizonSize);
-  pth = fp_array(0.f, horizonSize);
+  px = fp_array(0.f, horizonSize - 1);
+  pDx = fp_array(0.f, horizonSize - 1);
+  py = fp_array(0.f, horizonSize - 1);
+  pDy = fp_array(0.f, horizonSize - 1);
+  pth = fp_array(0.f, horizonSize - 1);
   // Gradients:
   grad = fp_array(0.f, horizonSize - 1);
+  // Tracking reference
+  xref = fp_array(0.f, horizonSize - 1);
+  yref = fp_array(0.f, horizonSize - 1);
 
-  xref = fp_array(0.f, horizonSize-1);
-  yref = fp_array(0.f, horizonSize-1);
-
-  //Must be last or destruction of init's unique_ptr causes double destruction.
+  // Should be the very last step so that a partially constructed ojbect can't
+  // be accidentally aggregated.
   init.bindIntoAggregator(this);
 }
 
@@ -75,29 +76,32 @@ void VMeModel::seed(SeedPackage& seed) {
   th[0] = seed.pose.th;
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
+  xref = seed.xref;
+  yref = seed.yref;
+  v = seed.vref;
 }
 
 void VMeModel::computeForecast() noexcept {
   for (unsigned k = 1; k < N; ++k) {
     th[k] = th[k - 1] + Dth[k - 1] * T;
     x[k] = x[k - 1] + Dx[k - 1] * T;
-    Dx[k] = v[k] * std::cos(th[k]);
+    Dx[k] = v[k - 1] * std::cos(th[k]);
     y[k] = y[k - 1] + Dy[k - 1] * T;
-    Dy[k] = v[k] * std::sin(th[k]);
+    Dy[k] = v[k - 1] * std::sin(th[k]);
   }
 }
 
 void VMeModel::computeTrackingErrors() noexcept {
-  for (unsigned k = 1; k < N-1; ++k) {
-    ex[k] = x[k] - xref[k];
-    ey[k] = y[k] - yref[k];
+  for (unsigned k = 0; k < N - 1; ++k) {
+    ex[k] = x[k + 1] - xref[k];
+    ey[k] = y[k + 1] - yref[k];
   }
 }
 
 void VMeModel::computePathPotentialGradient(
     ObstacleContainer& obstacles) noexcept {
-  for (unsigned k = 0; k < N; ++k) {
-    fp_point2d gradVec = obstacles.gradPhi(fp_point2d{x[k], y[k]});
+  for (unsigned k = 0; k < N - 1; ++k) {
+    fp_point2d gradVec = obstacles.gradPhi(fp_point2d{x[k + 1], y[k + 1]});
     DPhiX[k] = gradVec.x;
     DPhiY[k] = gradVec.y;
   }
@@ -109,8 +113,8 @@ void VMeModel::computePathPotentialGradient(
  */
 void VMeModel::computeGradient() noexcept {
   gradNorm = 0.;
-  px[N - 1] = Q0 * ex[N - 1];
-  py[N - 1] = Q0 * ey[N - 1];
+  px[N - 2] = Q0 * ex[N - 2];
+  py[N - 2] = Q0 * ey[N - 2];
   // Dth[N - 2] -= C.dg * R * Dth[N - 2];
 
   /*!
@@ -119,7 +123,7 @@ void VMeModel::computeGradient() noexcept {
    * and Lagrange multipliers. Then, the control plan is updated by
    * stepping against the direction of the gradient.
    */
-  for (int k = N - 2; k >= 0; --k) {
+  for (int k = N - 3; k >= 0; --k) {
     px[k] = Q * ex[k] - DPhiX[k] + px[k + 1];
     pDx[k] = px[k + 1] * T;
     py[k] = Q * ey[k] - DPhiY[k] + py[k + 1];
@@ -158,8 +162,8 @@ fp_array const& VMeModel::get_Dth() const noexcept { return Dth; }
 
 fp_array const& VMeModel::get_grad() const noexcept { return grad; }
 
-void VMeModel::set_v(fptype velocity) {
-  v = velocity;
+void VMeModel::set_v(fptype speed) {
+  v = speed;
   Dx[0] = v[0] * std::cos(th[0]);
   Dy[0] = v[0] * std::sin(th[0]);
 }
@@ -168,4 +172,3 @@ void VMeModel::setTrackingReferences(fp_array& ex, fp_array& ey) {
   this->ex = ex;
   this->ey = ey;
 }
-

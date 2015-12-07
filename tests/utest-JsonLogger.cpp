@@ -64,7 +64,7 @@ TEST_CASE(
 
 TEST_CASE("Straightforward write to stdout with nothing to assert.") {
   TestObject test;
-  SeedPackage seed(test.init);
+  SeedPackage seed(test.nmpcHorizon);
   seed.pose = xyth{0, 0, 0};
   seed.vref = 1;
   seed.xref = seed.yref = 10;

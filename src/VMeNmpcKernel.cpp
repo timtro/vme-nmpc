@@ -27,6 +27,7 @@ VMeNmpcKernel::VMeNmpcKernel(AggregatorInitializer& init)
   init.aggregatorCompletionSafetyCheck();
   model = init.model;
   minimizer = init.minimizer;
+  planner = init.planner;
 
   if (init.logger == nullptr) {
     noOpLogger = std::make_unique<VMeLogger>();
@@ -42,15 +43,26 @@ up_VMeCommand VMeNmpcKernel::nextCommand() {
     return model->retrieveCommand(cmdsExecutedFromCurrentHorizon);
 }
 
-void VMeNmpcKernel::seed(SeedPackage seed) {
+void VMeNmpcKernel::seed(SeedPackage& seed) {
   model->seed(seed);
   cmdsExecutedFromCurrentHorizon = 0;
+}
+
+void VMeNmpcKernel::nmpcStep(SeedPackage& seed) {
+  cmdsExecutedFromCurrentHorizon = 0;
+  model->seed(seed);
   auto minimizerStatus = minimizer->solveOptimalControlHorizon();
   if (minimizerStatus == MinimizerCode::reachedIterationLimit)
     throw MinimizerReachedIterationLimit();
   logger->logModelState();
   logger->logMinimizerState();
   notify();
+}
+
+void VMeNmpcKernel::run() {
+  do {
+    nmpcStep(planner->getSeed());
+  } while (planner->isContinuing());
 }
 
 vMeModelType* VMeNmpcKernel::_getModelPointer_() { return model; }

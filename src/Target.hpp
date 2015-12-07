@@ -36,7 +36,7 @@ class TargetContainer {
   std::vector<std::unique_ptr<Target>> targets;
 
  public:
-  void push(Target*);
+  void push_back(std::unique_ptr<Target>);
   void pop();
   size_t size();
   void clearContainer();

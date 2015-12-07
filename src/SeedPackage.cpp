@@ -17,11 +17,14 @@
  */
 
 #include "SeedPackage.hpp"
-#include "AggregatorInitializer.hpp"
 
-SeedPackage::SeedPackage(AggregatorInitializer& init) {
-  pose = xyth(0.f, 0.f, 0.f);
-  vref = fp_array(0.f, init.get_nmpcHorizon() - 1);
-  xref = fp_array(0.f, init.get_nmpcHorizon() - 1);
-  yref = fp_array(0.f, init.get_nmpcHorizon() - 1);
+SeedPackage::SeedPackage(int nmpcHorizon) {
+  if (nmpcHorizon > 1) {
+    vref = fp_array(0.f, nmpcHorizon - 1);
+    xref = fp_array(0.f, nmpcHorizon - 1);
+    yref = fp_array(0.f, nmpcHorizon - 1);
+  } else
+    throw std::logic_error(
+        "SeedPackage was initialized with a nonsensical horizon size. If you "
+        "wish for zero-length members, use the default constrctor.");
 }

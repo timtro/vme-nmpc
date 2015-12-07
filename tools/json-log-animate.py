@@ -101,11 +101,11 @@ def updatePlotData(data):
     xRelative = x - x[0]
     yRelative = y - y[0]
 
-    xTracked = x - ex
-    yTracked = y - ey
+    xTracked = x[1:] - ex
+    yTracked = y[1:] - ey
 
-    xTrackedRelative = xTracked - xTracked[0]
-    yTrackedRelative = yTracked - yTracked[0]
+    xTrackedRelative = xTracked - x[0]
+    yTrackedRelative = yTracked - y[0]
 
     aniPlot.ax1Path.set_data(x, y)
     aniPlot.ax2Path.set_data(xRelative, yRelative)

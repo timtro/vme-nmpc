@@ -74,7 +74,7 @@ TEST_CASE("Whatever") {
   TestSetup test{"itest.log.json"};
   FakeExecutor exec(test.engine.get());
 
-  test.planner->set_poseRetriever([&test](){
+  test.planner->set_stateEstimateRetriever([&test](){
     SeedPackage pose;
     pose.pose.x = test.model->get_x()[1];
     pose.pose.y = test.model->get_y()[1];

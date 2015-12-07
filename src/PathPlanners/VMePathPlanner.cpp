@@ -43,7 +43,7 @@ void VMePathPlanner::computeTrackingErrors() noexcept {
 }
 
 SeedPackage& VMePathPlanner::getSeed() {
-  seed.pose = poseRetriever().pose;
+  seed.pose = stateEstimateRetriever().pose;
   computeTargetMetrics();
   computeTrackingErrors();
   return this->seed;
@@ -58,6 +58,6 @@ bool VMePathPlanner::isContinuing() {
   }
 }
 
-void VMePathPlanner::set_poseRetriever(std::function<SeedPackage()> fun) {
-  poseRetriever = fun;
+void VMePathPlanner::set_stateEstimateRetriever(std::function<SeedPackage()> fun) {
+  stateEstimateRetriever = fun;
 }

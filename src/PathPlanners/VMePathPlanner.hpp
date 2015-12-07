@@ -23,13 +23,22 @@
 #include "../AggregatorInitializer.hpp"
 #include "../SeedPackage.hpp"
 
+class FailedToProvideFunctionToRetrieveStateEstimate : public std::exception {
+  const char* what() const noexcept override {
+    return "Use the VMePathPlanner::set_stateEstimateRetriever method to "
+           "provide a function to retrieve the state estimate for seed "
+           "construction.";
+  }
+};
+
 class VMePathPlanner : public PathPlanner<SeedPackage> {
   SeedPackage seed;
   TargetContainer* targets;
   point2d targetUnitVector{0.0, 0.0};
   float distanceToTarget{0.0};
   float timeInterval{0.0};
-  std::function<SeedPackage()> poseRetriever = [](){
+  std::function<SeedPackage()> stateEstimateRetriever = []() {
+    throw FailedToProvideFunctionToRetrieveStateEstimate();
     SeedPackage defaultSeed;
     return defaultSeed;
   };
@@ -44,8 +53,7 @@ class VMePathPlanner : public PathPlanner<SeedPackage> {
   void computeTargetMetrics();
   void computeTrackingErrors() noexcept;
 
-  void set_poseRetriever(std::function<SeedPackage()>);
-
+  void set_stateEstimateRetriever(std::function<SeedPackage()>);
 };
 
 #endif  // VME_NMPC_SRC_VMEPATHPLANNER_HPP_

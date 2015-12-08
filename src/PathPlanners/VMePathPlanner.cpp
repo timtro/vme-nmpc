@@ -51,8 +51,13 @@ SeedPackage& VMePathPlanner::getSeed() {
 
 bool VMePathPlanner::isContinuing() {
   {
-    if (distanceToTarget < (*targets)[0].tolerance)
-      return false;
+    if (distanceToTarget < (*targets)[0].tolerance) {
+      targets->pop_front();
+      if (targets->hasTargets())
+        return true;
+      else
+        return false;
+    }
     else
       return true;
   }

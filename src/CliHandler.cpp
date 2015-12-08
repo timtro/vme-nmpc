@@ -25,7 +25,7 @@ std::string detachToken(std::string&);
 std::string fetchMessageString(const int);
 void makeLowerCase(std::string&);
 
-CliHandler::CliHandler(std::deque<Target*>* tgt, ObstacleContainer* obs)
+CliHandler::CliHandler(TargetContainer* tgt, ObstacleContainer* obs)
     : targets(tgt), obstacles(obs) {}
 
 CliHandler::CliHandler(CliHandler&& source) {

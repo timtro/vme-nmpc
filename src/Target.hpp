@@ -21,6 +21,7 @@
 
 #include "linear.hpp"
 #include <memory>
+#include <deque>
 
 struct Target {
   fp_point2d locus;
@@ -33,11 +34,15 @@ struct Target {
 };
 
 class TargetContainer {
-  std::vector<std::unique_ptr<Target>> targets;
+  std::deque<std::unique_ptr<Target>> targets;
 
  public:
   void push_back(std::unique_ptr<Target>);
-  void pop();
+  void emplace_back(Target*);
+  void push_front(std::unique_ptr<Target>);
+  void pop_back();
+  void pop_front();
+  void clear();
   size_t size();
   void clearContainer();
   bool hasTargets();

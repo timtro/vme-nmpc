@@ -117,7 +117,7 @@ TEST_CASE(
     "Using the add obstacle ('ao') commandline should cause an appropriate "
     "obstacle to be placed in the ObstacleContainer") {
   ObstacleContainer obstacles;
-  std::deque<Target*> targets;
+  TargetContainer targets;
   std::function<void(int)> commandHandler{CliHandler(&targets, &obstacles)};
   Daemon command_server(testPort, commandHandler);
   SocketSender fakeClient(testHost, testPort);
@@ -142,7 +142,7 @@ TEST_CASE(
     "Sending the 'ao' command with too few arguments should result in no "
     "changes made to the ObstacleContainer") {
   ObstacleContainer obstacles;
-  std::deque<Target*> targets;
+  TargetContainer targets;
   std::function<void(int)> commandHandler{CliHandler(&targets, &obstacles)};
   Daemon command_server(testPort, commandHandler);
   SocketSender fakeClient(testHost, testPort);
@@ -158,7 +158,7 @@ TEST_CASE(
     "Sending the 'ao' command with a bad argument should result in no changes "
     "made to the ObstacleContainer") {
   ObstacleContainer obstacles;
-  std::deque<Target*> targets;
+  TargetContainer targets;
   std::function<void(int)> commandHandler{CliHandler(&targets, &obstacles)};
   Daemon command_server(testPort, commandHandler);
   SocketSender fakeClient(testHost, testPort);
@@ -174,7 +174,7 @@ TEST_CASE(
     "After an obstacle is added, sending 'clear obstacles' sould empty the "
     "obstacle container") {
   ObstacleContainer obstacles;
-  std::deque<Target*> targets;
+  TargetContainer targets;
   std::function<void(int)> commandHandler{CliHandler(&targets, &obstacles)};
   Daemon command_server(testPort, commandHandler);
   SocketSender fakeClient(testHost, testPort);

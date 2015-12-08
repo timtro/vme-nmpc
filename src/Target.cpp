@@ -25,6 +25,29 @@ void TargetContainer::push_back(unique_ptr<Target> tgt) {
   targets.push_back(std::move(tgt));
 }
 
+void TargetContainer::push_front(unique_ptr<Target> tgt) {
+  targets.push_front(std::move(tgt));
+}
+
+void TargetContainer::pop_back() {
+  targets.pop_back();
+}
+void TargetContainer::pop_front() {
+  targets.pop_front();
+}
+
 Target& TargetContainer::operator[](const int i) {
-  return *targets[0];
+  return *targets[i];
+}
+
+bool TargetContainer::hasTargets() {
+  return !targets.empty();
+}
+
+void TargetContainer::emplace_back(Target* tgt) {
+  targets.emplace_back(tgt);
+}
+
+void TargetContainer::clear() {
+  targets.clear();
 }

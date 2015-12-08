@@ -25,12 +25,12 @@
 #include "Obstacle.hpp"
 
 struct CliHandler {
-  std::deque<Target*>* targets{nullptr};
+  TargetContainer* targets{nullptr};
   ObstacleContainer* obstacles{nullptr};
 
   CliHandler& operator=(const CliHandler&) = delete;
   CliHandler(const CliHandler&);
-  CliHandler(std::deque<Target*>*, ObstacleContainer*);
+  CliHandler(TargetContainer*, ObstacleContainer*);
   CliHandler(CliHandler&&);
 
   void operator()(const int);

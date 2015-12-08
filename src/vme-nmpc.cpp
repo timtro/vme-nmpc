@@ -27,6 +27,7 @@
 #include "Loggers/JsonLogger.hpp"
 #include "NmpcModels/VMeModel.hpp"
 #include "NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
+#include "PathPlanners/VMePathPlanner.hpp"
 #include "VMeNmpcKernel.hpp"
 
 // TODO(T.T.): Use Boost scoped threads that assure that all paths out of a
@@ -52,26 +53,29 @@ int main(int argc, char** argv) {
   }
 
   ObstacleContainer obstacles;
-  std::deque<Target*> targets;
+  TargetContainer targets;
   std::function<void(int)> commandHandler{CliHandler(&targets, &obstacles)};
 
   Daemon command_server(5111, commandHandler);
-
   vme.originate();
-  vme.fd(1);
-
-  float x, y, n;
-  int q;
-  std::tie(x, y, n, q) = vme.q();
-  printf("%f %f %f %d\n", x, y, n, q);
 
   AggregatorInitializer init(inputFileData);
   auto model = make_unique<VMeModel>(init);
   auto minimizer = make_unique<VMeNaiveSdMinimizer>(init);
+  auto planner = make_unique<VMePathPlanner>(init);
   auto logger = make_unique<JsonLogger>(init, inputFileData.jsonLogPath);
   auto engine = make_unique<VMeNmpcKernel>(init);
 
+  planner->set_stateEstimateRetriever([&vme](){
+      SeedPackage state;
+      int q;
+      std::tie(state.pose.x, state.pose.y, state.pose.th, q) = vme.q();
+      return state;
+    });
+
   for (;;) {
+
+    while(!targets.hasTargets())
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // test.engine->seed(xyth{0, 0, 0}, fp_point2d{3, 4});
     // while (isMoveCmd(exec.commandFromLastNotify.get())) {

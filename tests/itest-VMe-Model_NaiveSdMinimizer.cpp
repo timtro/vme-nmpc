@@ -82,6 +82,7 @@ TEST_CASE("Whatever") {
     return pose;
   });
 
-  test.targets->push_back(make_unique<Target>(5, 10, 0.1));
+  test.targets->push_back(make_unique<Target>(3, 5, 0.1));
+  test.targets->push_back(make_unique<Target>(8, 0, 0.1));
   test.engine->run();
 }

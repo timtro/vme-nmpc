@@ -63,7 +63,6 @@ TEST_CASE(
   // Should have called (S)eed (D)istanceToTarget:
   REQUIRE(test.callRecord == "SD");
   REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
-  // REQUIRE(test.engine->isHalted());
 }
 
 TEST_CASE(
@@ -88,18 +87,28 @@ TEST_CASE(
   FakeExecutor exec(test.engine.get());
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
 
-  SeedPackage seed(test.nmpcHorizon);
-  seed.pose = xyth{0, 0, 0};
-  test.engine->seed(seed);
-  unsigned countReturnedMotionCommands = 0;
-  auto command = std::move(exec.commandFromLastNotify);
-  for (;;) {
-    if (isNullCmd(command.get()))
-      break;
-    else if (isMoveCmd(command.get())) {
-      ++countReturnedMotionCommands;
-      command = test.engine->nextCommand();
-    }
+  SECTION("Newly created engine should provide null commands:") {
+    auto command = test.engine->nextCommand();
+    REQUIRE(isNullCmd(command.get()));
   }
-  REQUIRE(countReturnedMotionCommands == test.nmpcHorizon);
+
+  SECTION(
+      "Run an NMPC step and count to be sure that no more than a horizon's "
+      "worth of commands are doled out.") {
+    SeedPackage seed(test.nmpcHorizon);
+    test.engine->nmpcStep(seed);
+    unsigned countReturnedMotionCommands = 0;
+    auto command = std::move(exec.commandFromLastNotify);
+    for (;;) {
+      if (isNullCmd(command.get()))
+        break;
+      else if (isMoveCmd(command.get())) {
+        ++countReturnedMotionCommands;
+        command = test.engine->nextCommand();
+      } else
+        throw std::runtime_error(
+            "ERROR: Unexpected output from engine.nextCommand().\n");
+    }
+    REQUIRE(countReturnedMotionCommands == test.nmpcHorizon);
+  }
 }

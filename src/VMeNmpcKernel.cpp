@@ -29,6 +29,8 @@ VMeNmpcKernel::VMeNmpcKernel(AggregatorInitializer& init)
   minimizer = init.minimizer;
   planner = init.planner;
 
+  cmdsExecutedFromCurrentHorizon = model->get_horizonSize();
+
   if (init.logger == nullptr) {
     noOpLogger = std::make_unique<VMeLogger>();
     logger = noOpLogger.get();
@@ -45,7 +47,7 @@ up_VMeCommand VMeNmpcKernel::nextCommand() {
 
 void VMeNmpcKernel::seed(SeedPackage& seed) {
   model->seed(seed);
-  cmdsExecutedFromCurrentHorizon = 0;
+  cmdsExecutedFromCurrentHorizon = model->get_horizonSize();
 }
 
 void VMeNmpcKernel::nmpcStep(SeedPackage& seed) {

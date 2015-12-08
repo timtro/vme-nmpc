@@ -21,6 +21,8 @@ add_executable (vme-nmpc vme-nmpc.cpp
                   NmpcMinimizers/VMeNaiveSdMinimizer.cpp
                   Loggers/JsonLogger.cpp
                   AggregatorInitializer.cpp
+                  PathPlanners/VMePathPlanner.cpp
+                  Target.cpp
                   CliHandler.cpp
                 )
 target_link_libraries (vme-nmpc VMeNmpcKernel VMeModel Obstacle ${CMAKE_THREAD_LIBS_INIT})

@@ -52,6 +52,7 @@ set(testname iutest-CliHandler-Daemon)
     add_executable (${testname} ${testname}.cpp
                         ../src/CliHandler.cpp
                         ../src/Daemon.cpp
+                        ../src/Target.cpp
                     )
     target_link_libraries (${testname} CATCH Obstacle ${CMAKE_THREAD_LIBS_INIT})
     create_test(${testname})

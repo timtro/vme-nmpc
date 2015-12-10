@@ -38,7 +38,6 @@ class ObstacleContainer;
 using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
 struct AggregatorInitializer {
-
   AggregatorInitializer(const AggregatorInitializer&) = delete;
   AggregatorInitializer& operator=(const AggregatorInitializer&) = delete;
   AggregatorInitializer();
@@ -61,22 +60,21 @@ struct AggregatorInitializer {
   void bindIntoAggregator(VMeLogger*);
   void bindIntoAggregator(PathPlanner<SeedPackage>*);
 
-  unsigned get_nmpcHorizon();
-  fptype get_timeInterval();
-  fptype get_cruiseSpeed();
-  fptype get_Q();
-  fptype get_Q0();
-  fptype get_R();
-  fptype get_sdStepFactor();
-  fptype get_sdConvergenceTolerance();
-  unsigned get_maxSdSteps();
-  fptype get_targetDistanceTolerance();
-  std::string get_jsonLogPath();
+  unsigned get_nmpcHorizon() const;
+  fptype get_timeInterval() const;
+  fptype get_cruiseSpeed() const;
+  fptype get_Q() const;
+  fptype get_Q0() const;
+  fptype get_R() const;
+  fptype get_sdStepFactor() const;
+  fptype get_sdConvergenceTolerance() const;
+  unsigned get_maxSdSteps() const;
+  fptype get_targetDistanceTolerance() const;
+  std::string get_jsonLogPath() const;
 
-private:
+ private:
   // only for default construction:
   std::unique_ptr<InputFileData> defaultParameters_;
-
 };
 
 class ModelMustBeInitializedBeforeMinimizerOrLogger : public std::exception {

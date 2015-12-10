@@ -75,30 +75,30 @@ void AggregatorInitializer::aggregatorCompletionSafetyCheck() {
     throw InitPkgDoesNotContainPointerToAPathPlanner();
 }
 
-unsigned AggregatorInitializer::get_nmpcHorizon() {
+unsigned AggregatorInitializer::get_nmpcHorizon() const {
   return parameters->nmpcHorizon;
 }
-fptype AggregatorInitializer::get_timeInterval() {
+fptype AggregatorInitializer::get_timeInterval() const {
   return parameters->timeInterval;
 }
-fptype AggregatorInitializer::get_cruiseSpeed() {
+fptype AggregatorInitializer::get_cruiseSpeed() const {
   return parameters->cruiseSpeed;
 }
-fptype AggregatorInitializer::get_Q() { return parameters->Q; }
-fptype AggregatorInitializer::get_Q0() { return parameters->Q0; }
-fptype AggregatorInitializer::get_R() { return parameters->R; }
-fptype AggregatorInitializer::get_sdStepFactor() {
+fptype AggregatorInitializer::get_Q() const { return parameters->Q; }
+fptype AggregatorInitializer::get_Q0() const { return parameters->Q0; }
+fptype AggregatorInitializer::get_R() const { return parameters->R; }
+fptype AggregatorInitializer::get_sdStepFactor() const {
   return parameters->sdStepFactor;
 }
-fptype AggregatorInitializer::get_sdConvergenceTolerance() {
+fptype AggregatorInitializer::get_sdConvergenceTolerance() const {
   return parameters->sdConvergenceTolerance;
 }
-unsigned AggregatorInitializer::get_maxSdSteps() {
+unsigned AggregatorInitializer::get_maxSdSteps() const {
   return parameters->maxSdSteps;
 }
-fptype AggregatorInitializer::get_targetDistanceTolerance() {
+fptype AggregatorInitializer::get_targetDistanceTolerance() const {
   return parameters->targetDistanceTolerance;
 }
-std::string AggregatorInitializer::get_jsonLogPath() {
+std::string AggregatorInitializer::get_jsonLogPath() const {
   return parameters->jsonLogPath;
 };

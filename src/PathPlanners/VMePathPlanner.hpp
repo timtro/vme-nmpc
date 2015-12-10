@@ -26,7 +26,7 @@
 class FailedToProvideFunctionToRetrieveStateEstimate : public std::exception {
   const char* what() const noexcept override {
     return "Use the VMePathPlanner::set_stateEstimateRetriever method to "
-           "provide a function to retrieve the state estimate for seed "
+           "provide a std::function to retrieve the state estimate for seed "
            "construction.";
   }
 };

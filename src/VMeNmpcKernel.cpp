@@ -36,6 +36,8 @@ VMeNmpcKernel::VMeNmpcKernel(AggregatorInitializer& init)
     logger = noOpLogger.get();
   } else
     logger = init.logger;
+
+  logger->logConstants(init);
 }
 
 up_VMeCommand VMeNmpcKernel::nextCommand() {

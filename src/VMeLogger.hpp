@@ -27,12 +27,14 @@ using up_VMeCommand = std::unique_ptr<VMeCommand>;
 
 template <typename seedType, typename cmdType>
 class NmpcModel;
+struct AggregatorInitializer;
 
 class VMeLogger {
  public:
   virtual ~VMeLogger() = default;
   virtual void logModelState() const noexcept {};
   virtual void logMinimizerState() const noexcept {};
+  virtual void logConstants(const AggregatorInitializer&) const noexcept {};
 };
 
 #endif  // VME_NMPC_SRC_DATALOGGER_HPP_

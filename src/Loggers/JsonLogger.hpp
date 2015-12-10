@@ -21,8 +21,8 @@
 
 #include "../VMeLogger.hpp"
 #include "../CFileContainer.hpp"
-#include "../AggregatorInitializer.hpp"
 
+struct AggregatorInitializer;
 class VMeModel;
 class VMeNaiveSdMinimizer;
 
@@ -43,6 +43,7 @@ class JsonLogger : public VMeLogger {
 
   virtual void logModelState() const noexcept;
   virtual void logMinimizerState() const noexcept;
+  virtual void logConstants(const AggregatorInitializer&) const noexcept;
 };
 
 class LoggerIsIncompatibleWithModelType : public std::exception {

@@ -17,6 +17,7 @@
  */
 
 #include "FakeExecutor.hpp"
+#include "../src/VMeNmpcKernel.hpp"
 
 FakeExecutor::FakeExecutor(VMeNmpcKernel* s) {
   subjectKernel = s;

@@ -20,8 +20,9 @@
 #define VME_NMPC_TESTS_FAKEEXECUTOR_HPP_
 
 #include "../src/Observer.hpp"
-#include "../src/VMeNmpcKernel.hpp"
+#include "../src/VMeCommand.hpp"
 
+class VMeNmpcKernel;
 
 class FakeExecutor : public Observer {
   VMeNmpcKernel* subjectKernel = nullptr;

@@ -39,6 +39,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from modules.Nav2Robot import Nav2Robot
 import matplotlib.gridspec as gridspec
+import re
 
 def init():
 	history.set_data([], [])
@@ -72,11 +73,11 @@ parser.add_argument('-o', '--host', dest='hostname', default='localhost',
 parser.add_argument('-p', '--port', dest='hostport', type=int, default=5010,
 	help='Turtle is listening on this port.',
 	metavar='PORT')
-parser.add_argument('-xr', dest='xr', default="-1,1",
-	help='x-axis range (two comma separated floats in brackets. Default: [-1,1]).',
+parser.add_argument('-xr', dest='xr', default="-5,5",
+	help='x-axis range (two comma separated floats in brackets. Default: "[-5,5]").',
 	metavar='RANGE')
-parser.add_argument('-yr', dest='yr', default="-1,1",
-	help='y-axis range (two comma separated floats in brackets. Default: [-1,1]).',
+parser.add_argument('-yr', dest='yr', default="-5,5",
+	help='y-axis range (two comma separated floats in brackets. Default: "[-5,5]").',
 	metavar='RANGE')
 parser.add_argument('-i', dest='ival', type=float, default=5,
 	help='Animation refresh interval',
@@ -84,13 +85,10 @@ parser.add_argument('-i', dest='ival', type=float, default=5,
 
 args = parser.parse_args()
 
-args.xr = args.xr.replace('[', '')
-args.xr = args.xr.replace(']', '')
-args.yr = args.yr.replace('[', '')
-args.yr = args.yr.replace(']', '')
+parseRange = re.compile('\s*\\[\\s*(-?\\d+)\\s*[,:]\\s*(-?\\d+)\\s*\\]\s*')
 
-xr = [ float(i) for i in args.xr.split(',') ]
-yr = [ float(i) for i in args.yr.split(',') ]
+xr = [int(i) for i in parseRange.findall(args.xr)[0]]
+yr = [int(i) for i in parseRange.findall(args.yr)[0]]
 
 # Initialize the TCP/IP socket
 print("Initializing connection to VirualME...")

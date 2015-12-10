@@ -45,7 +45,8 @@ class TargetContainer {
   void clear();
   size_t size();
   void clearContainer();
-  bool hasTargets();
+  [[deprecated]] bool hasTargets();
+  bool empty() const noexcept;
   Target& operator[](const int i);
 };
 

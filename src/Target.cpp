@@ -44,6 +44,10 @@ bool TargetContainer::hasTargets() {
   return !targets.empty();
 }
 
+bool TargetContainer::empty() const noexcept {
+  return targets.empty();
+}
+
 void TargetContainer::emplace_back(Target* tgt) {
   targets.emplace_back(tgt);
 }

@@ -29,13 +29,13 @@
 #include "NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include "PathPlanners/VMePathPlanner.hpp"
 #include "VMeNmpcKernel.hpp"
+#include "Executors/VMeDefaultExecutor.hpp"
 
 // TODO(T.T.): Use Boost scoped threads that assure that all paths out of a
 //             make the thread unjoinable. (As per the advice of Scott Mayers)
 
 using std::unique_ptr;
 using std::make_unique;
-
 
 int main(int argc, char** argv) {
   ClArgs cmdlnArgs(argc, argv);
@@ -60,29 +60,31 @@ int main(int argc, char** argv) {
   vme.originate();
 
   AggregatorInitializer init(inputFileData);
+  init.targets = &targets;
+  init.obstacles = &obstacles;
   auto model = make_unique<VMeModel>(init);
   auto minimizer = make_unique<VMeNaiveSdMinimizer>(init);
   auto planner = make_unique<VMePathPlanner>(init);
   auto logger = make_unique<JsonLogger>(init, inputFileData.jsonLogPath);
-  auto engine = make_unique<VMeNmpcKernel>(init);
+  auto kernel = make_unique<VMeNmpcKernel>(init);
 
-  planner->set_stateEstimateRetriever([&vme](){
-      SeedPackage state;
-      int q;
-      std::tie(state.pose.x, state.pose.y, state.pose.th, q) = vme.q();
-      return state;
-    });
+  auto executor = make_unique<VMeDefaultExecutor>(kernel.get());
+
+  planner->set_stateEstimateRetriever([&vme]() {
+    SeedPackage state;
+    int q;
+    std::tie(state.pose.x, state.pose.y, state.pose.th, q) = vme.q();
+    return state;
+  });
 
   for (;;) {
-
-    while(!targets.hasTargets())
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    // test.engine->seed(xyth{0, 0, 0}, fp_point2d{3, 4});
-    // while (isMoveCmd(exec.commandFromLastNotify.get())) {
-    //   test.engine->seed(xyth{
-    //       test.model->get_x()[1], test.model->get_y()[1],
-    //       test.model->get_th()[1],
-    //   });
+    while (targets.empty())
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    do {
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      kernel->nmpcStep(planner->getSeed());
+      executor->run(vme);
+    } while (planner->isContinuing());
   }
 
   printf("Shutting down!\n");

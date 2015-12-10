@@ -22,6 +22,7 @@ add_executable (vme-nmpc vme-nmpc.cpp
                   Loggers/JsonLogger.cpp
                   AggregatorInitializer.cpp
                   PathPlanners/VMePathPlanner.cpp
+                  Executors/VMeDefaultExecutor.cpp
                   Target.cpp
                   CliHandler.cpp
                 )

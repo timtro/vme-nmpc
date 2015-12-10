@@ -1,12 +1,13 @@
 {
-    "nmpcHorizon" : 50,
-    "timeInterval" : 0.012,
+    "nmpcHorizon" : 30,
+    "timeInterval" : 0.1,
     "cruiseSpeed" : 0.4,
-    "R" : 0.1,
-    "Q" : 0.1,
-    "Q0": 0.1,
+    "R" : 0.25,
+    "Q" : 1,
+    "Q0": 0.5,
     "sdStepFactor" : 0.1,
-    "maxSdSteps" : 1000,
+    "sdConvergenceTolerance" : 0.1,
     "targetDistanceTolerance" : 0.1,
+    "maxSdSteps" : 1000,
     "jsonLogPath" : "maintest.json"
 }

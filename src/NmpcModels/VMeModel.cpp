@@ -137,7 +137,7 @@ void VMeModel::computeGradient() noexcept {
 }
 
 up_VMeCommand VMeModel::retrieveCommand(int n) const {
-  return up_VMeCommand{new VMeV{0, v[n], Dth[n]}};
+  return up_VMeCommand{new VMeV{0, v[n], radToDeg(Dth[n])}};
 }
 
 unsigned VMeModel::get_horizonSize() const noexcept { return N; }

@@ -44,6 +44,7 @@ void InputFileData::load(const std::string& filename) {
   Q = tree.get<float>("Q");
   Q0 = tree.get<float>("Q0");
   R = tree.get<float>("R");
+  sdConvergenceTolerance = tree.get<float>("sdConvergenceTolerance");
   sdStepFactor = tree.get<float>("sdStepFactor");
   maxSdSteps = tree.get<unsigned>("maxSdSteps");
   targetDistanceTolerance = tree.get<float>("targetDistanceTolerance");

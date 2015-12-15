@@ -80,13 +80,16 @@ int main(int argc, char** argv) {
   });
 
   for (;;) {
-    while (targets.empty())
+    while (targets.empty()) {
+      printf("WAITING(1)\n");
       std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
     do {
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
       kernel->nmpcStep(planner->getSeed());
       executor->run(vme);
     } while (planner->isContinuing());
+    vme.stop();
   }
 
   printf("Shutting down!\n");

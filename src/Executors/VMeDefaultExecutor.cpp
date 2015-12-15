@@ -33,7 +33,6 @@ void VMeDefaultExecutor::update(Subject* s) {
   if (s == dynamic_cast<Subject*>(subjectKernel))
     commandFromLastNotify = subjectKernel->nextCommand();
   auto v = static_cast<VMeV*>(commandFromLastNotify.get());
-  printf("Notified: v %f %f %f\n", v->th, v->v, v->Dth);
 }
 
 void VMeDefaultExecutor::run(Nav2Robot& vme) {

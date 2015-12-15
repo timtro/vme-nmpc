@@ -53,16 +53,16 @@ bool VMePathPlanner::isContinuing() {
   {
     if (distanceToTarget < (*targets)[0].tolerance) {
       targets->pop_front();
-      if (!targets->empty())
-        return true;
-      else
+      if (targets->empty())
         return false;
-    }
-    else
+      else
+        return true;
+    } else
       return true;
   }
 }
 
-void VMePathPlanner::set_stateEstimateRetriever(std::function<SeedPackage()> fun) {
+void VMePathPlanner::set_stateEstimateRetriever(
+    std::function<SeedPackage()> fun) {
   stateEstimateRetriever = fun;
 }

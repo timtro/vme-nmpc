@@ -57,7 +57,15 @@ void CliHandler::operator()(const int sockfd) {
 }
 
 void CliHandler::addTarget(std::string line) {
-  targets->emplace_back(new Target(1, 1, .1));
+  fptype x{0}, y{0}, tol{0};
+  try {
+    x = std::stof(detachToken(line));
+    y = std::stof(detachToken(line));
+    tol = std::stof(detachToken(line));
+  } catch (std::invalid_argument) {
+    return;
+  }
+  targets->emplace_back(new Target(x, y, tol));
 }
 
 void CliHandler::addObstacle(std::string line) {

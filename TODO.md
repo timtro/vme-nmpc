@@ -11,3 +11,4 @@
 * Define what() for all custom exceptions.
 * Remove usages of VMeModel::set_v, now that the seed contains it.
 * Write a test for VMeModel that checks for pythagorean relationship in ex, ey, x and y when the x/yref is perpandicular to the model trajectory.
+* FIXME (BUG): segfault when CLI:clear all while en route to target.

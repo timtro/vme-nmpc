@@ -51,8 +51,8 @@ class VMeNmpcKernel : public Subject {
   void seed(SeedPackage&);
   void nmpcStep(SeedPackage&);
   void run();
-  vMeModelType* _getModelPointer_();
-  NmpcMinimizer* _getMinimizerPointer_();
+  // vMeModelType* _getModelPointer_();
+  // NmpcMinimizer* _getMinimizerPointer_();
 };
 
 class MinimizerReachedIterationLimit : public std::exception {

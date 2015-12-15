@@ -69,6 +69,6 @@ void VMeNmpcKernel::run() {
   } while (planner->isContinuing());
 }
 
-vMeModelType* VMeNmpcKernel::_getModelPointer_() { return model; }
+// vMeModelType* VMeNmpcKernel::_getModelPointer_() { return model; }
 
-NmpcMinimizer* VMeNmpcKernel::_getMinimizerPointer_() { return minimizer; }
+// NmpcMinimizer* VMeNmpcKernel::_getMinimizerPointer_() { return minimizer; }

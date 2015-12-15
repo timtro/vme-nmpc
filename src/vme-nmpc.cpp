@@ -30,6 +30,7 @@
 #include "PathPlanners/VMePathPlanner.hpp"
 #include "VMeNmpcKernel.hpp"
 #include "Executors/VMeDefaultExecutor.hpp"
+#include "trig.hpp"
 
 // TODO(T.T.): Use Boost scoped threads that assure that all paths out of a
 //             make the thread unjoinable. (As per the advice of Scott Mayers)
@@ -74,6 +75,7 @@ int main(int argc, char** argv) {
     SeedPackage state;
     int q;
     std::tie(state.pose.x, state.pose.y, state.pose.th, q) = vme.q();
+    state.pose.th = degToRad(state.pose.th);
     return state;
   });
 

@@ -25,6 +25,8 @@
 #include "../trig.hpp"
 #include "../AggregatorInitializer.hpp"
 #include "../VMeCommand.hpp"
+#include "../Obstacle.hpp"
+
 
 VMeModel::VMeModel(AggregatorInitializer& init)
     : N{init.get_nmpcHorizon()},
@@ -100,7 +102,7 @@ void VMeModel::computeTrackingErrors() noexcept {
 
 void VMeModel::computePathPotentialGradient(
     ObstacleContainer& obstacles) noexcept {
-  for (unsigned k = 0; k < N - 1; ++k) {
+  for (unsigned k = 0; k < N - 2; ++k) {
     fp_point2d gradVec = obstacles.gradPhi(fp_point2d{x[k + 1], y[k + 1]});
     DPhiX[k] = gradVec.x;
     DPhiY[k] = gradVec.y;
@@ -124,9 +126,9 @@ void VMeModel::computeGradient() noexcept {
    * stepping against the direction of the gradient.
    */
   for (int k = N - 3; k >= 0; --k) {
-    px[k] = Q * ex[k] - DPhiX[k] + px[k + 1];
+    px[k] = Q * ex[k] + DPhiX[k] + px[k + 1];
     pDx[k] = px[k + 1] * T;
-    py[k] = Q * ey[k] - DPhiY[k] + py[k + 1];
+    py[k] = Q * ey[k] + DPhiY[k] + py[k + 1];
     pDy[k] = py[k + 1] * T;
     pth[k] = pth[k + 1] + pDy[k + 1] * v[k] * std::cos(th[k]) -
              pDx[k + 1] * v[k] * std::sin(th[k]);

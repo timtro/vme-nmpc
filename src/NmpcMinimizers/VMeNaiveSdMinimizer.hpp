@@ -23,6 +23,8 @@
 #include "../NmpcModels/VMeModel.hpp"
 #include "../AggregatorInitializer.hpp"
 
+class ObstacleContainer;
+
 class VMeNaiveSdMinimizer : public NmpcMinimizer {
   VMeModel* model{nullptr};
   unsigned sdLoopCount{0};
@@ -30,6 +32,7 @@ class VMeNaiveSdMinimizer : public NmpcMinimizer {
   fptype sdStepFactor{0};
   fptype sdConvergenceTolerance{0};
   MinimizerCode status{MinimizerCode::idle};
+  ObstacleContainer* obstacles;
 
   bool iterate() noexcept;
 

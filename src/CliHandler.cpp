@@ -45,6 +45,7 @@ void CliHandler::operator()(const int sockfd) {
     std::string line = fetchMessageString(sockfd);
     auto cmd = detachToken(line);
     makeLowerCase(cmd);
+    // TODO: Add e-stop.
     if (cmd == "at")
       addTarget(line);
     else if (cmd == "ao")

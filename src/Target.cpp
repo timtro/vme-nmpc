@@ -33,6 +33,8 @@ void TargetContainer::pop_back() {
   targets.pop_back();
 }
 void TargetContainer::pop_front() {
+  previousTarget->locus = targets[0]->locus;
+  previousTarget->tolerance = targets[0]->tolerance;
   targets.pop_front();
 }
 
@@ -54,4 +56,13 @@ void TargetContainer::emplace_back(Target* tgt) {
 
 void TargetContainer::clear() {
   targets.clear();
+}
+
+void TargetContainer::addToFront(fp_point2d displacement, fptype tolerance) {
+  if (targets.empty())
+    targets.emplace_front(new Target(previousTarget->locus.x,
+                                     previousTarget->locus.y,
+                                     previousTarget->tolerance));
+  targets[0]->locus += displacement;
+  targets[0]->tolerance = tolerance;
 }

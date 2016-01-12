@@ -81,7 +81,6 @@ int main(int argc, char** argv) {
 
   for (;;) {
     while (targets.empty()) {
-      printf("WAITING(1)\n");
       std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     do {

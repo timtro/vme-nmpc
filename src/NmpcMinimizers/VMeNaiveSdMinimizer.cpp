@@ -17,6 +17,7 @@
  */
 
 #include "VMeNaiveSdMinimizer.hpp"
+#include "../Obstacle.hpp"
 
 VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(AggregatorInitializer& init)
     : maxSdSteps(init.get_maxSdSteps()),
@@ -24,6 +25,7 @@ VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(AggregatorInitializer& init)
       sdConvergenceTolerance(init.get_sdConvergenceTolerance()) {
   init.minimizerBindingSafetyCheck();
   model = dynamic_cast<VMeModel*>(init.model);
+  obstacles = init.obstacles;
   init.bindIntoAggregator(this);
 }
 
@@ -33,6 +35,7 @@ MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {
   do {
     model->computeForecast();
     model->computeTrackingErrors();
+    model->computePathPotentialGradient(*obstacles);
     model->computeGradient();
     ++sdLoopCount;
   } while (iterate());

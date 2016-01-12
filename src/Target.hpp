@@ -35,6 +35,7 @@ struct Target {
 
 class TargetContainer {
   std::deque<std::unique_ptr<Target>> targets;
+  std::unique_ptr<Target> previousTarget{new Target(0, 0, 0)};
 
  public:
   void push_back(std::unique_ptr<Target>);
@@ -43,6 +44,7 @@ class TargetContainer {
   void pop_back();
   void pop_front();
   void clear();
+  void addToFront(fp_point2d, fptype);
   size_t size();
   void clearContainer();
   [[deprecated]] bool hasTargets();

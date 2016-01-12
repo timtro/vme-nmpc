@@ -155,7 +155,9 @@ class JoyPad(Thread):
     return self.axisStates['y']
 
   def rx(self):
-    return self.axisStates['z']
+    # return self.axisStates['z'] # for my older model
+    return self.axisStates['rx']
 
   def ry(self):
-    return self.axisStates['rz']
+    # return self.axisStates['rz'] # for my older model
+    return self.axisStates['ry']

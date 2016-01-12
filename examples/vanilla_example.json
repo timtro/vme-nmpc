@@ -8,6 +8,6 @@
     "sdStepFactor" : 0.1,
     "sdConvergenceTolerance" : 0.1,
     "targetDistanceTolerance" : 0.1,
-    "maxSdSteps" : 1000,
+    "maxSdSteps" : 10000,
     "jsonLogPath" : "maintest.json"
 }

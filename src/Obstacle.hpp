@@ -22,6 +22,7 @@
 #include "linear.hpp"
 
 #include <memory>
+#include <mutex>
 
 /**
  * An abstract base class defining the interface that will be required for the
@@ -41,6 +42,7 @@ struct Obstacle {
 
 class ObstacleContainer {
   std::vector<std::unique_ptr<Obstacle>> obstacles;
+  std::mutex mutex;
  public:
   fp_point2d gradPhi(fp_point2d);
   void pushObstacle(Obstacle *obs);

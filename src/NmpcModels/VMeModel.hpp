@@ -20,9 +20,10 @@
 #define VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP_
 
 #include "../NmpcModel.hpp"
-#include "../Obstacle.hpp"
 #include "../AggregatorInitializer.hpp"
 #include "../SeedPackage.hpp"
+
+class ObstacleContainer;
 
 class VMeModel : public NmpcModel<SeedPackage, up_VMeCommand> {
   unsigned N;

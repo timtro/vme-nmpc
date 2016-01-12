@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from argparse import ArgumentParser
 import sys, signal
@@ -36,13 +36,13 @@ def composeAndSendCommand(speed, heading, turnRate):
   vme.v(heading, speed, turnRate)
 
 def getDataFromDevice(device):
-  lx = device.lx()
-  ly = -device.ly()
-  rx = device.rx()
+  lx = device.lx()*.5
+  ly = -device.ly()*.5
+  rx = device.rx()*.5
 
   # Push R-thumb to assign origin to currebt position.
-  if device.buttonStates['base6']:
-    vme.originate()
+  # if device.buttonStates['base']:
+    # vme.originate()
 
   speed = hypot(lx, ly)
   heading = degrees(atan2(ly, lx))-90

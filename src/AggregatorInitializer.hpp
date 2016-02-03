@@ -37,6 +37,18 @@ class ObstacleContainer;
 
 using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
+/*
+ * This class provides a convenient means to handle a complex dependency
+ *  injection.
+ *   An AggregatorInitializer is used to initialize the model, minimizer, logger
+ * and kernel by passing it as an argument to their constructors. It retains
+ * pointers to each of the objects it initializes so that when it is used to
+ * initialize aggregate objects, those objects can take the pointers from the
+ * AggregatorInitializer. Therefore, objects which are initialized with a
+ * particular AggregatorInitializer will hang together. A programmer
+ * building an NMPC kernel need only make sure to initialize things in the
+ * right order.
+ */
 struct AggregatorInitializer {
   AggregatorInitializer(const AggregatorInitializer&) = delete;
   AggregatorInitializer& operator=(const AggregatorInitializer&) = delete;

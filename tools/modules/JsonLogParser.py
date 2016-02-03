@@ -17,7 +17,7 @@ class JsonLogParser:
         stringObject += line
         nestCount += line.count('{')
         nestCount -= line.count('}')
-        if nestCount == 0: # Found single line object
+        if nestCount == 0:  # Found single line object
             line = line[0:line.rfind('}') + 1]
             return line
         while True:

@@ -29,34 +29,23 @@ void TargetContainer::push_front(unique_ptr<Target> tgt) {
   targets.push_front(std::move(tgt));
 }
 
-void TargetContainer::pop_back() {
-  targets.pop_back();
-}
+void TargetContainer::pop_back() { targets.pop_back(); }
+
 void TargetContainer::pop_front() {
   previousTarget->locus = targets[0]->locus;
   previousTarget->tolerance = targets[0]->tolerance;
   targets.pop_front();
 }
 
-Target& TargetContainer::operator[](const int i) {
-  return *targets[i];
-}
+Target& TargetContainer::operator[](const int i) { return *targets[i]; }
 
-bool TargetContainer::hasTargets() {
-  return !targets.empty();
-}
+bool TargetContainer::hasTargets() { return !targets.empty(); }
 
-bool TargetContainer::empty() const noexcept {
-  return targets.empty();
-}
+bool TargetContainer::empty() const noexcept { return targets.empty(); }
 
-void TargetContainer::emplace_back(Target* tgt) {
-  targets.emplace_back(tgt);
-}
+void TargetContainer::emplace_back(Target* tgt) { targets.emplace_back(tgt); }
 
-void TargetContainer::clear() {
-  targets.clear();
-}
+void TargetContainer::clear() { targets.clear(); }
 
 void TargetContainer::addToFront(fp_point2d displacement, fptype tolerance) {
   if (targets.empty())

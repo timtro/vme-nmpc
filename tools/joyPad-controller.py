@@ -10,70 +10,87 @@ from math import atan2, hypot, degrees
 from modules.Nav2Robot import Nav2Robot
 from modules.JoyPad import JoyPad
 
-def mainLoop(stdscr): # Curses main loop.
-  stdscr.border(1)
-  curses.use_default_colors()
-  stdscr.addstr(4, 2, "INITIALIZED AND READY")
-  stdscr.noutrefresh()
-  curses.doupdate()
-  stdscr.clear()
 
-  vme.originate()
+def mainLoop(stdscr):  # Curses main loop.
+    stdscr.border(1)
+    curses.use_default_colors()
+    stdscr.addstr(4, 2, "INITIALIZED AND READY")
+    stdscr.noutrefresh()
+    curses.doupdate()
+    stdscr.clear()
 
-  while 1:
-    speed, heading, turnRate = getDataFromDevice(joyPad)
-    pushScreenText(speed, heading, turnRate, stdscr)
-    vme.v(heading, speed, turnRate)
-    time.sleep(0.1)
+    vme.originate()
+
+    while 1:
+        speed, heading, turnRate = getDataFromDevice(joyPad)
+        pushScreenText(speed, heading, turnRate, stdscr)
+        vme.v(heading, speed, turnRate)
+        time.sleep(0.25)
+
 
 def pushScreenText(speed, heading, turnRate, stdscr):
-  stdscr.addstr(2, 2, "   Speed : " + '{:10.4f}'.format(speed) + " m/s")
-  stdscr.addstr(3, 2, " Heading : " + '{:10.4f}'.format(heading) + " deg")
-  stdscr.addstr(4, 2, "Turnrate : " + '{:10.4f}'.format(turnRate) + " deg/s")
-  stdscr.refresh()
+    stdscr.addstr(2, 2, "   Speed : " + '{:10.4f}'.format(speed) + " m/s")
+    stdscr.addstr(3, 2, " Heading : " + '{:10.4f}'.format(heading) + " deg")
+    stdscr.addstr(4, 2, "Turnrate : " + '{:10.4f}'.format(turnRate) + " deg/s")
+    stdscr.refresh()
+
 
 def composeAndSendCommand(speed, heading, turnRate):
-  vme.v(heading, speed, turnRate)
+    vme.v(heading, speed, turnRate)
+
 
 def getDataFromDevice(device):
-  lx = device.lx()*.5
-  ly = -device.ly()*.5
-  rx = device.rx()*.5
+    lx = device.lx() * .5
+    ly = -device.ly() * .5
+    rx = device.rx() * .5
 
-  # Push R-thumb to assign origin to currebt position.
-  # if device.buttonStates['base']:
+    # Push R-thumb to assign origin to currebt position.
+    # if device.buttonStates['base']:
     # vme.originate()
 
-  speed = hypot(lx, ly)
-  heading = degrees(atan2(ly, lx))-90
-  turnRate = rx * -180
+    speed = hypot(lx, ly)
+    heading = degrees(atan2(ly, lx)) - 90
+    turnRate = rx * -180
 
-  if speed < 0.05:
-    speed = 0.
-    heading = 0.
-  if abs(rx) < 0.01:
-    turnRate = 0.
-  return speed, heading, turnRate
+    if speed < 0.05:
+        speed = 0.
+        heading = 0.
+    if abs(rx) < 0.01:
+        turnRate = 0.
+    return speed, heading, turnRate
+
 
 def haltAndDie():
-  vme.stop()
-  curses.endwin()
-  joyPad.cancel()
+    vme.stop()
+    curses.endwin()
+    joyPad.cancel()
+
 
 def signalHandler(signal, frame):
-  haltAndDie()
-  sys.exit(0)
+    haltAndDie()
+    sys.exit(0)
+
 
 parser = ArgumentParser(description='Connects a Wii Nunchuck to a VirtualME')
-parser.add_argument('-o', '--host', dest='hostname', default='localhost',
-  help='Address of turtle server.',
-  metavar='HOST')
-parser.add_argument('-p', '--port', dest='hostport', type=int, default=5010,
-  help='Turtle is listening on this port.',
-  metavar='PORT')
-parser.add_argument('-j', '--joydev', dest='joyStickDevicePath',
-  default='/dev/input/js0', help='Path to joystick device.',
-  metavar='DEV')
+parser.add_argument('-o',
+                    '--host',
+                    dest='hostname',
+                    default='localhost',
+                    help='Address of turtle server.',
+                    metavar='HOST')
+parser.add_argument('-p',
+                    '--port',
+                    dest='hostport',
+                    type=int,
+                    default=5010,
+                    help='Turtle is listening on this port.',
+                    metavar='PORT')
+parser.add_argument('-j',
+                    '--joydev',
+                    dest='joyStickDevicePath',
+                    default='/dev/input/js0',
+                    help='Path to joystick device.',
+                    metavar='DEV')
 
 args = parser.parse_args()
 

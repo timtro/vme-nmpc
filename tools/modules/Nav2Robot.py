@@ -20,7 +20,7 @@ Description
 ===========
 
 This module contains a class for wrapping the connection and communication with
-a TCP server accepting CrossWing's Nav2 server interface.
+a TCP server accepting Nav2 server interface.
 
 """
 
@@ -29,25 +29,26 @@ import numpy as np
 from math import sin, cos, degrees, radians, atan2, atan
 import time
 
+
 class Nav2Robot:
 
-	def __init__(self, addy, portno):
-		'''
+    def __init__(self, addy, portno):
+        '''
 		Initialize with the address and port of the robot.
 		'''
-		self.hostname = addy
-		self.hostport = portno
+        self.hostname = addy
+        self.hostport = portno
 
-	def connect(self):
-		'''
+    def connect(self):
+        '''
 		The object was initialized with the address and port of the robot.
 		Now, use them to connect and return the reuslt of socket.connect().
 		'''
-		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		return self.socket.connect((self.hostname, self.hostport))
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        return self.socket.connect((self.hostname, self.hostport))
 
-	def command(self, *arg):
-		'''
+    def command(self, *arg):
+        '''
 		Taks an arbitrarily long list of arguments, of the form:
 		   cmd a1, a2, a3,...
 		such that cmd is a string contaiing a turtle command and the remaining
@@ -61,107 +62,112 @@ class Nav2Robot:
 		  v 0 0.5 0.25\n
 		to the robot.
 		'''
-		cmd = arg[0]
-		if len(arg) > 1:
-			for item in arg[1:]:
-				cmd += ' ' + str(item)
-		cmd += '\n'
-		return self.socket.send(cmd.encode())
+        cmd = arg[0]
+        if len(arg) > 1:
+            for item in arg[1:]:
+                cmd += ' ' + str(item)
+        cmd += '\n'
+        return self.socket.send(cmd.encode())
 
-	def sendline(self, cmd):
-		'''
+    def sendline(self, cmd):
+        '''
 		Packs a newline character onto the end of cmd (if needed) and sends it
 		over the socket, encoding() along the way.
 		'''
-		if cmd[-1] != '\n':
-			cmd += '\n'
-		return self.socket.send(cmd.encode())
+        if cmd[-1] != '\n':
+            cmd += '\n'
+        return self.socket.send(cmd.encode())
 
-	def stop(self):
-		'''
+    def stop(self):
+        '''
 		Stop the robot by sending it 's'.
 
 		Not using self.command() to reduce opportunity for error,
 		since stop is a rather critical function.
 		'''
-		return self.socket.send("s\n".encode())
+        return self.socket.send("s\n".encode())
 
-	# s is the same as stop
-	s = stop
+    # s is the same as stop
+    s = stop
 
-	def locationa(self):
-		self.sendline('q')
-		return np.array([ float(str) for str in self.socket.makefile().readline().split() ])
-	def locationl(self):
-		self.sendline('q')
-		return [ float(str) for str in self.socket.makefile().readline().split() ]
-	def locationt(self):
-		self.sendline('q')
-		return tuple([ float(str) for str in self.socket.makefile().readline().split() ])
-	location = locationa
+    def locationa(self):
+        self.sendline('q')
+        return np.array([float(str)
+                         for str in self.socket.makefile().readline().split()])
 
-	def originate(self):
-		return self.sendline('p 0 0 0')
+    def locationl(self):
+        self.sendline('q')
+        return [float(str) for str in self.socket.makefile().readline().split()]
 
-	def p(self, x=None, y=None, theta=None):
-		return self.command('p', x, y, theta)
+    def locationt(self):
+        self.sendline('q')
+        return tuple([float(str)
+                      for str in self.socket.makefile().readline().split()])
 
-	def rt(self, theta):
-		return self.command('rt', theta)
+    location = locationa
 
-	def lt(self, theta):
-		return self.command('lt', theta)
+    def originate(self):
+        return self.sendline('p 0 0 0')
 
-	def mv(self, dist, theta):
-		return self.command('mv', dist, theta)
+    def p(self, x=None, y=None, theta=None):
+        return self.command('p', x, y, theta)
 
-	def fd(self, dist):
-		return self.command('fd', dist)
+    def rt(self, theta):
+        return self.command('rt', theta)
 
-	def bk(self, dist):
-		return self.command('bk', dist)
+    def lt(self, theta):
+        return self.command('lt', theta)
 
-	def av(self, vx, vy):
-		return self.command('av', vx, vy)
+    def mv(self, dist, theta):
+        return self.command('mv', dist, theta)
 
-	def v(self, theta, v, omega=None):
-		return self.command('v', theta, v, omega)
+    def fd(self, dist):
+        return self.command('fd', dist)
 
-	def o(self, theta):
-		return self.command('o', theta)
+    def bk(self, dist):
+        return self.command('bk', dist)
 
-	def avv(self, v, theta):
-		rads = np.radians(theta)
-		return self.command('av', cos(rads)*v, sin(rads)*v)
+    def av(self, vx, vy):
+        return self.command('av', vx, vy)
 
-	def pointat(self, Xat):
-		X = self.location()
-		DX = Xat - X[:2]
-		return self.o(degrees(atan2(DX[1], DX[0])))
+    def v(self, theta, v, omega=None):
+        return self.command('v', theta, v, omega)
 
-	def displacement_from(self, Xat):
-		X = self.location()
-		return Xat[:2] - X[:2]
+    def o(self, theta):
+        return self.command('o', theta)
 
-	def distance_to(self, Xat):
-		return np.sqrt(np.sum(self.displacement_from(Xat)**2))
+    def avv(self, v, theta):
+        rads = np.radians(theta)
+        return self.command('av', cos(rads) * v, sin(rads) * v)
 
-	def hold_for_locomotion(self, threshold=0.1):
-		there = self.location()
-		time.sleep(.5) # Let the robot start moving.
-		while True:
-			time.sleep(0.25)
-			here = self.location()
-			if np.sum( (there[:2] - here[:2])**2 ) <= threshold**2:
-				break
-			there = here
+    def pointat(self, Xat):
+        X = self.location()
+        DX = Xat - X[:2]
+        return self.o(degrees(atan2(DX[1], DX[0])))
 
-	def hold_for_rotation(self, threshold=0.5):
-		there = self.location()
-		time.sleep(.5) # Let the robot start moving.
-		while True:
-			time.sleep(0.25)
-			here = self.location()
-			if  np.absolute(there[2] - here[2]) <= threshold:
-				break
-			there = here
+    def displacement_from(self, Xat):
+        X = self.location()
+        return Xat[:2] - X[:2]
+
+    def distance_to(self, Xat):
+        return np.sqrt(np.sum(self.displacement_from(Xat)**2))
+
+    def hold_for_locomotion(self, threshold=0.1):
+        there = self.location()
+        time.sleep(.5)  # Let the robot start moving.
+        while True:
+            time.sleep(0.25)
+            here = self.location()
+            if np.sum((there[:2] - here[:2])**2) <= threshold**2:
+                break
+            there = here
+
+    def hold_for_rotation(self, threshold=0.5):
+        there = self.location()
+        time.sleep(.5)  # Let the robot start moving.
+        while True:
+            time.sleep(0.25)
+            here = self.location()
+            if np.absolute(there[2] - here[2]) <= threshold:
+                break
+            there = here

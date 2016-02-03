@@ -52,8 +52,10 @@ class AnimatedPlot:
         self.ax1ErrPath, = ax1.plot([], [], 'yo-', lw=4, ms=3)
         self.ax1ExecPath, = ax1.plot([], [], 'r-', lw=2)
 
-        ax2 = self.fig.add_subplot(
-            gs[1], adjustable='box', aspect=1.0, axisbg='w')
+        ax2 = self.fig.add_subplot(gs[1],
+                                   adjustable='box',
+                                   aspect=1.0,
+                                   axisbg='w')
         plt.setp(ax2.get_xticklabels(), visible=False)
         plt.setp(ax2.get_yticklabels(), visible=False)
         ax2.set_xlim(-pathRadius, pathRadius)
@@ -63,7 +65,7 @@ class AnimatedPlot:
 
         plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
 
-        self.execPath = [[],[]]
+        self.execPath = [[], []]
 
     def animationInit(self):
         self.ax1Path.set_data([], [])
@@ -116,11 +118,20 @@ def updatePlotData(data):
 
     return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
 
+
 parser = argparse.ArgumentParser(
     description='Animate a plot of the NMPC calculation')
-parser.add_argument('-f', '--file', dest='inputFileName', default='',
-                    help='JSON formatted input file', metavar='FILENAME')
-parser.add_argument('-i', '--interval', dest='interval', type=float, default=10,
+parser.add_argument('-f',
+                    '--file',
+                    dest='inputFileName',
+                    default='',
+                    help='JSON formatted input file',
+                    metavar='FILENAME')
+parser.add_argument('-i',
+                    '--interval',
+                    dest='interval',
+                    type=float,
+                    default=10,
                     help='Graph refresh interval',
                     metavar='INTERVAL')
 

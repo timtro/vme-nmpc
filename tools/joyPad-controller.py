@@ -60,7 +60,7 @@ def keyBoardHandler(key=''):
     elif key == ord('a'):
         speed, heading, turnRate = 0.3, 90, 0
     elif key == ord('d'):
-        speed, heading, turnRate = -0.3, -90, 0
+        speed, heading, turnRate = 0.3, -90, 0
     elif key == ord('e'):
         speed, heading, turnRate = 0, 0, -30
     elif key == ord('q'):

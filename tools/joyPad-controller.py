@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, RawTextHelpFormatter
 import sys, signal
 import socket
 import time
@@ -114,7 +114,29 @@ def signalHandler(signal, frame):
     sys.exit(0)
 
 
-parser = ArgumentParser(description='Connects a Wii Nunchuck to a VirtualME')
+class nullJoyPad:
+
+    def lx(self):
+        return 0
+
+    def ly(self):
+        return 0
+
+    def rx(self):
+        return 0
+
+    def ry(self):
+        return 0
+
+
+parser = ArgumentParser(description="""Use the keyboard or a joypad/joystick to control virtualME.
+    Keyboard controls:
+    <BACKSPACE>         Exit
+    <SPACEBAR>          STOP
+    a, d                Move left/right
+    w, s                Move forward/backward
+    q, e                Rotate left, right""",
+                        formatter_class=RawTextHelpFormatter)
 parser.add_argument('-o',
                     '--host',
                     dest='hostname',
@@ -134,6 +156,7 @@ parser.add_argument('-j',
                     default='/dev/input/js0',
                     help='Path to joystick device.',
                     metavar='DEV')
+parser.add_argument('--nojoy', action='store_true', help='Do not look for joypad/stick. Just use the keyboard.')
 
 args = parser.parse_args()
 
@@ -145,10 +168,13 @@ vme = Nav2Robot(args.hostname, args.hostport)
 vme.connect()
 print("  done.")
 
-print("Initializing Joy Pad...")
-joyPad = JoyPad(args.joyStickDevicePath)
-joyPad.start()
-print("  done.")
+if args.nojoy:
+    joyPad = nullJoyPad()
+else:
+    print("Initializing Joy Pad...")
+    joyPad = JoyPad(args.joyStickDevicePath)
+    joyPad.start()
+    print("  done.")
 
 vme.stop()
 

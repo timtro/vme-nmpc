@@ -1,4 +1,4 @@
-# Released by rdb under the Unlicense (unlicense.org)
+# Based on work by rdb under the Unlicense (unlicense.org)
 # Based on information from:
 # https://www.kernel.org/doc/Documentation/input/joystick-api.txt
 
@@ -162,3 +162,18 @@ class JoyPad(Thread):
     def ry(self):
         return self.axisStates['rz']  # for my older model
         # return self.axisStates['ry']
+
+
+class NullJoyPad:
+
+    def lx(self):
+        return 0
+
+    def ly(self):
+        return 0
+
+    def rx(self):
+        return 0
+
+    def ry(self):
+        return 0

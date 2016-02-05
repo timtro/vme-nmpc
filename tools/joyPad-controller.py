@@ -8,7 +8,7 @@ import curses
 from math import atan2, hypot, degrees
 
 from modules.Nav2Robot import Nav2Robot
-from modules.JoyPad import JoyPad
+from modules.JoyPad import JoyPad, NullJoyPad
 
 
 def mainLoop(stdscr):  # Curses main loop.
@@ -114,21 +114,6 @@ def signalHandler(signal, frame):
     sys.exit(0)
 
 
-class nullJoyPad:
-
-    def lx(self):
-        return 0
-
-    def ly(self):
-        return 0
-
-    def rx(self):
-        return 0
-
-    def ry(self):
-        return 0
-
-
 parser = ArgumentParser(description="""Use the keyboard or a joypad/joystick to control virtualME.
     Keyboard controls:
     <BACKSPACE>         Exit
@@ -141,22 +126,24 @@ parser.add_argument('-o',
                     '--host',
                     dest='hostname',
                     default='localhost',
-                    help='Address of turtle server.',
+                    help='Address of turtle server. (Default: localhost)',
                     metavar='HOST')
 parser.add_argument('-p',
                     '--port',
                     dest='hostport',
                     type=int,
                     default=5010,
-                    help='Turtle is listening on this port.',
+                    help='Turtle is listening on this port. (Default: 5010)',
                     metavar='PORT')
 parser.add_argument('-j',
                     '--joydev',
                     dest='joyStickDevicePath',
                     default='/dev/input/js0',
-                    help='Path to joystick device.',
+                    help='Path to joystick device. (Default: /dev/input/js0)',
                     metavar='DEV')
-parser.add_argument('--nojoy', action='store_true', help='Do not look for joypad/stick. Just use the keyboard.')
+parser.add_argument('--nojoy',
+                    action='store_true',
+                    help='Do not look for joypad/stick. Just use the keyboard.\n(Default is to use joypad/stick.)')
 
 args = parser.parse_args()
 
@@ -169,7 +156,7 @@ vme.connect()
 print("  done.")
 
 if args.nojoy:
-    joyPad = nullJoyPad()
+    joyPad = NullJoyPad()
 else:
     print("Initializing Joy Pad...")
     joyPad = JoyPad(args.joyStickDevicePath)

@@ -18,14 +18,57 @@ def mainLoop(stdscr):  # Curses main loop.
     stdscr.noutrefresh()
     curses.doupdate()
     stdscr.clear()
+    stdscr.nodelay(True)
+    curses.noecho()
+    curses.cbreak()
 
     vme.originate()
 
-    while 1:
-        speed, heading, turnRate = getDataFromDevice(joyPad)
+    key = ''
+    while key != curses.KEY_BACKSPACE:
+
+        key = stdscr.getch()
+        speed, heading, turnRate = keyBoardHandler(key)
+        if speed == None:
+            speed, heading, turnRate = getDataFromDevice(joyPad)
+
         pushScreenText(speed, heading, turnRate, stdscr)
-        vme.v(heading, speed, turnRate)
-        time.sleep(0.25)
+
+        if speed == 0 and turnRate == 0:
+            vme.stop()
+        else:
+            vme.v(heading, speed, turnRate)
+
+        speed, heading, turnRate = 0, 0, 0
+        curses.flushinp()
+        time.sleep(0.15)
+
+
+def keyBoardHandler(key=''):
+    if key == ord(' '):
+        return 0, 0, 0
+    if key == '':
+        return None, None, None
+    elif key == curses.KEY_UP:
+        speed, heading, turnRate = 0.3, 0, 0
+    elif key == curses.KEY_DOWN:
+        speed, heading, turnRate = -0.3, 0, 0
+    elif key == ord('w'):
+        speed, heading, turnRate = 0.3, 0, 0
+    elif key == ord('s'):
+        speed, heading, turnRate = -0.3, 0, 0
+    elif key == ord('a'):
+        speed, heading, turnRate = 0.3, 90, 0
+    elif key == ord('d'):
+        speed, heading, turnRate = -0.3, -90, 0
+    elif key == ord('e'):
+        speed, heading, turnRate = 0, 0, -30
+    elif key == ord('q'):
+        speed, heading, turnRate = 0, 0, 30
+    else:
+        return None, None, None
+
+    return speed, heading, turnRate
 
 
 def pushScreenText(speed, heading, turnRate, stdscr):

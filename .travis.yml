@@ -1,68 +1,27 @@
+language: cpp
+
+compiler:
+  - clang
+
 language: c++
-sudo: false
-matrix:
-  include:
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise
-            - llvm-toolchain-precise-3.7
-          packages:
-            - clang-3.8
-            - g++-5
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-5
-cache:
-  apt: true
-  directories:
-  - "$HOME/.travis/cmake/build/install"
-  - "deps/SFML/build/install"
-  - "deps/SFML/build-static/install"
-  - "deps/boost-install"
 
 before_install:
-  - if [ "$CC"  == "gcc"     ]; then export CC=gcc-5; fi
-  - if [ "$CXX" == "g++"     ]; then export CXX=g++-5; fi
-  - if [ "$CC"  == "clang"   ]; then export CC=clang-3.8; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX=clang++-3.8; fi
-  - pushd . && cd $HOME
-  - git clone https://github.com/LB--/travis.git travis
-  - source "./travis/update-cmake.sh"
-  - popd
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq cmake libboost-dev clang-3.6
+  - if [ "$CC"  == "gcc"     ]; then export CC=gcc; fi
+  - if [ "$CXX" == "g++"     ]; then export CXX=g++; fi
+  - if [ "$CC"  == "clang"   ]; then export CC=clang-3.6; fi
+  - if [ "$CXX" == "clang++" ]; then export CXX=clang++-3.6; fi
 
-install:
-  - pushd .
-  # Build Boost
-  - if [ ! -d "deps/boost-install/lib" ]; then export REBUILD_BOOST="yes"; else export REBUILD_BOOST="no"; fi
-  - cd deps
-  - if [ "$REBUILD_BOOST" == "yes" ]; then rm -rf boost && rm -rf boost-install; fi
-  - if [ "$REBUILD_BOOST" == "yes" ]; then git clone --quiet --recursive https://github.com/boostorg/boost.git boost; fi
-  - if [ "$REBUILD_BOOST" == "yes" ]; then cd boost && chmod +x bootstrap.sh; fi
-  - if [ "$REBUILD_BOOST" == "yes" ]; then ./bootstrap.sh --prefix="$(pwd)/../boost-install"; fi
-  - if [ "$REBUILD_BOOST" == "yes" ]; then ./b2 headers; fi
-  - if [ "$REBUILD_BOOST" == "yes" ]; then ./b2 toolset=gcc-5 cxxflags="-std=c++14" variant=release link=static --with-filesystem --with-system install -d0; fi
-  - if [ "$REBUILD_BOOST" == "no"  ]; then mkdir boost && cd boost; fi
-  - cd ../boost-install && export BOOST_ROOT="$(pwd)"
-  - popd
+before_script:
+  - mkdir build
+  - cd build
+  - cmake ..
 
 script:
-  - mkdir build && cd build
-  - cmake .. -DSFML_ROOT="$SFML_ROOT" -DBOOST_ROOT="$BOOST_ROOT"
-  - cmake --build .
-  - ctest -VV
-  - cd .. && mkdir build-static && cd build-static
-  - cmake .. -DSFML_ROOT="$SFML_STATIC_ROOT" -DSFML_STATIC_LIBRARIES=ON -DBOOST_ROOT="$BOOST_ROOT"
-  - cmake --build .
-  - ctest -VV
+  - $CXX --version
+  - make
+  - make test
 
 notifications:
   email: false

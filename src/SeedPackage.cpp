@@ -16,6 +16,7 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "SeedPackage.hpp"
+#include <stdexcept>
 
 SeedPackage::SeedPackage(int nmpcHorizon) {
   if (nmpcHorizon > 1) {

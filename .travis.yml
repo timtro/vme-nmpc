@@ -12,13 +12,13 @@ addons:
             - boost-latest
         packages:
             - clang-3.7
-            - g++-4.8
-            - gcc-4.8
+            - g++-5
+            - gcc-5
             - libboost1.55-all-dev
             - cmake
 
 before_install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
   - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
 
 before_script:

@@ -1,7 +1,7 @@
 # vme-nmpc
 
-Author : Timothy A.V. Teatro <timothy.teatro@uoit.ca>
-Date   : April 2013
+[![Build Status](https://travis-ci.org/timtro/vme-nmpc.svg?branch=master)](https://travis-ci.org/timtro/vme-nmpc)
+[![Build Status](https://scan.coverity.com/projects/7887/badge.svg)](https://scan.coverity.com/projects/vme-nmpc)
 
 The Non-linear model predictive control path optimizer and tracker for
 Crosswing's VirtualME platform.

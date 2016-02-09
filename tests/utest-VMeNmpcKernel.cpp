@@ -1,10 +1,10 @@
 #include "catch.hpp"
 
 #include "../src/VMeNmpcKernel.hpp"
-#include "FakeVMeModel.hpp"
-#include "FakeVMeMinimizer.hpp"
 #include "FakeExecutor.hpp"
 #include "FakePathPlanner.hpp"
+#include "FakeVMeMinimizer.hpp"
+#include "FakeVMeModel.hpp"
 
 using std::unique_ptr;
 using std::make_unique;
@@ -48,36 +48,6 @@ TEST_CASE(
   auto model = make_unique<FakeVMeModel>(init, callRecord);
   REQUIRE_THROWS_AS(make_unique<VMeNmpcKernel>(init),
                     InitPkgDoesNotContainPointerToAMinimizer);
-}
-
-TEST_CASE(
-    "When the robot is on the target the controller should return the command "
-    "to stop, and should have halted the model.") {
-  TestObject test;
-  FakeExecutor exec(test.engine.get());
-  REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-
-  SeedPackage seed(test.nmpcHorizon);
-  seed.pose = xyth{1, 1, 0};
-  test.engine->seed(seed);
-  // Should have called (S)eed (D)istanceToTarget:
-  REQUIRE(test.callRecord == "SD");
-  REQUIRE(is_stop_cmd(exec.commandFromLastNotify.get()));
-}
-
-TEST_CASE(
-    "When the robot and target are sufficiently separated, the engine should "
-    "orchestrate the minimization of the cost function over the NMPC horizon "
-    "and notify observers of success.") {
-  TestObject test;
-  FakeExecutor exec(test.engine.get());
-  REQUIRE(exec.commandFromLastNotify.get() == nullptr);
-
-  SeedPackage seed(test.nmpcHorizon);
-  seed.pose = xyth{0, 0, 0};
-  test.engine->seed(seed);
-  REQUIRE(test.callRecord == "SDOC");
-  REQUIRE(is_motion_cmd(exec.commandFromLastNotify.get()));
 }
 
 TEST_CASE(

@@ -7,7 +7,6 @@ language: c++
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq cmake clang-3.6
   - sudo apt-get install -qq libboost-dev
   - if [ "$CC"  == "gcc"     ]; then export CC=gcc; fi
   - if [ "$CXX" == "g++"     ]; then export CXX=g++; fi

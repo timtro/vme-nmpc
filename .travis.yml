@@ -13,13 +13,6 @@ matrix:
           packages:
             - clang-3.8
             - g++-5
-            - libglew-dev
-            - libsndfile1-dev
-            - libopenal-dev
-            - libfreetype6-dev
-            - libx11-xcb-dev
-            - udev
-            - libudev-dev
     - os: linux
       compiler: gcc
       addons:
@@ -28,13 +21,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-            - libglew-dev
-            - libsndfile1-dev
-            - libopenal-dev
-            - libfreetype6-dev
-            - libx11-xcb-dev
-            - udev
-            - libudev-dev
 cache:
   apt: true
   directories:
@@ -55,26 +41,6 @@ before_install:
 
 install:
   - pushd .
-  # SFML 2.3 has new dependencies that Travis doesn't have
-  - cd deps/SFML
-  - git checkout 2.2
-  - popd && pushd .
-  # Build SFML (dynamic)
-  - if [ ! -d "deps/SFML/build/install/lib" ]; then export REBUILD_SFML="yes"; else export REBUILD_SFML="no"; fi
-  - if [ "$REBUILD_SFML" == "yes" ]; then cd deps/SFML && rm -rf build && mkdir build && cd build; fi
-  - if [ "$REBUILD_SFML" == "yes" ]; then cmake .. -DCMAKE_INSTALL_PREFIX="$(pwd)/install" && cmake --build . && cmake --build . --target install; fi
-  - if [ "$REBUILD_SFML" == "yes" ]; then cd install/lib; fi
-  - if [ "$REBUILD_SFML" == "no"  ]; then cd deps/SFML/build/install/lib; fi
-  - export PATH="$(pwd):$PATH" && cd .. && export SFML_ROOT="$(pwd)"
-  - popd && pushd .
-  # Build SFML (static)
-  - if [ ! -d "deps/SFML/build-static/install/lib" ]; then export REBUILD_SFML_STATIC="yes"; else export REBUILD_SFML_STATIC="no"; fi
-  - if [ "$REBUILD_SFML_STATIC" == "yes" ]; then cd deps/SFML && rm -rf build-static && mkdir build-static && cd build-static; fi
-  - if [ "$REBUILD_SFML_STATIC" == "yes" ]; then cmake .. -DCMAKE_INSTALL_PREFIX="$(pwd)/install" -DBUILD_SHARED_LIBS=OFF && cmake --build . && cmake --build . --target install; fi
-  - if [ "$REBUILD_SFML_STATIC" == "yes" ]; then cd install; fi
-  - if [ "$REBUILD_SFML_STATIC" == "no"  ]; then cd deps/SFML/build-static/install; fi
-  - export SFML_STATIC_ROOT="$(pwd)"
-  - popd && pushd .
   # Build Boost
   - if [ ! -d "deps/boost-install/lib" ]; then export REBUILD_BOOST="yes"; else export REBUILD_BOOST="no"; fi
   - cd deps

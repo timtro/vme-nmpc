@@ -37,27 +37,27 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-void daemon_threadfn(const Daemon* parent_daemon) {
-  std::list<RequestTicket> ticket_stubs;
+void daemon_threadfn(const Daemon* parentDaemon) {
+  std::list<RequestTicket> ticketStubs;
   for (;;) {
     try {
       // NB: RequestTicket constructor calls accept() which blocks until a
       // connection is received.
-      ticket_stubs.emplace_back(parent_daemon);
-    } catch (blocked_socket) {
-      // blocked_socket indicates that Daemon is shutting down, so exit() the
+      ticketStubs.emplace_back(parentDaemon);
+    } catch (BlockedSocket) {
+      // BlockedSocket indicates that Daemon is shutting down, so exit() the
       // thread.
       // std::exit(1);
       return;
     }
 
-    ticket_stubs.remove_if([](auto& each) { return each.done; });
+    ticketStubs.remove_if([](auto& each) { return each.done; });
   }
   return;
 }
 
-Daemon::Daemon(int port, std::function<void(int)> server_child)
-    : server_child_{server_child}, shutdown_flag{false}, sockfd_{-1} {
+Daemon::Daemon(int port, std::function<void(int)> serverChild)
+    : serverChild{serverChild}, shutdownFlag{false}, sockfd{-1} {
   char buf[80];
   struct addrinfo* ai;
   struct addrinfo hints;
@@ -69,76 +69,76 @@ Daemon::Daemon(int port, std::function<void(int)> server_child)
   getaddrinfo(nullptr, buf, &hints, &ai);
 
   for (struct addrinfo* rp = ai; rp != nullptr; rp = rp->ai_next) {
-    sockfd_ = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-    if (sockfd_ == -1) continue;
-    setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-    if (bind(sockfd_, rp->ai_addr, rp->ai_addrlen) == 0) break;
-    close(sockfd_);
+    sockfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+    if (sockfd == -1) continue;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+    if (bind(sockfd, rp->ai_addr, rp->ai_addrlen) == 0) break;
+    close(sockfd);
   }
 
   freeaddrinfo(ai);
-  if (sockfd_ == -1) {
+  if (sockfd == -1) {
     snprintf(buf, sizeof(buf), "Can't bind port %d", port);
     throw std::runtime_error(buf);
   }
 
-  int rc = listen(sockfd_, 1);
+  int rc = listen(sockfd, 1);
   if (rc == -1) {
     snprintf(buf, sizeof(buf), "Can't listen on port %d: %s", port,
              strerror(errno));
-    close(sockfd_);
+    close(sockfd);
     throw std::runtime_error(buf);
   }
 
   try {
-    daemon_thread_ = std::thread(daemon_threadfn, this);
+    daemonThread = std::thread(daemon_threadfn, this);
   } catch (...) {
-    close(sockfd_);
+    close(sockfd);
     throw;
   }
 }
 
 Daemon::~Daemon() {
-  /* Shut down the socket to break daemon_thread_ out of the accept() call so
+  /* Shut down the socket to break daemonThread out of the accept() call so
    * that the thread can be properly joined.
    *
    * The shutdown flag must be true for safe shutdown, otherwise when accept()
    * returns -1, std::runtime error is thrown.
    */
-  shutdown_flag = true;
-  shutdown(sockfd_, SHUT_RDWR);
-  daemon_thread_.join();
-  close(sockfd_);
+  shutdownFlag = true;
+  shutdown(sockfd, SHUT_RDWR);
+  daemonThread.join();
+  close(sockfd);
 }
 
 void server_child_wrapper(RequestTicket* ticket) {
-  ticket->get_server_child()(ticket->connectionfd_);
-  close(ticket->connectionfd_);
+  ticket->get_server_child()(ticket->connectionfd);
+  close(ticket->connectionfd);
   ticket->done = true;
 }
 
-RequestTicket::RequestTicket(const Daemon* d) : parent_daemon_{d}, done{false} {
-  connectionfd_ = accept(parent_daemon_->sockfd_, nullptr, nullptr);
-  if (connectionfd_ == -1) {
+RequestTicket::RequestTicket(const Daemon* d) : parentDaemon{d}, done{false} {
+  connectionfd = accept(parentDaemon->sockfd, nullptr, nullptr);
+  if (connectionfd == -1) {
     /*
      * At this point, the failure of accept could be because the destructor
      * of Daemon has shutdown() the socket, or other reasons. Daemon's
-     * destructor also sets its member shutdown_flag to true, so we can
+     * destructor also sets its member shutdownFlag to true, so we can
      * distinguish.
      */
-    if (d->shutdown_flag)
-      throw blocked_socket();
+    if (d->shutdownFlag)
+      throw BlockedSocket();
     else
       throw std::runtime_error("Daemon can't accept connection");
   }
 
   try {
-    server_thread_ = std::thread(server_child_wrapper, this);
+    serverThread = std::thread(server_child_wrapper, this);
   } catch (...) {
-    close(connectionfd_);
+    close(connectionfd);
     throw;
   }
 }
 
-// TODO: Theck if this is what the original does
-RequestTicket::~RequestTicket() { server_thread_.join(); }
+// TODO: Check if this is what the original does
+RequestTicket::~RequestTicket() { serverThread.join(); }

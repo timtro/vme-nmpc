@@ -23,7 +23,7 @@ VMePathPlanner::VMePathPlanner(AggregatorInitializer& init)
   timeInterval = init.get_timeInterval();
   seed.vref = init.get_cruiseSpeed();
   targets = init.targets;
-  init.bindIntoAggregator(this);
+  init.bind_into_aggregator(this);
 }
 
 void VMePathPlanner::computeTargetMetrics() {
@@ -33,7 +33,7 @@ void VMePathPlanner::computeTargetMetrics() {
   targetUnitVector /= distanceToTarget;
 }
 
-void VMePathPlanner::computeTrackingErrors() noexcept {
+void VMePathPlanner::compute_tracking_errors() noexcept {
   for (unsigned k = 0; k < seed.xref.size(); ++k) {
     seed.xref[k] = seed.pose.x +
                    seed.vref[k] * targetUnitVector.x * (k + 1) * timeInterval;
@@ -42,14 +42,14 @@ void VMePathPlanner::computeTrackingErrors() noexcept {
   }
 }
 
-SeedPackage& VMePathPlanner::getSeed() {
+SeedPackage& VMePathPlanner::get_seed() {
   seed.pose = stateEstimateRetriever().pose;
   computeTargetMetrics();
-  computeTrackingErrors();
+  compute_tracking_errors();
   return this->seed;
 }
 
-bool VMePathPlanner::isContinuing() {
+bool VMePathPlanner::is_continuing() {
   {
     if (distanceToTarget < (*targets)[0].tolerance) {
       targets->pop_front();

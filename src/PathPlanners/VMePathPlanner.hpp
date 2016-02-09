@@ -19,9 +19,9 @@
 #ifndef VME_NMPC_SRC_VMEPATHPLANNER_HPP_
 #define VME_NMPC_SRC_VMEPATHPLANNER_HPP_
 
-#include "../Target.hpp"
 #include "../AggregatorInitializer.hpp"
 #include "../SeedPackage.hpp"
+#include "../Target.hpp"
 
 class FailedToProvideFunctionToRetrieveStateEstimate : public std::exception {
   const char* what() const noexcept override {
@@ -47,11 +47,11 @@ class VMePathPlanner : public PathPlanner<SeedPackage> {
   VMePathPlanner(AggregatorInitializer&);
   ~VMePathPlanner() = default;
 
-  virtual SeedPackage& getSeed();
-  virtual bool isContinuing();
+  virtual SeedPackage& get_seed();
+  virtual bool is_continuing();
 
   void computeTargetMetrics();
-  void computeTrackingErrors() noexcept;
+  void compute_tracking_errors() noexcept;
 
   void set_stateEstimateRetriever(std::function<SeedPackage()>);
 };

@@ -92,8 +92,7 @@ class Nav2Robot:
 
     def locationa(self):
         self.sendline('q')
-        return np.array([float(str)
-                         for str in self.socket.makefile().readline().split()])
+        return np.array([float(str) for str in self.socket.makefile().readline().split()])
 
     def locationl(self):
         self.sendline('q')
@@ -101,8 +100,7 @@ class Nav2Robot:
 
     def locationt(self):
         self.sendline('q')
-        return tuple([float(str)
-                      for str in self.socket.makefile().readline().split()])
+        return tuple([float(str) for str in self.socket.makefile().readline().split()])
 
     location = locationa
 

@@ -26,7 +26,7 @@
 class FakeVMeModel : public vMeModelType {
   std::string& eventHistory;
   fptype distanceToTarget;
-  void recordEvent(char) const;
+  void record_event(char) const;
 
  public:
   unsigned N = 0;
@@ -34,14 +34,13 @@ class FakeVMeModel : public vMeModelType {
   FakeVMeModel(AggregatorInitializer&, std::string&);
   virtual ~FakeVMeModel() = default;
   virtual unsigned get_horizonSize() const;
-  virtual fptype getTargetDistance() const noexcept;
   virtual void seed(SeedPackage&);
-  virtual void computeForecast() noexcept;
-  virtual void computeTrackingErrors() noexcept;
-  virtual void computePathPotentialGradient(ObstacleContainer&) noexcept;
-  virtual void computeGradient() noexcept;
-  virtual up_VMeCommand retrieveCommand(int) const;
-  std::string getEventHistory() const;
+  virtual void compute_forecast() noexcept;
+  virtual void compute_tracking_errors() noexcept;
+  virtual void compute_path_potential_gradient(ObstacleContainer&) noexcept;
+  virtual void compute_gradient() noexcept;
+  virtual up_VMeCommand retrieve_command(int) const;
+  std::string get_eventHistory() const;
   void setTrackingReferences(fp_array&, fp_array&);
 };
 

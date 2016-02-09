@@ -33,18 +33,18 @@
 Nav2Robot::Nav2Robot()
     : hostname_{"localhost"},
       portno_{5010},
-      sockfd_{},
+      sockfd{},
       pose_{},
       is_connected_{false} {}
 
 Nav2Robot::Nav2Robot(std::string host, unsigned int portno)
     : hostname_{std::move(host)},
       portno_{portno},
-      sockfd_{},
+      sockfd{},
       pose_{},
       is_connected_{false} {}
 
-Nav2Robot::~Nav2Robot() { close(sockfd_); }
+Nav2Robot::~Nav2Robot() { close(sockfd); }
 
 void Nav2Robot::connect() {
   // TODO(TT): Create a timeout exception. Temporarily set the socket to non-
@@ -77,15 +77,15 @@ void Nav2Robot::connect() {
   struct addrinfo* p;
 
   for (p = servinfo; p != nullptr; p = p->ai_next) {
-    if ((sockfd_ = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) ==
+    if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) ==
         -1) {
       freeaddrinfo(servinfo);
       throw std::runtime_error(
           std::string{"Function socket() returned error: "} + strerror(errno));
     }
 
-    if (::connect(sockfd_, p->ai_addr, p->ai_addrlen) == -1) {
-      close(sockfd_);
+    if (::connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+      close(sockfd);
       continue;
     }
 
@@ -108,7 +108,7 @@ void Nav2Robot::connect() {
  */
 void Nav2Robot::disconnect() {
   stop();
-  close(sockfd_);
+  close(sockfd);
   is_connected_ = false;
 }
 
@@ -120,7 +120,7 @@ void Nav2Robot::disconnect() {
  * @return     Forwards the return value from write().
  */
 int Nav2Robot::sendstr(std::string msg) {
-  return send(sockfd_, msg.c_str(), msg.length(), 0);
+  return send(sockfd, msg.c_str(), msg.length(), 0);
 }
 
 /**
@@ -163,7 +163,7 @@ int Nav2Robot::sendline(std::string cmd) {
     if (*s == '\n') {
       char* msg = (char*)calloc(sizeof(char), (s - cmd + 1) * sizeof(char));
       strncpy(msg, cmd, (s - cmd) / sizeof(char));
-      int a = write(sockfd_, msg, strlen(msg));
+      int a = write(sockfd, msg, strlen(msg));
 
       if (a < 0) throw std::runtime_error("Could not write to Nav2 device");
 
@@ -177,7 +177,7 @@ int Nav2Robot::sendline(std::string cmd) {
   char* msg = (char*)calloc(sizeof(char), (s - cmd + 1) * sizeof(char));
   strncpy(msg, cmd, (s - cmd) / sizeof(char));
   strncat(msg, "\n", 1);
-  int a = write(sockfd_, msg, strlen(msg));
+  int a = write(sockfd, msg, strlen(msg));
 
   if (a < 0) throw std::runtime_error("Could not write to Nav2 device");
 
@@ -220,7 +220,7 @@ std::string Nav2Robot::send_recv(std::string msg, int buffer_size) {
   int bytes_received{0};
 
   do {
-    bytes_received = recv(sockfd_, buffer.data(), buffer.size(), 0);
+    bytes_received = recv(sockfd, buffer.data(), buffer.size(), 0);
 
     if (bytes_received < 0)
       throw std::runtime_error(

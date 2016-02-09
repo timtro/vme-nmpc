@@ -43,7 +43,6 @@
  */
 
 struct PointObstacle : public Obstacle {
-
   fp_point2d position;
   fptype pwr, eps;
 
@@ -51,9 +50,7 @@ struct PointObstacle : public Obstacle {
 
   virtual fptype dist(fp_point2d);
   virtual fptype phi(fp_point2d);
-  virtual fp_point2d gradPhi(fp_point2d);
-
-
+  virtual fp_point2d gradient_phi(fp_point2d);
 };
 
-#endif // VME_NMPC_SRC_OBSTACLE_CLASSES_POINTOBSTACLE_HPP__
+#endif  // VME_NMPC_SRC_OBSTACLE_CLASSES_POINTOBSTACLE_HPP__

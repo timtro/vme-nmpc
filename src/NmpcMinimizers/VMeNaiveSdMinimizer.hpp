@@ -19,9 +19,9 @@
 #ifndef VME_NMPC_VIRTUALMESDMINIMIZER_HPP_
 #define VME_NMPC_VIRTUALMESDMINIMIZER_HPP_
 
+#include "../AggregatorInitializer.hpp"
 #include "../NmpcMinimizer.hpp"
 #include "../NmpcModels/VMeModel.hpp"
-#include "../AggregatorInitializer.hpp"
 
 class ObstacleContainer;
 
@@ -43,7 +43,7 @@ class VMeNaiveSdMinimizer : public NmpcMinimizer {
   int lastSdLoopCount{0};
 
   VMeNaiveSdMinimizer(AggregatorInitializer&);
-  virtual MinimizerCode solveOptimalControlHorizon() noexcept;
+  virtual MinimizerCode solve_optimal_control_horizon() noexcept;
 };
 
 #endif  // VME_NMPC_VIRTUALMESDMINIMIZER_HPP_

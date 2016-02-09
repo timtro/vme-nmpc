@@ -85,9 +85,9 @@ int main(int argc, char** argv) {
     }
     do {
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      kernel->nmpcStep(planner->getSeed());
+      kernel->nmpc_step(planner->get_seed());
       executor->run(vme);
-    } while (planner->isContinuing());
+    } while (planner->is_continuing());
     vme.stop();
   }
 

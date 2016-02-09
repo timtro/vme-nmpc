@@ -23,13 +23,13 @@
 #include <string>
 
 class FakeMinimizer : public NmpcMinimizer {
-  std::string& eventHistory;
-  void recordEvent(char);
+  std::string &eventHistory;
+  void record_event(char);
 
  public:
-  FakeMinimizer(std::string&);
-  virtual MinimizerCode solveOptimalControlHorizon() noexcept;
-  std::string getEventHistory();
+  FakeMinimizer(std::string &);
+  virtual MinimizerCode solve_optimal_control_horizon() noexcept;
+  std::string get_eventHistory();
 };
 
 #endif  // VME_NMPC_TESTS_FAKEVIRTUALMEMINIMIZER_HPP_

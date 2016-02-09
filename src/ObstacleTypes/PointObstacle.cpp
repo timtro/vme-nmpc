@@ -21,9 +21,6 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-//TODO(TT): wrap linear.h to insert my own typedef for the sake of brevity and
-//generics.
-
 #include "PointObstacle.hpp"
 
 #include "../linear.hpp"
@@ -33,8 +30,8 @@
 
 #include <cstdio>
 
-PointObstacle::PointObstacle(fp_point2d position, fptype pwr, fptype eps) :
-  position{position}, pwr{pwr}, eps{eps} {}
+PointObstacle::PointObstacle(fp_point2d position, fptype pwr, fptype eps)
+    : position{position}, pwr{pwr}, eps{eps} {}
 
 /**
  * Standard Euclidian distance metric.
@@ -55,7 +52,7 @@ auto PointObstacle::dist(fp_point2d xr) -> decltype(xr.x) {
  * @return    The scalar field value.
  */
 auto PointObstacle::phi(fp_point2d refPoint) -> decltype(refPoint.x) {
-  return 1/(  std::pow( dist(refPoint), pwr ) + eps  );
+  return 1 / (std::pow(dist(refPoint), pwr) + eps);
 }
 
 /**
@@ -81,10 +78,11 @@ auto PointObstacle::phi(fp_point2d refPoint) -> decltype(refPoint.x) {
  * @param  ry reference y-coordinate.
  * @return    A pair, the x- and y-components of the gradient vector.
  */
-decltype(PointObstacle::position) PointObstacle::gradPhi(fp_point2d refPoint) {
-  auto disp = position - refPoint; // = - (refPoint - position)
-  auto d = disp.x*disp.x + disp.y*disp.y;
-  auto num = pwr*disp*std::pow(d, pwr/2 - 1);
-  auto den = std::pow( std::pow(d, pwr/2) + eps , 2);
-  return num/den;
+decltype(PointObstacle::position) PointObstacle::gradient_phi(
+    fp_point2d refPoint) {
+  auto disp = position - refPoint;  // = - (refPoint - position)
+  auto d = disp.x * disp.x + disp.y * disp.y;
+  auto num = pwr * disp * std::pow(d, pwr / 2 - 1);
+  auto den = std::pow(std::pow(d, pwr / 2) + eps, 2);
+  return num / den;
 }

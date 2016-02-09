@@ -23,6 +23,10 @@
 #include "typedefs.h"
 #include "linear.hpp"
 
+/**
+ * A structure to hold the parameters which are retrieved from an input file at
+ * runtime. The load() method also provides the means to populate the structure.
+ */
 struct InputFileData {
   unsigned nmpcHorizon{0};
   fptype timeInterval{0};

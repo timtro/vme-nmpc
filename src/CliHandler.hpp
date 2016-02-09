@@ -34,8 +34,8 @@ struct CliHandler {
   CliHandler(CliHandler&&);
 
   void operator()(const int);
-  void addTarget(std::string);
-  void addObstacle(std::string);
+  void add_target(std::string);
+  void add_obstacle(std::string);
   void clear(std::string);
 };
 

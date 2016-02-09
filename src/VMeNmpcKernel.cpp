@@ -24,7 +24,7 @@ using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 VMeNmpcKernel::VMeNmpcKernel(AggregatorInitializer& init)
     : targetDistanceTolerance(init.get_targetDistanceTolerance()) {
   // TODO Safety checks
-  init.aggregatorCompletionSafetyCheck();
+  init.aggregator_completion_safety_check();
   model = init.model;
   minimizer = init.minimizer;
   planner = init.planner;
@@ -37,14 +37,14 @@ VMeNmpcKernel::VMeNmpcKernel(AggregatorInitializer& init)
   } else
     logger = init.logger;
 
-  logger->logConstants(init);
+  logger->log_constants(init);
 }
 
-up_VMeCommand VMeNmpcKernel::nextCommand() {
+up_VMeCommand VMeNmpcKernel::next_command() {
   if (cmdsExecutedFromCurrentHorizon++ >= model->get_horizonSize())
     return up_VMeCommand{new VMeNullCmd()};
   else
-    return model->retrieveCommand(cmdsExecutedFromCurrentHorizon);
+    return model->retrieve_command(cmdsExecutedFromCurrentHorizon);
 }
 
 void VMeNmpcKernel::seed(SeedPackage& seed) {
@@ -52,23 +52,19 @@ void VMeNmpcKernel::seed(SeedPackage& seed) {
   cmdsExecutedFromCurrentHorizon = model->get_horizonSize();
 }
 
-void VMeNmpcKernel::nmpcStep(SeedPackage& seed) {
+void VMeNmpcKernel::nmpc_step(SeedPackage& seed) {
   cmdsExecutedFromCurrentHorizon = 0;
   model->seed(seed);
-  auto minimizerStatus = minimizer->solveOptimalControlHorizon();
+  auto minimizerStatus = minimizer->solve_optimal_control_horizon();
   if (minimizerStatus == MinimizerCode::reachedIterationLimit)
     throw MinimizerReachedIterationLimit();
-  logger->logModelState();
-  logger->logMinimizerState();
+  logger->log_model_state();
+  logger->log_minimizer_state();
   notify();
 }
 
 void VMeNmpcKernel::run() {
   do {
-    nmpcStep(planner->getSeed());
-  } while (planner->isContinuing());
+    nmpc_step(planner->get_seed());
+  } while (planner->is_continuing());
 }
-
-// vMeModelType* VMeNmpcKernel::_getModelPointer_() { return model; }
-
-// NmpcMinimizer* VMeNmpcKernel::_getMinimizerPointer_() { return minimizer; }

@@ -22,6 +22,13 @@
 #include "Nav2Robot.hpp"
 #include <memory>
 
+/**
+ * Structures representing Nav2 commands. These objects will have a public
+ * `execute(Nav2Robot&)` method so that they can be executed on a any given
+ * connected Nav2Robot device. (See documentation for Nav2Robot for further
+ * details.)
+ */
+
 struct VMeCommand {
   virtual int execute(Nav2Robot &) = 0;
 };

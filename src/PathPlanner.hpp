@@ -19,13 +19,20 @@
 #ifndef VME_NMPC_SRC_PATHPLANNER_HPP_
 #define VME_NMPC_SRC_PATHPLANNER_HPP_
 
-
-template<typename SeedType>
+/**
+ * This template class provides and interface for path planners---the highest
+ * level abstraction in this control machinery. It supervises the NMPC
+ * calculation and plans the global path from starting place to target. The NMPC
+ * calculation will drive the robot from the planned path, but the planner
+ * provides a path to follow which should be computationally lean, naive from
+ * an optimality point of view but guaranteed to be complete.
+ */
+template <typename SeedType>
 class PathPlanner {
  public:
   virtual ~PathPlanner() = default;
-  virtual SeedType& getSeed() = 0;
-  virtual bool isContinuing() = 0;
+  virtual SeedType& get_seed() = 0;
+  virtual bool is_continuing() = 0;
 };
 
-#endif // VME_NMPC_SRC_PATHPLANNER_HPP_
+#endif  // VME_NMPC_SRC_PATHPLANNER_HPP_

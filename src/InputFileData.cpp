@@ -28,7 +28,11 @@
 
 namespace pt = boost::property_tree;
 
-class ErrorReadingNmpcHorizonSizeFromInputFile : public std::exception {};
+class ErrorReadingNmpcHorizonSizeFromInputFile : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "Error reading nmpcHorizonSize from Input File";
+  }
+};
 
 void InputFileData::load(const std::string& filename) {
   pt::ptree tree;

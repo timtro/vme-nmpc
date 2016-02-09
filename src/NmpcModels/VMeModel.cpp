@@ -18,15 +18,11 @@
 
 // TODO(TT): Test speed of storing sintk vs letting the compiler optimize it.
 
-// NB(TT to TT): to convert from old notation:
-// s/qu\[([^\]]*)\]\.([a-zA-Z0-9]*)/\2\[\1\]/g
-
 #include "VMeModel.hpp"
-#include "../trig.hpp"
 #include "../AggregatorInitializer.hpp"
-#include "../VMeCommand.hpp"
 #include "../Obstacle.hpp"
-
+#include "../VMeCommand.hpp"
+#include "../trig.hpp"
 
 VMeModel::VMeModel(AggregatorInitializer& init)
     : N{init.get_nmpcHorizon()},
@@ -37,7 +33,7 @@ VMeModel::VMeModel(AggregatorInitializer& init)
       R{init.get_R()} {
   if (N <= 2) throw HorizonSizeShouldBeSensiblyLarge();
 
-  init.modelBindingSafetyCheck();
+  init.model_binding_safety_check();
 
   size_t horizonSize = static_cast<size_t>(N);
 
@@ -69,7 +65,7 @@ VMeModel::VMeModel(AggregatorInitializer& init)
 
   // Should be the very last step so that a partially constructed ojbect can't
   // be accidentally aggregated.
-  init.bindIntoAggregator(this);
+  init.bind_into_aggregator(this);
 }
 
 void VMeModel::seed(SeedPackage& seed) {
@@ -83,7 +79,7 @@ void VMeModel::seed(SeedPackage& seed) {
   v = seed.vref;
 }
 
-void VMeModel::computeForecast() noexcept {
+void VMeModel::compute_forecast() noexcept {
   for (unsigned k = 1; k < N; ++k) {
     th[k] = th[k - 1] + Dth[k - 1] * T;
     x[k] = x[k - 1] + Dx[k - 1] * T;
@@ -93,17 +89,17 @@ void VMeModel::computeForecast() noexcept {
   }
 }
 
-void VMeModel::computeTrackingErrors() noexcept {
+void VMeModel::compute_tracking_errors() noexcept {
   for (unsigned k = 0; k < N - 1; ++k) {
     ex[k] = x[k + 1] - xref[k];
     ey[k] = y[k + 1] - yref[k];
   }
 }
 
-void VMeModel::computePathPotentialGradient(
+void VMeModel::compute_path_potential_gradient(
     ObstacleContainer& obstacles) noexcept {
   for (unsigned k = 0; k < N - 2; ++k) {
-    fp_point2d gradVec = obstacles.gradPhi(fp_point2d{x[k + 1], y[k + 1]});
+    fp_point2d gradVec = obstacles.gradient_phi(fp_point2d{x[k + 1], y[k + 1]});
     DPhiX[k] = gradVec.x;
     DPhiY[k] = gradVec.y;
   }
@@ -113,7 +109,7 @@ void VMeModel::computePathPotentialGradient(
  * Calculate gradient from ∂J = ∑∂H/∂u ∂u. In doing so, the Lagrange multipliers
  * are computed.
  */
-void VMeModel::computeGradient() noexcept {
+void VMeModel::compute_gradient() noexcept {
   gradNorm = 0.;
   px[N - 2] = Q0 * ex[N - 2];
   py[N - 2] = Q0 * ey[N - 2];
@@ -138,7 +134,7 @@ void VMeModel::computeGradient() noexcept {
   gradNorm = sqrt(gradNorm);
 }
 
-up_VMeCommand VMeModel::retrieveCommand(int n) const {
+up_VMeCommand VMeModel::retrieve_command(int n) const {
   return up_VMeCommand{new VMeV{0, v[n], radToDeg(Dth[n])}};
 }
 

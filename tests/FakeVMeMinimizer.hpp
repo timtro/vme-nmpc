@@ -25,12 +25,12 @@
 
 class FakeVMeMinimizer : public NmpcMinimizer {
   std::string& eventHistory;
-  void recordEvent(char);
+  void record_event(char);
 
  public:
   FakeVMeMinimizer(AggregatorInitializer&, std::string&);
-  virtual MinimizerCode solveOptimalControlHorizon() noexcept;
-  std::string getEventHistory();
+  virtual MinimizerCode solve_optimal_control_horizon() noexcept;
+  std::string get_eventHistory();
 };
 
 #endif  // VME_NMPC_TESTS_FAKEVMEMINIMIZER_HPP_

@@ -37,20 +37,28 @@
 struct Obstacle {
   virtual fptype dist(fp_point2d) = 0;
   virtual fptype phi(fp_point2d) = 0;
-  virtual fp_point2d gradPhi(fp_point2d) = 0;
+  virtual fp_point2d gradient_phi(fp_point2d) = 0;
 };
 
+/**
+ * A container for obstacles to separate implementation from usage. For some
+ * cases, a simple linked list will do, but in complex environments where
+ * obstacles must be updated, added and remove, this will need a hash-table in
+ * the back end.
+ */
 class ObstacleContainer {
   std::vector<std::unique_ptr<Obstacle>> obstacles;
-  std::mutex mutex;
+  mutable std::mutex mutex;
+
  public:
-  fp_point2d gradPhi(fp_point2d);
-  void pushObstacle(Obstacle *obs);
-  void pushObstacleUniquePtr(std::unique_ptr<Obstacle>);
-  void popObstacle();
-  size_t numberOfObstacles();
-  void clearObstacleContainer();
-  bool hasObstacles();
+  fp_point2d gradient_phi(fp_point2d);
+  void push(Obstacle *obs);
+  void push_unique_ptr(std::unique_ptr<Obstacle>);
+  void pop();
+  size_t size();
+  void clear();
+  [[deprecated]] bool has_obstacles() const noexcept;
+  bool empty() const noexcept;
   std::unique_ptr<Obstacle> &operator[](const int i);
 };
 

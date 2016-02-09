@@ -28,45 +28,45 @@ AggregatorInitializer::AggregatorInitializer() {
 AggregatorInitializer::AggregatorInitializer(InputFileData& in)
     : parameters(&in) {}
 
-void AggregatorInitializer::modelBindingSafetyCheck() {
+void AggregatorInitializer::model_binding_safety_check() {
   if ((minimizer != nullptr) || (logger != nullptr))
     throw ModelMustBeInitializedBeforeMinimizerOrLogger();
   else if (model != nullptr)
     throw InitPkgCanOnlyBeUsedOnceToInitializeAModel();
 }
 
-void AggregatorInitializer::bindIntoAggregator(vMeModelType* caller) {
+void AggregatorInitializer::bind_into_aggregator(vMeModelType* caller) {
   model = caller;
 }
 
-void AggregatorInitializer::minimizerBindingSafetyCheck() {
+void AggregatorInitializer::minimizer_binding_safety_check() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer != nullptr)
     throw InitPkgAlreadyHasBoundMinimizer();
 }
 
-void AggregatorInitializer::bindIntoAggregator(NmpcMinimizer* caller) {
+void AggregatorInitializer::bind_into_aggregator(NmpcMinimizer* caller) {
   minimizer = caller;
 }
 
-void AggregatorInitializer::loggerBindingSafetyCheck() {
+void AggregatorInitializer::logger_binding_safety_check() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer == nullptr)
     throw InitPkgDoesNotContainPointerToAMinimizer();
 }
 
-void AggregatorInitializer::bindIntoAggregator(VMeLogger* caller) {
+void AggregatorInitializer::bind_into_aggregator(VMeLogger* caller) {
   logger = caller;
 }
 
-void AggregatorInitializer::bindIntoAggregator(
+void AggregatorInitializer::bind_into_aggregator(
     PathPlanner<SeedPackage>* caller) {
   planner = caller;
 }
 
-void AggregatorInitializer::aggregatorCompletionSafetyCheck() {
+void AggregatorInitializer::aggregator_completion_safety_check() {
   if (model == nullptr)
     throw InitPkgDoesNotContainPointerToAModel();
   else if (minimizer == nullptr)

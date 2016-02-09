@@ -23,20 +23,20 @@ VMeNaiveSdMinimizer::VMeNaiveSdMinimizer(AggregatorInitializer& init)
     : maxSdSteps(init.get_maxSdSteps()),
       sdStepFactor(init.get_sdStepFactor()),
       sdConvergenceTolerance(init.get_sdConvergenceTolerance()) {
-  init.minimizerBindingSafetyCheck();
+  init.minimizer_binding_safety_check();
   model = dynamic_cast<VMeModel*>(init.model);
   obstacles = init.obstacles;
-  init.bindIntoAggregator(this);
+  init.bind_into_aggregator(this);
 }
 
-MinimizerCode VMeNaiveSdMinimizer::solveOptimalControlHorizon() noexcept {
+MinimizerCode VMeNaiveSdMinimizer::solve_optimal_control_horizon() noexcept {
   sdLoopCount = 0;
   status = MinimizerCode::active;
   do {
-    model->computeForecast();
-    model->computeTrackingErrors();
-    model->computePathPotentialGradient(*obstacles);
-    model->computeGradient();
+    model->compute_forecast();
+    model->compute_tracking_errors();
+    model->compute_path_potential_gradient(*obstacles);
+    model->compute_gradient();
     ++sdLoopCount;
   } while (iterate());
 

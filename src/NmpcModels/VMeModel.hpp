@@ -19,8 +19,8 @@
 #ifndef VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP_
 #define VME_NMPC_SRC_NMPCMODELS_VIRTUALMEMODEL_HPP_
 
-#include "../NmpcModel.hpp"
 #include "../AggregatorInitializer.hpp"
+#include "../NmpcModel.hpp"
 #include "../SeedPackage.hpp"
 
 class ObstacleContainer;
@@ -73,15 +73,15 @@ class VMeModel : public NmpcModel<SeedPackage, up_VMeCommand> {
   fp_array xref;
   fp_array yref;
 
-  virtual void seed(SeedPackage&);
-  virtual void computeForecast() noexcept;
-  virtual void computePathPotentialGradient(
+  virtual void seed(SeedPackage &);
+  virtual void compute_forecast() noexcept;
+  virtual void compute_path_potential_gradient(
       ObstacleContainer &obstacles) noexcept;
-  virtual void computeGradient() noexcept;
-  virtual up_VMeCommand retrieveCommand(int) const;
+  virtual void compute_gradient() noexcept;
+  virtual up_VMeCommand retrieve_command(int) const;
 
   virtual unsigned get_horizonSize() const noexcept;
-  virtual void computeTrackingErrors() noexcept;
+  virtual void compute_tracking_errors() noexcept;
   fp_array const &get_x() const noexcept;
   fp_array const &get_Dx() const noexcept;
   fp_array const &get_ex() const noexcept;
@@ -94,11 +94,11 @@ class VMeModel : public NmpcModel<SeedPackage, up_VMeCommand> {
   fp_array const &get_grad() const noexcept;
 
   [[deprecated]] void set_v(fptype);
-  void setTrackingReferences(fp_array&, fp_array&);
+  void setTrackingReferences(fp_array &, fp_array &);
 };
 
 class HorizonSizeShouldBeSensiblyLarge : public std::exception {
-  const char* what() const noexcept override {
+  const char *what() const noexcept override {
     return "An attempt was made to initialize a model with a nonsensically "
            "small NMPC horizon.";
   }

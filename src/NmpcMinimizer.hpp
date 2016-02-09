@@ -19,12 +19,21 @@
 #ifndef VME_NMPC_NMPCMINIMIZER_HPP_
 #define VME_NMPC_NMPCMINIMIZER_HPP_
 
+/**
+ * Minimizer routines that are designed for tight loops won't throw. Instead,
+ * return MinimizerCodes and leave exception handling to the caller (That is,
+ * the kernel.)
+ */
 enum class MinimizerCode { success, idle, active, reachedIterationLimit };
 
+/**
+ * Abstract class provides an interface for the kernel to use the minimizer to
+ * bring a model into a state which minimizes the NMPC cost function.
+ */
 class NmpcMinimizer {
  public:
   virtual ~NmpcMinimizer() = default;
-  virtual MinimizerCode solveOptimalControlHorizon() noexcept = 0;
+  virtual MinimizerCode solve_optimal_control_horizon() noexcept = 0;
 };
 
 #endif  // VME_NMPC_NMPCMINIMIZER_HPP_

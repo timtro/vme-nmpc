@@ -66,15 +66,15 @@ struct TestSetup {
   }
 };
 
-bool isStopCmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
-bool isNullCmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
-bool isMoveCmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
+bool is_stop_cmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
+bool is_null_cmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
+bool is_motion_cmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
 TEST_CASE("Whatever") {
   TestSetup test{"itest.log.json"};
   FakeExecutor exec(test.engine.get());
 
-  test.planner->set_stateEstimateRetriever([&test](){
+  test.planner->set_stateEstimateRetriever([&test]() {
     SeedPackage pose;
     pose.pose.x = test.model->get_x()[1];
     pose.pose.y = test.model->get_y()[1];

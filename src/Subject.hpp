@@ -25,21 +25,30 @@
 #include <algorithm>
 #include <stdexcept>
 
+/**
+ * A faithful inplementation of the Gang of Four _observer_ pattern.
+ * See Observer.hpp for the observer half of the pattern.
+ */
 class Subject {
  public:
   virtual ~Subject() = default;
 
-  virtual void attachObserver(Observer*);
-  virtual void detachObserver(Observer*);
+  virtual void attach_observer(Observer*);
+  virtual void detach_observer(Observer*);
   virtual void notify();
 
  protected:
   Subject() = default;
 
  private:
-  std::vector<Observer*> observers_{};
+  std::vector<Observer*> observers{};
 };
 
-class AttemptToAttachAlreadyAttachedObserver : public std::exception {};
+class AttemptToAttachAlreadyAttachedObserver : public std::exception {
+  virtual const char* what() const noexcept override {
+    return "An attempt has been made to subscribe a subject more than once to "
+           "the same observer list.";
+  }
+};
 
 #endif  // VME_NMPC_SRC_SUBJECT_HPP_

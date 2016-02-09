@@ -22,17 +22,26 @@
 #include "Obstacle.hpp"
 #include "linear.hpp"
 
+/**
+ * This template class provides an interface which must be offered by all plant
+ * models which are to be compatible with the other objects in the NMPC
+ * calculation.
+ *
+ * The template parameters specify the data structure that will be used to relay
+ * the current state estimate to the model in order to seed the NMPC computation
+ * and close the feedback loop.
+ */
 template <typename seedType, typename cmdType>
 class NmpcModel {
  public:
   virtual ~NmpcModel() = default;
-  virtual void seed(seedType&) = 0;
-  virtual void computeForecast() noexcept = 0;
-  virtual void computePathPotentialGradient(
+  virtual void seed(seedType &) = 0;
+  virtual void compute_forecast() noexcept = 0;
+  virtual void compute_path_potential_gradient(
       ObstacleContainer &obstacles) noexcept = 0;
-  virtual void computeTrackingErrors() noexcept = 0;
-  virtual void computeGradient() noexcept = 0;
-  virtual cmdType retrieveCommand(int) const = 0;
+  virtual void compute_tracking_errors() noexcept = 0;
+  virtual void compute_gradient() noexcept = 0;
+  virtual cmdType retrieve_command(int) const = 0;
   virtual unsigned get_horizonSize() const = 0;
 };
 

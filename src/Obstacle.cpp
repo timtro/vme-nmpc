@@ -19,39 +19,44 @@
 #include "linear.hpp"
 #include "Obstacle.hpp"
 
-fp_point2d ObstacleContainer::gradPhi(fp_point2d refPoint) {
+fp_point2d ObstacleContainer::gradient_phi(fp_point2d refPoint) {
   std::lock_guard<std::mutex> lock(mutex);
   auto sum = fp_point2d{0.f, 0.f};
-  for (auto const& each : obstacles) sum += each->gradPhi(refPoint);
+  for (auto const& each : obstacles) sum += each->gradient_phi(refPoint);
   return sum;
 }
 
-void ObstacleContainer::pushObstacleUniquePtr(std::unique_ptr<Obstacle> obs) {
+void ObstacleContainer::push_unique_ptr(std::unique_ptr<Obstacle> obs) {
   std::lock_guard<std::mutex> lock(mutex);
   obstacles.push_back(std::move(obs));
 }
 
-void ObstacleContainer::pushObstacle(Obstacle* obs) {
+void ObstacleContainer::push(Obstacle* obs) {
   std::lock_guard<std::mutex> lock(mutex);
   obstacles.push_back(std::unique_ptr<Obstacle>{obs});
 }
 
-void ObstacleContainer::popObstacle() {
+void ObstacleContainer::pop() {
   std::lock_guard<std::mutex> lock(mutex);
   obstacles.pop_back();
 }
 
-size_t ObstacleContainer::numberOfObstacles() {
+size_t ObstacleContainer::size() {
   std::lock_guard<std::mutex> lock(mutex);
   return obstacles.size();
 }
 
-void ObstacleContainer::clearObstacleContainer() {
+void ObstacleContainer::clear() {
   std::lock_guard<std::mutex> lock(mutex);
   obstacles.clear();
 }
 
-bool ObstacleContainer::hasObstacles() {
+bool ObstacleContainer::has_obstacles() const noexcept {
+  std::lock_guard<std::mutex> lock(mutex);
+  return !obstacles.empty();
+}
+
+bool ObstacleContainer::empty() const noexcept {
   std::lock_guard<std::mutex> lock(mutex);
   return !obstacles.empty();
 }

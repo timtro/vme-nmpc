@@ -52,10 +52,7 @@ class AnimatedPlot:
         self.ax1ErrPath, = ax1.plot([], [], 'yo-', lw=4, ms=3)
         self.ax1ExecPath, = ax1.plot([], [], 'r-', lw=2)
 
-        ax2 = self.fig.add_subplot(gs[1],
-                                   adjustable='box',
-                                   aspect=1.0,
-                                   axisbg='w')
+        ax2 = self.fig.add_subplot(gs[1], adjustable='box', aspect=1.0, axisbg='w')
         plt.setp(ax2.get_xticklabels(), visible=False)
         plt.setp(ax2.get_yticklabels(), visible=False)
         ax2.set_xlim(-pathRadius, pathRadius)
@@ -119,8 +116,7 @@ def updatePlotData(data):
     return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
 
 
-parser = argparse.ArgumentParser(
-    description='Animate a plot of the NMPC calculation')
+parser = argparse.ArgumentParser(description='Animate a plot of the NMPC calculation')
 parser.add_argument('-f',
                     '--file',
                     dest='inputFileName',
@@ -140,5 +136,4 @@ args = parser.parse_args()
 with open(args.inputFileName, 'r') as instream:
     logParser = JsonLogParser(instream)
     aniPlot = AnimatedPlot(xr=[0, 10], yr=[-5, 5], pathRadius=2)
-    aniPlot.startAnimation(interval=args.interval,
-                           updateFunction=updatePlotData)
+    aniPlot.startAnimation(interval=args.interval, updateFunction=updatePlotData)

@@ -30,12 +30,9 @@ ClArgs::ClArgs(int argc, char** argv)
       port{5010},
       verbose{false},
       quiet{false} {
-  // char *pvalue = nullptr, *hvalue = nullptr, *fvalue = nullptr;
-  // int index;
   int c;
-  // I prefer std::string, but optopt is a char typed as int which means I'll
-  // need nasty static_casts that make me feel bad about my code.
-  char errnote[256];
+
+  char errNote[256];
   opterr = 0;
 
   for (;;) {
@@ -70,14 +67,14 @@ ClArgs::ClArgs(int argc, char** argv)
         break;
       case '?':
         if (optopt == 'p' || optopt == 'h' || optopt == 'f') {
-          sprintf(errnote, "Option -%c: requires an argument.\n", optopt);
-          throw std::runtime_error(errnote);
+          sprintf(errNote, "Option -%c: requires an argument.\n", optopt);
+          throw std::runtime_error(errNote);
         } else if (isprint(optopt)) {
-          sprintf(errnote, "Unknown option `-%c'.\n", optopt);
-          throw std::runtime_error(errnote);
+          sprintf(errNote, "Unknown option `-%c'.\n", optopt);
+          throw std::runtime_error(errNote);
         } else {
-          sprintf(errnote, "Unknown option character `\\x%x'.\n", optopt);
-          throw std::runtime_error(errnote);
+          sprintf(errNote, "Unknown option character `\\x%x'.\n", optopt);
+          throw std::runtime_error(errNote);
           return;
         }
         break;

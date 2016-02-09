@@ -19,13 +19,17 @@
 #ifndef VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_
 #define VME_NMPC_SRC_LOGGERS_VIRTUALMELOGGER_HPP_
 
-#include "../VMeLogger.hpp"
 #include "../CFileContainer.hpp"
+#include "../VMeLogger.hpp"
 
 struct AggregatorInitializer;
 class VMeModel;
 class VMeNaiveSdMinimizer;
 
+/**
+ * Logger writes a simple text file in JSON format:
+ *     http://www.json.org/
+ */
 class JsonLogger : public VMeLogger {
   VMeModel* model{nullptr};
   VMeNaiveSdMinimizer* minimizer{nullptr};
@@ -41,9 +45,9 @@ class JsonLogger : public VMeLogger {
   JsonLogger(AggregatorInitializer&, std::string);
   ~JsonLogger();
 
-  virtual void logModelState() const noexcept;
-  virtual void logMinimizerState() const noexcept;
-  virtual void logConstants(const AggregatorInitializer&) const noexcept;
+  virtual void log_model_state() const noexcept;
+  virtual void log_minimizer_state() const noexcept;
+  virtual void log_constants(const AggregatorInitializer&) const noexcept;
 };
 
 class LoggerIsIncompatibleWithModelType : public std::exception {

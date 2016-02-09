@@ -17,21 +17,21 @@
  */
 
 #include "VMeDefaultExecutor.hpp"
-#include "../VMeNmpcKernel.hpp"
 #include "../Nav2Robot.hpp"
+#include "../VMeNmpcKernel.hpp"
 
 VMeDefaultExecutor::VMeDefaultExecutor(VMeNmpcKernel* s) {
   subjectKernel = s;
-  s->attachObserver(this);
+  s->attach_observer(this);
 }
 
 VMeDefaultExecutor::~VMeDefaultExecutor() {
-  subjectKernel->detachObserver(this);
+  subjectKernel->detach_observer(this);
 }
 
 void VMeDefaultExecutor::update(Subject* s) {
   if (s == dynamic_cast<Subject*>(subjectKernel))
-    commandFromLastNotify = subjectKernel->nextCommand();
+    commandFromLastNotify = subjectKernel->next_command();
   auto v = static_cast<VMeV*>(commandFromLastNotify.get());
 }
 

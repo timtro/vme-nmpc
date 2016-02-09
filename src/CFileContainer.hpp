@@ -28,6 +28,9 @@ class ErrorOpeningFileWithFopen : public std::runtime_error {
   ErrorOpeningFileWithFopen(std::string const& msg) : std::runtime_error(msg) {}
 };
 
+/**
+ * An RAII wrapper for C-style file.
+ */
 struct CFileContainer {
   FILE* fd;
   CFileContainer(const CFileContainer&) = delete;

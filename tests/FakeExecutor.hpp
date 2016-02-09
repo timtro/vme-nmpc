@@ -25,15 +25,15 @@
 class VMeNmpcKernel;
 
 class FakeExecutor : public Observer {
-  VMeNmpcKernel* subjectKernel = nullptr;
+  VMeNmpcKernel *subjectKernel = nullptr;
 
  public:
   up_VMeCommand commandFromLastNotify;
   bool loopback = false;
 
-  FakeExecutor(VMeNmpcKernel*);
+  FakeExecutor(VMeNmpcKernel *);
   ~FakeExecutor();
-  void update(Subject*);
+  void update(Subject *);
 };
 
-#endif // VME_NMPC_TESTS_FAKEEXECUTOR_HPP_
+#endif  // VME_NMPC_TESTS_FAKEEXECUTOR_HPP_

@@ -16,8 +16,7 @@ def locate_robot():
     return [float(str) for str in sock.makefile().readline().split()]
 
 
-parser = ArgumentParser(
-    description='Sends a virtualME to origin or specified coordinates.')
+parser = ArgumentParser(description='Sends a virtualME to origin or specified coordinates.')
 parser.add_argument('-o',
                     '--host',
                     dest='hostname',
@@ -31,18 +30,8 @@ parser.add_argument('-p',
                     default=5010,
                     help='Turtle is listening on this port.',
                     metavar='PORT')
-parser.add_argument('-x',
-                    dest='x',
-                    type=float,
-                    default=0.0,
-                    help='Desired x-coordinate.',
-                    metavar='X-COORD')
-parser.add_argument('-y',
-                    dest='y',
-                    type=float,
-                    default=0.0,
-                    help='Desired y-coordinate.',
-                    metavar='Y-COORD')
+parser.add_argument('-x', dest='x', type=float, default=0.0, help='Desired x-coordinate.', metavar='X-COORD')
+parser.add_argument('-y', dest='y', type=float, default=0.0, help='Desired y-coordinate.', metavar='Y-COORD')
 args = parser.parse_args()
 
 # Initialize the TCP/IP socket

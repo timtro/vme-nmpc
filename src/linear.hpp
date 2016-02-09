@@ -24,6 +24,9 @@
 
 typedef Point<fptype, 2> fp_point2d;
 
+/**
+ * A class to hold x- and y-coordinates and orientation, theta.
+ */
 template <typename R>
 class XYTh {
  public:
@@ -35,8 +38,7 @@ class XYTh {
   explicit XYTh(const Point<R2, 4>& p) {
     for (unsigned i = 0; i < size; ++i) (*this)[i] = R(p[i]);
   }
-  XYTh(R x, R y, R th)
-      : x(std::move(x)), y(std::move(y)), th(std::move(th)){};
+  XYTh(R x, R y, R th) : x(std::move(x)), y(std::move(y)), th(std::move(th)){};
   typedef R value_type;
   template <typename R2>
   XYTh<R>& operator=(const Point<R2, 3>& b) {

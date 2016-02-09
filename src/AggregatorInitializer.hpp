@@ -37,10 +37,11 @@ class ObstacleContainer;
 
 using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
-/*
+/**
  * This class provides a convenient means to handle a complex dependency
- *  injection.
- *   An AggregatorInitializer is used to initialize the model, minimizer, logger
+ * injection.
+ *
+ * An AggregatorInitializer is used to initialize the model, minimizer, logger
  * and kernel by passing it as an argument to their constructors. It retains
  * pointers to each of the objects it initializes so that when it is used to
  * initialize aggregate objects, those objects can take the pointers from the
@@ -63,14 +64,14 @@ struct AggregatorInitializer {
   ObstacleContainer* obstacles{nullptr};
   TargetContainer* targets{nullptr};
 
-  void modelBindingSafetyCheck();
-  void minimizerBindingSafetyCheck();
-  void loggerBindingSafetyCheck();
-  void aggregatorCompletionSafetyCheck();
-  void bindIntoAggregator(vMeModelType*);
-  void bindIntoAggregator(NmpcMinimizer*);
-  void bindIntoAggregator(VMeLogger*);
-  void bindIntoAggregator(PathPlanner<SeedPackage>*);
+  void model_binding_safety_check();
+  void minimizer_binding_safety_check();
+  void logger_binding_safety_check();
+  void aggregator_completion_safety_check();
+  void bind_into_aggregator(vMeModelType*);
+  void bind_into_aggregator(NmpcMinimizer*);
+  void bind_into_aggregator(VMeLogger*);
+  void bind_into_aggregator(PathPlanner<SeedPackage>*);
 
   unsigned get_nmpcHorizon() const;
   fptype get_timeInterval() const;

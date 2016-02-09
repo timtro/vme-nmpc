@@ -16,14 +16,16 @@
  * vme-nmpc. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef VME_NMPC_SRC_CLOPTS_HPP_
 #define VME_NMPC_SRC_CLOPTS_HPP_
 
 #include <string>
 
+/**
+ * A structure to hold arguments from the command line. The constructor
+ * processes the arguments, so argc and argv are passed as parameters.
+ */
 struct ClArgs {
-
   std::string infile;
   std::string host;
   int port;
@@ -33,4 +35,4 @@ struct ClArgs {
   ClArgs(int, char**);
 };
 
-#endif // VME_NMPC_SRC_CLOPTS_HPP_
+#endif  // VME_NMPC_SRC_CLOPTS_HPP_

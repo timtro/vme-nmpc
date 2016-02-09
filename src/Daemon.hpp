@@ -31,16 +31,16 @@
  * background, creates the socket and owns the threads that do the serving.
  *
  * An object of type Daemon will spawn a thread that runs daemon_threadfn(). The
- * constructor of Daemon requires a port number and a server_child function. The
+ * constructor of Daemon requires a port number and a serverChild function. The
  * Daemon object will create and bind a socket and listen on the specified port.
  *
- * The thread function daemon_threadfn() maintains a list, ticket_stubs, of
+ * The thread function daemon_threadfn() maintains a list, ticketStubs, of
  * objects of type RequestTicket. The function runs in a loop and in each
  * iteration, it emplaces_back() a new RequestTicket on the list. The
  * constructor of a RequestTicket calls accept(), which blocks execution in the
  * thread until a connection is made. Once the connection is made, the
  * construction continues wherein a new thread is spawned which runs
- * server_threadfn() which executes the server_child() function. When the server
+ * server_threadfn() which executes the serverChild() function. When the server
  * child terminates, the RequestTicket is marked done and is cleaned up in the
  * next iteration of daemon_threadfn().
  *
@@ -56,27 +56,27 @@
  *
  * Daemon(.)
  *  @ Daemon server thread
- *  | +->std::list<RequestTicket> ticket_stubs
+ *  | +->std::list<RequestTicket> ticketStubs
  *  |    +-> ticket_stubes.emplace_back(.) -> RequestTicket(.)
  *  |    +   +-> @ server_child_wrapper
- *  |    +       | +->Daemon.server_child_(.)
+ *  |    +       | +->Daemon.serverChild(.)
  *  |    +-> ticket_stubes.emplace_back(.) -> RequestTicket(.)
  *  |    +   +-> @ server_child_wrapper
- *  |    +       | +->Daemon.server_child_(.)
+ *  |    +       | +->Daemon.serverChild(.)
  *  |   ...
  *  |    +-> ticket_stubes.emplace_back(.) -> RequestTicket(.)
  *  |        +-> @ server_child_wrapper
- *  |            | +->Daemon.server_child_(.)
+ *  |            | +->Daemon.serverChild(.)
  *  *
  */
 
 #include <thread>
 
 class Daemon {
-  std::function<void(int)> server_child_;
-  bool shutdown_flag;
-  int sockfd_;
-  std::thread daemon_thread_;
+  std::function<void(int)> serverChild;
+  bool shutdownFlag;
+  int sockfd;
+  std::thread daemonThread;
 
   friend void daemon_threadfn(const Daemon*);
   friend class RequestTicket;
@@ -89,11 +89,11 @@ class Daemon {
 };
 
 class RequestTicket {
-  const Daemon* parent_daemon_;
-  int connectionfd_;
-  std::thread server_thread_;
+  const Daemon* parentDaemon;
+  int connectionfd;
+  std::thread serverThread;
   friend void server_child_wrapper(RequestTicket*);
-  auto get_server_child() { return parent_daemon_->server_child_; }
+  auto get_server_child() { return parentDaemon->serverChild; }
 
  public:
   bool done;
@@ -105,7 +105,7 @@ class RequestTicket {
  * An exception class to throw from RequestTicket's constructor. See
  * documentation therein for motivation.
  */
-struct blocked_socket : std::exception {
+struct BlockedSocket : public std::exception {
   char const* what() const throw() { return ""; };
 };
 

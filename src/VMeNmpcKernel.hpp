@@ -32,6 +32,14 @@ class NmpcMinimizer;
 
 using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
+/**
+ * The kernel organizes the NMPC calculation. Its interface is meant to be used
+ * by a high level supervisory routine. It aggregates the objects related to the
+ * NMPC calculation: the model, minimizer, PathPlanner and logger.
+ *
+ * The kernel can be used to pass the seed to the model, step through the NMPC
+ * calculation and it doles out commands for execution.
+ */
 class VMeNmpcKernel : public Subject {
   vMeModelType* model;
   NmpcMinimizer* minimizer;
@@ -47,12 +55,10 @@ class VMeNmpcKernel : public Subject {
   VMeNmpcKernel& operator=(const VMeNmpcKernel&) = delete;
   VMeNmpcKernel(AggregatorInitializer&);
 
-  up_VMeCommand nextCommand();
+  up_VMeCommand next_command();
   void seed(SeedPackage&);
-  void nmpcStep(SeedPackage&);
+  void nmpc_step(SeedPackage&);
   void run();
-  // vMeModelType* _getModelPointer_();
-  // NmpcMinimizer* _getMinimizerPointer_();
 };
 
 class MinimizerReachedIterationLimit : public std::exception {

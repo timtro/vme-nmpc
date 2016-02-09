@@ -69,7 +69,7 @@ TEST_CASE("Straightforward write to stdout with nothing to assert.") {
   seed.vref = 1;
   seed.xref = seed.yref = 10;
   test.model->seed(seed);
-  test.logger->logModelState();
+  test.logger->log_model_state();
 }
 
 // TEST_CASE("Logger write to file. TODO: Assert against file contents.") {

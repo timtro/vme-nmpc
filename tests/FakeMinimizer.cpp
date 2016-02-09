@@ -18,12 +18,12 @@
 
 #include "FakeMinimizer.hpp"
 
-FakeMinimizer::FakeMinimizer(std::string& historyString)
+FakeMinimizer::FakeMinimizer(std::string &historyString)
     : eventHistory(historyString) {}
 
-void FakeMinimizer::recordEvent(char eventCode) { eventHistory += eventCode; }
+void FakeMinimizer::record_event(char eventCode) { eventHistory += eventCode; }
 
-MinimizerCode FakeMinimizer::solveOptimalControlHorizon() noexcept {
-  recordEvent('O');
+MinimizerCode FakeMinimizer::solve_optimal_control_horizon() noexcept {
+  record_event('O');
   return MinimizerCode::success;
 }

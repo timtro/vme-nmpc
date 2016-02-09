@@ -61,9 +61,9 @@ TEST_CASE(
     "should remain stationary throughout the forecast horizon.") {
   TestObject m;
   m.model->set_v(0.);
-  m.model->computeForecast();
-  REQUIRE(thlp::eachInArrayIsApprox(m.model->get_x(), 0.0f, 1e-5f));
-  REQUIRE(thlp::eachInArrayIsApprox(m.model->get_y(), 0.0f, 1e-5f));
+  m.model->compute_forecast();
+  REQUIRE(thlp::each_element_is_approx(m.model->get_x(), 0.0f, 1e-5f));
+  REQUIRE(thlp::each_element_is_approx(m.model->get_y(), 0.0f, 1e-5f));
 }
 
 template <typename T>
@@ -76,13 +76,13 @@ TEST_CASE(
     "should drive a straight line along the +x-axis in a forecast horizon.") {
   TestObject m;
   m.model->set_v(1);
-  REQUIRE(
-      thlp::eachInArrayIsApprox(m.model->get_v(), m.model->get_v()[0], 1e-5f));
-  m.model->computeForecast();
+  REQUIRE(thlp::each_element_is_approx(m.model->get_v(), m.model->get_v()[0],
+                                       1e-5f));
+  m.model->compute_forecast();
   REQUIRE(m.model->get_x()[m.model->get_horizonSize() - 1] ==
           Approx(linearTravelDistance(m.model->get_v()[0], m.timeInterval,
                                       m.nmpcHorizon)));
-  REQUIRE(thlp::eachInArrayIsApprox(m.model->get_y(), 0.0f, 1e-5f));
+  REQUIRE(thlp::each_element_is_approx(m.model->get_y(), 0.0f, 1e-5f));
 }
 
 TEST_CASE(
@@ -92,11 +92,12 @@ TEST_CASE(
   SeedPackage seed(m.nmpcHorizon);
   seed.pose = xyth{0, 0, degToRad(90.f)};
   m.model->seed(seed);
-  m.model->computeForecast();
+  m.model->set_v(m.cruiseSpeed);
+  m.model->compute_forecast();
   REQUIRE(m.model->get_y()[m.nmpcHorizon - 1] ==
           Approx(linearTravelDistance(m.cruiseSpeed, m.timeInterval,
                                       m.nmpcHorizon)));
-  REQUIRE(thlp::eachInArrayIsApprox(m.model->get_x(), 0.0f, 1e-5f));
+  REQUIRE(thlp::each_element_is_approx(m.model->get_x(), 0.0f, 1e-5f));
 }
 
 template <typename T>
@@ -117,11 +118,11 @@ TEST_CASE(
     "Should be able to compute potential gradient along path without throwing "
     "or faulting") {
   TestObject m;
-  m.model->computeForecast();
+  m.model->compute_forecast();
   ObstacleContainer obs;
-  obs.pushObstacleUniquePtr(
+  obs.push_unique_ptr(
       unique_ptr<Obstacle>{new PointObstacle{fp_point2d{10, 10}, 2, .12}});
-  obs.pushObstacleUniquePtr(
+  obs.push_unique_ptr(
       unique_ptr<Obstacle>{new PointObstacle{fp_point2d{5, 5}, 2, .12}});
-  m.model->computePathPotentialGradient(obs);
+  m.model->compute_path_potential_gradient(obs);
 }

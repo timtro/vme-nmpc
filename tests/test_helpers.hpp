@@ -23,14 +23,14 @@
 #include <valarray>
 
 namespace thlp {
-inline void printArray(std::valarray<float> a) {
+inline void print_array(std::valarray<float> a) {
   for (auto each : a) std::cout << each << ", ";
 
   std::cout << std::endl;
 }
 
 template <typename T, typename V>
-bool eachInArrayIsApprox(T array, V expectedValue, V absoluteError) {
+bool each_element_is_approx(T array, V expectedValue, V absoluteError) {
   return std::all_of(std::begin(array), std::end(array),
                      [expectedValue, absoluteError](auto val) {
                        return expectedValue - absoluteError <= std::abs(val) &&
@@ -38,18 +38,17 @@ bool eachInArrayIsApprox(T array, V expectedValue, V absoluteError) {
                      });
 }
 
-bool eachIsTrue(const std::valarray<bool>& comparison) {
+bool each_is_true(const std::valarray<bool> &comparison) {
   bool equals = true;
   for (auto item : comparison) equals &= item;
   return equals;
 }
 
 template <typename T>
-bool arraysAreAbsEqual(const T& a, const T& b,
-                       decltype(a[0] + b[0]) absoluteError) {
-  return eachIsTrue(std::abs(std::abs(a) - std::abs(b)) < absoluteError);
+bool elements_are_approx_equal(const T &a, const T &b,
+                               decltype(a[0] + b[0]) absoluteError) {
+  return each_is_true(std::abs(std::abs(a) - std::abs(b)) < absoluteError);
 }
 }
 
-
-#endif // VME_NMPC_TESTS_TEST_HELPERS_HPP_
+#endif  // VME_NMPC_TESTS_TEST_HELPERS_HPP_

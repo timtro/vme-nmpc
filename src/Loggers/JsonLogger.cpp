@@ -17,10 +17,10 @@
  */
 
 #include "JsonLogger.hpp"
-#include "../AggregatorInitializer.hpp"
-#include "../NmpcModels/VMeModel.hpp"
-#include "../NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include <cstdio>
+#include "../AggregatorInitializer.hpp"
+#include "../NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
+#include "../NmpcModels/VMeModel.hpp"
 
 using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
@@ -38,31 +38,31 @@ auto guranteedCompatibleMminimizer(NmpcMinimizer *model) {
 }
 
 JsonLogger::JsonLogger(AggregatorInitializer &init) {
-  init.loggerBindingSafetyCheck();
+  init.logger_binding_safety_check();
   this->model = guranteedCompatibleModel(init.model);
   this->minimizer = guranteedCompatibleMminimizer(init.minimizer);
-  init.bindIntoAggregator(this);
+  init.bind_into_aggregator(this);
   fprintf(fp_out, "[\n");
 }
 
 JsonLogger::JsonLogger(AggregatorInitializer &init, FILE *outputFilePtr)
     : fp_out{outputFilePtr} {
-  init.loggerBindingSafetyCheck();
+  init.logger_binding_safety_check();
   this->model = guranteedCompatibleModel(init.model);
   this->minimizer = guranteedCompatibleMminimizer(init.minimizer);
-  init.bindIntoAggregator(this);
+  init.bind_into_aggregator(this);
   fprintf(fp_out, "[\n");
 }
 
 JsonLogger::JsonLogger(AggregatorInitializer &init,
                        std::string outputFilePath) {
-  init.loggerBindingSafetyCheck();
+  init.logger_binding_safety_check();
   this->model = guranteedCompatibleModel(init.model);
   this->minimizer = guranteedCompatibleMminimizer(init.minimizer);
 
   logFile = std::make_unique<CFileContainer>(outputFilePath, "w");
   fp_out = logFile->fd;
-  init.bindIntoAggregator(this);
+  init.bind_into_aggregator(this);
   fprintf(fp_out, "[\n");
 }
 
@@ -78,7 +78,7 @@ void jsonPrintArrayNode(FILE *fd, std::string, const T);
 template <typename T>
 void jsonPrintArray(FILE *, const T &);
 
-void JsonLogger::logConstants(const AggregatorInitializer &init) const
+void JsonLogger::log_constants(const AggregatorInitializer &init) const
     noexcept {
   if (printedFirstObject) {
     fprintf(fp_out, ",\n");
@@ -101,7 +101,7 @@ void JsonLogger::logConstants(const AggregatorInitializer &init) const
   jsonPrintCloseObject(fp_out);
 }
 
-void JsonLogger::logModelState() const noexcept {
+void JsonLogger::log_model_state() const noexcept {
   if (printedFirstObject) {
     fprintf(fp_out, ",\n");
   } else {
@@ -116,7 +116,7 @@ void JsonLogger::logModelState() const noexcept {
   jsonPrintCloseObject(fp_out);
 }
 
-void JsonLogger::logMinimizerState() const noexcept {
+void JsonLogger::log_minimizer_state() const noexcept {
   if (printedFirstObject) {
     fprintf(fp_out, ",\n");
   } else {

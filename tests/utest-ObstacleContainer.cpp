@@ -68,41 +68,42 @@ TEST_CASE("Gradients are computed correctly... a though one.") {
   // float(ev(G(3, 4), pwr=2, eps=.2));
   // > [-0.00944822373393802,-0.01259763164525069]
   auto tc = PointObstacle(fp_point2d{0, 0}, 2, .2);
-  REQUIRE(tc.gradPhi(fp_point2d(3, 4)).x == Approx(-0.00944822373393802));
-  REQUIRE(tc.gradPhi(fp_point2d(3, 4)).y == Approx(-0.01259763164525069));
+  REQUIRE(tc.gradient_phi(fp_point2d(3, 4)).x == Approx(-0.00944822373393802));
+  REQUIRE(tc.gradient_phi(fp_point2d(3, 4)).y == Approx(-0.01259763164525069));
   // float(ev(G(5, -2), pwr=4, eps=.12));
   // > [-8.198078531413808*10^-4,3.279231412565523*10^-4]
   tc = PointObstacle(fp_point2d{0, 0}, 4, .12);
-  REQUIRE(tc.gradPhi(fp_point2d(5, -2)).x == Approx(-8.198078531413808E-4));
-  REQUIRE(tc.gradPhi(fp_point2d(5, -2)).y == Approx(3.279231412565523E-4));
+  REQUIRE(tc.gradient_phi(fp_point2d(5, -2)).x ==
+          Approx(-8.198078531413808E-4));
+  REQUIRE(tc.gradient_phi(fp_point2d(5, -2)).y == Approx(3.279231412565523E-4));
 }
 
 TEST_CASE("Create a stack of obstacles, fill and empty it") {
   ObstacleContainer obs;
-  REQUIRE(obs.hasObstacles() == false);
-  REQUIRE(obs.numberOfObstacles() == 0);
+  REQUIRE(obs.has_obstacles() == false);
+  REQUIRE(obs.size() == 0);
   // The long way:
-  obs.pushObstacleUniquePtr(
+  obs.push_unique_ptr(
       std::unique_ptr<Obstacle>{new PointObstacle{fp_point2d{10, 10}, 2, .12}});
-  REQUIRE(obs.numberOfObstacles() == 1);
-  REQUIRE(obs.hasObstacles() == true);
+  REQUIRE(obs.size() == 1);
+  REQUIRE(obs.has_obstacles() == true);
   // The short(er) way:
-  obs.pushObstacle(new PointObstacle{fp_point2d{5, 5}, 2, .12});
-  REQUIRE(obs.numberOfObstacles() == 2);
-  obs.popObstacle();
-  REQUIRE(obs.numberOfObstacles() == 1);
-  obs.clearObstacleContainer();
-  REQUIRE(obs.hasObstacles() == false);
+  obs.push(new PointObstacle{fp_point2d{5, 5}, 2, .12});
+  REQUIRE(obs.size() == 2);
+  obs.pop();
+  REQUIRE(obs.size() == 1);
+  obs.clear();
+  REQUIRE(obs.has_obstacles() == false);
 }
 
 TEST_CASE(
     "Given two point obstacles at a, the gradient at a should be"
     " zero (i.e., we are on the peak).") {
   ObstacleContainer obs;
-  obs.pushObstacle(new PointObstacle{fp_point2d{1, 1}, 2, 2});
-  obs.pushObstacle(new PointObstacle{fp_point2d{1, 1}, 2, 2});
+  obs.push(new PointObstacle{fp_point2d{1, 1}, 2, 2});
+  obs.push(new PointObstacle{fp_point2d{1, 1}, 2, 2});
   fp_point2d a{1, 1};
-  fp_point2d grad = obs.gradPhi(a);
+  fp_point2d grad = obs.gradient_phi(a);
   REQUIRE(grad.x == Approx(0));
   REQUIRE(grad.y == Approx(0));
 }

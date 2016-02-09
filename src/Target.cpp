@@ -39,7 +39,7 @@ void TargetContainer::pop_front() {
 
 Target& TargetContainer::operator[](const int i) { return *targets[i]; }
 
-bool TargetContainer::hasTargets() { return !targets.empty(); }
+bool TargetContainer::has_targets() { return !targets.empty(); }
 
 bool TargetContainer::empty() const noexcept { return targets.empty(); }
 
@@ -47,7 +47,7 @@ void TargetContainer::emplace_back(Target* tgt) { targets.emplace_back(tgt); }
 
 void TargetContainer::clear() { targets.clear(); }
 
-void TargetContainer::addToFront(fp_point2d displacement, fptype tolerance) {
+void TargetContainer::create_front(fp_point2d displacement, fptype tolerance) {
   if (targets.empty())
     targets.emplace_front(new Target(previousTarget->locus.x,
                                      previousTarget->locus.y,

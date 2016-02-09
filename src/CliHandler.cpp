@@ -21,9 +21,9 @@
 
 #include <unistd.h>
 
-std::string detachToken(std::string&);
-std::string fetchMessageString(const int);
-void makeLowerCase(std::string&);
+std::string detach_token(std::string&);
+std::string fetch_message_string(const int);
+void lowercase(std::string&);
 
 CliHandler::CliHandler(TargetContainer* tgt, ObstacleContainer* obs)
     : targets(tgt), obstacles(obs) {}
@@ -42,14 +42,14 @@ CliHandler::CliHandler(const CliHandler& source) {
 
 void CliHandler::operator()(const int sockfd) {
   for (;;) {
-    std::string line = fetchMessageString(sockfd);
-    auto cmd = detachToken(line);
-    makeLowerCase(cmd);
+    std::string line = fetch_message_string(sockfd);
+    auto cmd = detach_token(line);
+    lowercase(cmd);
     // TODO: Add e-stop.
     if (cmd == "at")
-      addTarget(line);
+      add_target(line);
     else if (cmd == "ao")
-      addObstacle(line);
+      add_obstacle(line);
     else if (cmd == "clear")
       clear(line);
     else if (cmd == "eot")
@@ -57,45 +57,45 @@ void CliHandler::operator()(const int sockfd) {
   }
 }
 
-void CliHandler::addTarget(std::string line) {
+void CliHandler::add_target(std::string line) {
   fptype x{0}, y{0}, tol{0};
   try {
-    x = std::stof(detachToken(line));
-    y = std::stof(detachToken(line));
-    tol = std::stof(detachToken(line));
+    x = std::stof(detach_token(line));
+    y = std::stof(detach_token(line));
+    tol = std::stof(detach_token(line));
   } catch (std::invalid_argument) {
     return;
   }
   targets->emplace_back(new Target(x, y, tol));
 }
 
-void CliHandler::addObstacle(std::string line) {
-  auto obstacleType = detachToken(line);
+void CliHandler::add_obstacle(std::string line) {
+  auto obstacleType = detach_token(line);
   fptype x{0}, y{0}, pwr{0}, eps{0};
   if (obstacleType == "PointObstacle") {
     try {
-      x = std::stof(detachToken(line));
-      y = std::stof(detachToken(line));
-      pwr = std::stof(detachToken(line));
-      eps = std::stof(detachToken(line));
+      x = std::stof(detach_token(line));
+      y = std::stof(detach_token(line));
+      pwr = std::stof(detach_token(line));
+      eps = std::stof(detach_token(line));
     } catch (std::invalid_argument) {
       return;
     }
-    obstacles->pushObstacle(new PointObstacle{fp_point2d{x, y}, pwr, eps});
+    obstacles->push(new PointObstacle{fp_point2d{x, y}, pwr, eps});
   }
 }
 
 void CliHandler::clear(std::string line) {
-  auto whatToClear = detachToken(line);
+  auto whatToClear = detach_token(line);
   if (whatToClear == "targets") targets->clear();
-  if (whatToClear == "obstacles") obstacles->clearObstacleContainer();
+  if (whatToClear == "obstacles") obstacles->clear();
   if (whatToClear == "all") {
     targets->clear();
-    obstacles->clearObstacleContainer();
+    obstacles->clear();
   }
 }
 
-std::string detachToken(std::string& line) {
+std::string detach_token(std::string& line) {
   unsigned begin = 0;
   while (begin < line.length() && std::isspace(line[begin])) ++begin;
   unsigned end = begin;
@@ -105,12 +105,12 @@ std::string detachToken(std::string& line) {
   return token;
 }
 
-std::string fetchMessageString(const int sockfd) {
+std::string fetch_message_string(const int sockfd) {
   char buff[120];
   if (read(sockfd, &buff, 80) < 1) return "eot";
   return std::string{buff};
 }
 
-void makeLowerCase(std::string& string) {
+void lowercase(std::string& string) {
   for (auto& each : string) each = std::tolower(each);
 }

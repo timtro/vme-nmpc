@@ -23,7 +23,7 @@
 class Nav2Robot {
   std::string hostname_;
   unsigned int portno_;
-  int sockfd_;
+  int sockfd;
   float pose_[3];
   bool is_connected_{false};
 

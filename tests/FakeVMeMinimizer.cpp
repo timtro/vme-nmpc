@@ -21,14 +21,14 @@
 FakeVMeMinimizer::FakeVMeMinimizer(AggregatorInitializer& init,
                                    std::string& historyString)
     : eventHistory(historyString) {
-      init.bindIntoAggregator(this);
-    }
+  init.bind_into_aggregator(this);
+}
 
-void FakeVMeMinimizer::recordEvent(char eventCode) {
+void FakeVMeMinimizer::record_event(char eventCode) {
   eventHistory += eventCode;
 }
 
-MinimizerCode FakeVMeMinimizer::solveOptimalControlHorizon() noexcept {
-  recordEvent('O');
+MinimizerCode FakeVMeMinimizer::solve_optimal_control_horizon() noexcept {
+  record_event('O');
   return MinimizerCode::success;
 }

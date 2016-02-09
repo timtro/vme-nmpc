@@ -28,9 +28,9 @@ struct TestObject {
   }
 };
 
-bool isStopCmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
-bool isNullCmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
-bool isMoveCmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
+bool is_stop_cmd(VMeCommand* cmd) { return dynamic_cast<VMeStop*>(cmd); }
+bool is_null_cmd(VMeCommand* cmd) { return dynamic_cast<VMeNullCmd*>(cmd); }
+bool is_motion_cmd(VMeCommand* cmd) { return dynamic_cast<VMeV*>(cmd); }
 
 TEST_CASE("Throw appropriately if AggregatorInitializer is missing a model") {
   std::string callRecord;
@@ -62,7 +62,7 @@ TEST_CASE(
   test.engine->seed(seed);
   // Should have called (S)eed (D)istanceToTarget:
   REQUIRE(test.callRecord == "SD");
-  REQUIRE(isStopCmd(exec.commandFromLastNotify.get()));
+  REQUIRE(is_stop_cmd(exec.commandFromLastNotify.get()));
 }
 
 TEST_CASE(
@@ -77,7 +77,7 @@ TEST_CASE(
   seed.pose = xyth{0, 0, 0};
   test.engine->seed(seed);
   REQUIRE(test.callRecord == "SDOC");
-  REQUIRE(isMoveCmd(exec.commandFromLastNotify.get()));
+  REQUIRE(is_motion_cmd(exec.commandFromLastNotify.get()));
 }
 
 TEST_CASE(
@@ -88,26 +88,26 @@ TEST_CASE(
   REQUIRE(exec.commandFromLastNotify.get() == nullptr);
 
   SECTION("Newly created engine should provide null commands:") {
-    auto command = test.engine->nextCommand();
-    REQUIRE(isNullCmd(command.get()));
+    auto command = test.engine->next_command();
+    REQUIRE(is_null_cmd(command.get()));
   }
 
   SECTION(
       "Run an NMPC step and count to be sure that no more than a horizon's "
       "worth of commands are doled out.") {
     SeedPackage seed(test.nmpcHorizon);
-    test.engine->nmpcStep(seed);
+    test.engine->nmpc_step(seed);
     unsigned countReturnedMotionCommands = 0;
     auto command = std::move(exec.commandFromLastNotify);
     for (;;) {
-      if (isNullCmd(command.get()))
+      if (is_null_cmd(command.get()))
         break;
-      else if (isMoveCmd(command.get())) {
+      else if (is_motion_cmd(command.get())) {
         ++countReturnedMotionCommands;
-        command = test.engine->nextCommand();
+        command = test.engine->next_command();
       } else
         throw std::runtime_error(
-            "ERROR: Unexpected output from engine.nextCommand().\n");
+            "ERROR: Unexpected output from engine.next_command().\n");
     }
     REQUIRE(countReturnedMotionCommands == test.nmpcHorizon);
   }

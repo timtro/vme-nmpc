@@ -23,6 +23,12 @@
 #include <memory>
 #include <deque>
 
+/**
+ * A structure embodying the notion of a target. The target has a locus (the x-
+ * and y-coordinates) as well as a tolerance. The tolerance creates a ball
+ * around the locus into which if the plant enters, the target may be marked as
+ * reached.
+ */
 struct Target {
   fp_point2d locus;
   decltype(locus.x)& x;
@@ -33,6 +39,10 @@ struct Target {
       : locus{x, y}, x{locus.x}, y{locus.y}, tolerance{tol} {}
 };
 
+/**
+ * A container for targets which abstracts away implementation and provides a
+ * convenient interface.
+ */
 class TargetContainer {
   std::deque<std::unique_ptr<Target>> targets;
   std::unique_ptr<Target> previousTarget{new Target(0, 0, 0)};
@@ -44,10 +54,9 @@ class TargetContainer {
   void pop_back();
   void pop_front();
   void clear();
-  void addToFront(fp_point2d, fptype);
+  void create_front(fp_point2d, fptype);
   size_t size();
-  void clearContainer();
-  [[deprecated]] bool hasTargets();
+  [[deprecated]] bool has_targets();
   bool empty() const noexcept;
   Target& operator[](const int i);
 };

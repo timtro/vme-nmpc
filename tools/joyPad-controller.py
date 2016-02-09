@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+from gi.repository import Gtk, Gdk, GObject
+
 from argparse import ArgumentParser, RawTextHelpFormatter
 import sys, signal
 import socket
@@ -114,6 +116,16 @@ def signalHandler(signal, frame):
     sys.exit(0)
 
 
+class MainWindow(Gtk.Window):
+
+    def __init__(self):
+        Gtk.Window.__init__(self, title='Control virtualME')
+        self.settings = Gtk.Settings.get_default()
+        self.settings.set_property("gtk-application-prefer-dark-theme", True)
+        self.connect("delete-event", Gtk.main_quit)
+        self.show_all()
+
+
 parser = ArgumentParser(description="""Use the keyboard or a joypad/joystick to control virtualME.
     Keyboard controls:
     <BACKSPACE>         Exit
@@ -145,25 +157,29 @@ parser.add_argument('--nojoy',
                     action='store_true',
                     help='Do not look for joypad/stick. Just use the keyboard.\n(Default is to use joypad/stick.)')
 
-args = parser.parse_args()
+# Start the curses loop.
+#screen = curses.wrapper(mainLoop)
 
-# Handle Ctrl+C gracefully.
-signal.signal(signal.SIGINT, signalHandler)
+if __name__ == "__main__":
+    args = parser.parse_args()
 
-print("Initializing connection to VirualME...")
-vme = Nav2Robot(args.hostname, args.hostport)
-vme.connect()
-print("  done.")
+    # Handle Ctrl+C gracefully.
+    signal.signal(signal.SIGINT, signalHandler)
 
-if args.nojoy:
-    joyPad = NullJoyPad()
-else:
-    print("Initializing Joy Pad...")
-    joyPad = JoyPad(args.joyStickDevicePath)
-    joyPad.start()
+    print("Initializing connection to VirualME...")
+    vme = Nav2Robot(args.hostname, args.hostport)
+    vme.connect()
     print("  done.")
 
-vme.stop()
+    if args.nojoy:
+        joyPad = NullJoyPad()
+    else:
+        print("Initializing Joy Pad...")
+        joyPad = JoyPad(args.joyStickDevicePath)
+        joyPad.start()
+        print("  done.")
 
-# Start the curses loop.
-screen = curses.wrapper(mainLoop)
+    vme.stop()
+
+    window = MainWindow()
+    Gtk.main()

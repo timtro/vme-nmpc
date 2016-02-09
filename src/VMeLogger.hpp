@@ -25,6 +25,12 @@
 struct VMeCommand;
 using up_VMeCommand = std::unique_ptr<VMeCommand>;
 
+/**
+ * A template class to provide an interface for loggers. The kernel will
+ * organize calls to members promised by this interface. A loger implementing
+ * the interface will be a drop-in replacement so that users may add new ways
+ * of exporting data from the calculation.
+ */
 template <typename seedType, typename cmdType>
 class NmpcModel;
 struct AggregatorInitializer;
@@ -32,9 +38,9 @@ struct AggregatorInitializer;
 class VMeLogger {
  public:
   virtual ~VMeLogger() = default;
-  virtual void logModelState() const noexcept {};
-  virtual void logMinimizerState() const noexcept {};
-  virtual void logConstants(const AggregatorInitializer&) const noexcept {};
+  virtual void log_model_state() const noexcept {};
+  virtual void log_minimizer_state() const noexcept {};
+  virtual void log_constants(const AggregatorInitializer&) const noexcept {};
 };
 
 #endif  // VME_NMPC_SRC_DATALOGGER_HPP_

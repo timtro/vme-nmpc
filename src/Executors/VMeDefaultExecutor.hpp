@@ -25,6 +25,10 @@
 class VMeNmpcKernel;
 class Nav2Robot;
 
+/**
+ * A very straightforward exectutor that observes the kernel and peels of the
+ * first available command each notify(). That command gets executed with run().
+ */
 class VMeDefaultExecutor : public Observer {
   VMeNmpcKernel* subjectKernel = nullptr;
 
@@ -37,4 +41,4 @@ class VMeDefaultExecutor : public Observer {
   void run(Nav2Robot&);
 };
 
-#endif // VME_NMPC_SRC_VMEDEFAULTEXECUTOR_HPP_
+#endif  // VME_NMPC_SRC_VMEDEFAULTEXECUTOR_HPP_

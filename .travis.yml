@@ -7,11 +7,12 @@ language: c++
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq cmake libboost-dev clang-3.6
+  - sudo apt-get install -qq cmake clang-3.6
+  - sudo apt-get install -qq libboost-dev
   - if [ "$CC"  == "gcc"     ]; then export CC=gcc; fi
   - if [ "$CXX" == "g++"     ]; then export CXX=g++; fi
-  - if [ "$CC"  == "clang"   ]; then export CC=clang-3.6; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX=clang++-3.6; fi
+  - if [ "$CC"  == "clang"   ]; then export CC=clang; fi
+  - if [ "$CXX" == "clang++" ]; then export CXX=clang++; fi
 
 before_script:
   - mkdir build

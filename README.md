@@ -30,7 +30,7 @@ to automatically run all tests. Users adding obstacle, model or minimizer types 
 
 ## Usage
 
-See vme-nmpc.cpp for an example of constructing objects and binding them with the NMPC kernel. Here is a naive example using default classes:
+See vme-nmpc.cpp for an example of constructing objects and binding them with the NMPC kernel. Here is a naive example of object construction and main loop anatomy:
 
     Daemon command_server(5111, commandHandler);
     vme.originate()
@@ -65,6 +65,8 @@ See vme-nmpc.cpp for an example of constructing objects and binding them with th
       } while (planner->is_continuing());
       vme.stop();
     }
+
+It is difficult to write a definitive example, since it is expected that most people pulling this repo are going to implement a lot of their own objects which may have different needs.
 
 ### Reading and Using the Code
 

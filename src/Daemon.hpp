@@ -93,7 +93,7 @@ class RequestTicket {
   int connectionfd;
   std::thread serverThread;
   friend void server_child_wrapper(RequestTicket*);
-  auto get_server_child() { return parentDaemon->serverChild; }
+  auto get_serverChild() { return parentDaemon->serverChild; }
 
  public:
   bool done;

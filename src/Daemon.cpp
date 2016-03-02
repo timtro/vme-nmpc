@@ -112,7 +112,7 @@ Daemon::~Daemon() {
 }
 
 void server_child_wrapper(RequestTicket* ticket) {
-  ticket->get_server_child()(ticket->connectionfd);
+  ticket->get_serverChild()(ticket->connectionfd);
   close(ticket->connectionfd);
   ticket->done = true;
 }

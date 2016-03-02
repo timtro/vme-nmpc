@@ -52,13 +52,13 @@ int main(int argc, char** argv) {
     printf("%s\n", ex.what());
     std::exit(1);
   }
+  vme.originate();
 
   ObstacleContainer obstacles;
   TargetContainer targets;
-  std::function<void(int)> commandHandler{CliHandler(&targets, &obstacles)};
 
-  Daemon command_server(5111, commandHandler);
-  vme.originate();
+  std::function<void(int)> command_handler{CliHandler(&targets, &obstacles)};
+  Daemon command_server(5111, command_handler);
 
   AggregatorInitializer init(inputFileData);
   init.targets = &targets;

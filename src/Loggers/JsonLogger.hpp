@@ -25,6 +25,7 @@
 struct AggregatorInitializer;
 class VMeModel;
 class VMeNaiveSdMinimizer;
+class ObstacleContainer;
 
 /**
  * Logger writes a simple text file in JSON format:
@@ -48,6 +49,7 @@ class JsonLogger : public VMeLogger {
   virtual void log_model_state() const noexcept;
   virtual void log_minimizer_state() const noexcept;
   virtual void log_constants(const AggregatorInitializer&) const noexcept;
+  virtual void log_obstacles(const ObstacleContainer&) const noexcept;
 };
 
 class LoggerIsIncompatibleWithModelType : public std::exception {

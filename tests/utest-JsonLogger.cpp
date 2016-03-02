@@ -19,8 +19,6 @@ struct TestObject {
   unique_ptr<VMeModel> model{nullptr};
   unique_ptr<VMeNaiveSdMinimizer> minimizer{nullptr};
   unique_ptr<JsonLogger> logger{nullptr};
-  // unique_ptr<PathPlanner<SeedPackage>> planner{nullptr};
-  // unique_ptr<VMeNmpcKernel> engine{nullptr};
 
   TestObject() {
     init.parameters->nmpcHorizon = nmpcHorizon;
@@ -31,8 +29,6 @@ struct TestObject {
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     logger = make_unique<JsonLogger>(init);
-    // planner = make_unique<FakePathPlanner>(init);
-    // engine = make_unique<VMeNmpcKernel>(init);
   }
 
   TestObject(std::string logFilePath) {
@@ -44,8 +40,6 @@ struct TestObject {
     model = make_unique<VMeModel>(init);
     minimizer = make_unique<VMeNaiveSdMinimizer>(init);
     logger = make_unique<JsonLogger>(init, logFilePath);
-    // planner = make_unique<FakePathPlanner>(init);
-    // engine = make_unique<VMeNmpcKernel>(init);
   }
 };
 
@@ -70,6 +64,16 @@ TEST_CASE("Straightforward write to stdout with nothing to assert.") {
   seed.xref = seed.yref = 10;
   test.model->seed(seed);
   test.logger->log_model_state();
+}
+
+TEST_CASE("Write out obstacle list") {
+  TestObject test;
+  SeedPackage seed(test.nmpcHorizon);
+
+  ObstacleContainer obstacles;
+  TargetContainer targets;
+
+  test.logger->log_obstacles(obstacles);
 }
 
 // TEST_CASE("Logger write to file. TODO: Assert against file contents.") {

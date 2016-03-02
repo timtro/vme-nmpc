@@ -22,6 +22,9 @@
 #include "../NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include "../NmpcModels/VMeModel.hpp"
 
+// Add new obstacle types here:
+#include "../ObstacleTypes/PointObstacle.hpp"
+
 using vMeModelType = NmpcModel<SeedPackage, up_VMeCommand>;
 
 auto guranteedCompatibleModel(vMeModelType *model) {
@@ -127,6 +130,14 @@ void JsonLogger::log_minimizer_state() const noexcept {
   jsonPrintCloseObject(fp_out);
 }
 
+bool is_unknown_obstacle_type(const std::unique_ptr<Obstacle>&);
+void JsonLogger::log_obstacles(const ObstacleContainer &obstacles) const
+    noexcept {
+  for (auto const &obstacle : obstacles) {
+    if (is_unknown_obstacle_type(obstacle)) printf("HELLO\n");
+  }
+}
+
 void jsonPrintOpenObject(FILE *fd) { fprintf(fd, "{\n"); }
 
 void jsonPrintCloseObject(FILE *fd) {
@@ -162,4 +173,8 @@ void jsonPrintArray(FILE *fd, const T &array) {
     if (++iter == std::end(array)) break;
     fprintf(fd, ",");
   }
+}
+
+bool is_unknown_obstacle_type(const std::unique_ptr<Obstacle>& obstacle) {
+  return true;
 }

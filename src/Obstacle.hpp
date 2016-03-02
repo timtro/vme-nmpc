@@ -47,19 +47,28 @@ struct Obstacle {
  * the back end.
  */
 class ObstacleContainer {
-  std::vector<std::unique_ptr<Obstacle>> obstacles;
+  using InternalContainer = std::vector<std::unique_ptr<Obstacle>>;
+
+  InternalContainer obstacles;
   mutable std::mutex mutex;
 
  public:
   fp_point2d gradient_phi(fp_point2d);
-  void push(Obstacle *obs);
+  void push(Obstacle* obs);
   void push_unique_ptr(std::unique_ptr<Obstacle>);
   void pop();
   size_t size();
   void clear();
   [[deprecated]] bool has_obstacles() const noexcept;
   bool empty() const noexcept;
-  std::unique_ptr<Obstacle> &operator[](const int i);
+  std::unique_ptr<Obstacle>& operator[](const int i);
+
+  using const_iterator = InternalContainer::const_iterator;
+
+  const_iterator begin() const { return obstacles.begin(); }
+  const_iterator end() const { return obstacles.end(); }
+  const_iterator cbegin() const { return obstacles.cbegin(); }
+  const_iterator cend() const { return obstacles.cend(); }
 };
 
 #endif  // VME_NMPC_SRC_OBSTACLE_HPP_

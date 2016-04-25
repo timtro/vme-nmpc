@@ -48,9 +48,8 @@ class VmeNmpc {
   void set_port(int);
 
   // Wrapped CLI commands:
-  int stop();
-  void at(float, float, float);
-  void clear_targets();
+  int at(float, float, float);
+  int clear_targets();
 
 };
 

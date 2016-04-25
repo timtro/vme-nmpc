@@ -110,7 +110,7 @@ void VmeNmpc::connect() {
  * Safely disconnect from the VmeNmpc machine.
  */
 void VmeNmpc::disconnect() {
-  stop();
+  clear_targets();
   close(sockfd);
   is_connected_ = false;
 }
@@ -184,3 +184,13 @@ std::string VmeNmpc::send_recv(std::string msg, int buffer_size) {
 
   return recieved_message;
 }
+
+// Wrapped CLI commands
+
+int VmeNmpc::at(float x, float y, float tol) {
+  std::string msg = "AT " + std::to_string(x) + ' ' + std::to_string(y) + ' ' +
+                    std::to_string(tol) + '\n';
+  return sendstr(msg);
+}
+
+int VmeNmpc::clear_targets() { return sendstr("\nCLEAR ALL\n"); }

@@ -3,6 +3,8 @@
 #include "../src/Obstacle.hpp"
 #include "../src/ObstacleTypes/PointObstacle.hpp"
 
+#include <random>
+
 std::random_device rd;
 std::default_random_engine e1(rd());
 

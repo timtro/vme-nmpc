@@ -141,13 +141,14 @@ void JsonLogger::log_obstacles(const ObstacleContainer &obstacles) const
 
 void JsonLogger::log_targets(const TargetContainer &targets) const
     noexcept {
-  fprintf(fp_out, "  \"targets\" : ");
+  fprintf(fp_out, "{\n  \"targets\" : ");
   auto iter = std::begin(targets);
   for (;;) {
     fprintf(fp_out, "[%f, %f, %f]", (*iter)->x, (*iter)->y, (*iter)->tolerance);
     if (++iter == std::end(targets)) break;
     fprintf(fp_out, ",");
   }
+  fprintf(fp_out, "\n}");
 }
 
 void jsonPrintOpenObject(FILE *fd) { fprintf(fd, "{\n"); }

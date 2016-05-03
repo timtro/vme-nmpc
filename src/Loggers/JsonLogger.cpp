@@ -21,6 +21,7 @@
 #include "../AggregatorInitializer.hpp"
 #include "../NmpcMinimizers/VMeNaiveSdMinimizer.hpp"
 #include "../NmpcModels/VMeModel.hpp"
+#include "../Target.hpp"
 
 // Add new obstacle types here:
 #include "../ObstacleTypes/PointObstacle.hpp"
@@ -135,6 +136,17 @@ void JsonLogger::log_obstacles(const ObstacleContainer &obstacles) const
     noexcept {
   for (auto const &obstacle : obstacles) {
     if (is_unknown_obstacle_type(obstacle)) printf("HELLO\n");
+  }
+}
+
+void JsonLogger::log_targets(const TargetContainer &targets) const
+    noexcept {
+  fprintf(fp_out, "  \"targets\" : ");
+  auto iter = std::begin(targets);
+  for (;;) {
+    fprintf(fp_out, "[%f, %f, %f]", (*iter)->x, (*iter)->y, (*iter)->tolerance);
+    if (++iter == std::end(targets)) break;
+    fprintf(fp_out, ",");
   }
 }
 

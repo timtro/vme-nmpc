@@ -44,7 +44,8 @@ struct Target {
  * convenient interface.
  */
 class TargetContainer {
-  std::deque<std::unique_ptr<Target>> targets;
+  using InternalContainer = std::deque<std::unique_ptr<Target>>;
+  InternalContainer targets;
   std::unique_ptr<Target> previousTarget{new Target(0, 0, 0)};
 
  public:
@@ -59,6 +60,14 @@ class TargetContainer {
   [[deprecated]] bool has_targets();
   bool empty() const noexcept;
   Target& operator[](const int i);
+
+  using const_iterator = InternalContainer::const_iterator;
+
+  const_iterator begin() const { return targets.begin(); }
+  const_iterator end() const { return targets.end(); }
+  const_iterator cbegin() const { return targets.cbegin(); }
+  const_iterator cend() const { return targets.cend(); }
+
 };
 
 #endif  // VME_NMPC_SRC_TARGET_HPP_

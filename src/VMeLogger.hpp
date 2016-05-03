@@ -35,6 +35,7 @@ template <typename seedType, typename cmdType>
 class NmpcModel;
 struct AggregatorInitializer;
 class ObstacleContainer;
+class TargetContainer;
 
 class VMeLogger {
  public:
@@ -43,6 +44,8 @@ class VMeLogger {
   virtual void log_minimizer_state() const noexcept {};
   virtual void log_constants(const AggregatorInitializer&) const noexcept {};
   virtual void log_obstacles(const ObstacleContainer&) const noexcept {};
+  virtual void log_targets(const TargetContainer&) const noexcept{};
+
 };
 
 #endif  // VME_NMPC_SRC_DATALOGGER_HPP_

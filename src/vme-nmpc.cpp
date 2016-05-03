@@ -84,9 +84,10 @@ int main(int argc, char** argv) {
       std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     do {
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
       kernel->nmpc_step(planner->get_seed());
       executor->run(vme);
+      logger->VMeLogger::log_targets(targets);
+      std::this_thread::sleep_for(std::chrono::duration<fptype>(inputFileData.timeInterval));
     } while (planner->is_continuing());
     vme.stop();
   }

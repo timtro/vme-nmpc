@@ -74,9 +74,6 @@ JsonLogger::~JsonLogger() { fprintf(fp_out, "\n]\n"); }
 
 void jsonPrintOpenObject(FILE *);
 void jsonPrintCloseObject(FILE *);
-void jsonPrintNode(FILE *, std::string, std::string);
-void jsonPrintNode(FILE *, std::string, int);
-void jsonPrintNode(FILE *, std::string, float);
 template <typename T>
 void jsonPrintArrayNode(FILE *fd, std::string, const T);
 template <typename T>
@@ -89,49 +86,44 @@ void JsonLogger::log_constants(const AggregatorInitializer &init) const
   } else {
     printedFirstObject = true;
   }
-  jsonPrintOpenObject(fp_out);
-  jsonPrintNode(fp_out, "nmpcHorizon:",
-                static_cast<int>(init.get_nmpcHorizon()));
-  jsonPrintNode(fp_out, "timeInterval", init.get_timeInterval());
-  jsonPrintNode(fp_out, "cruiseSpeed", init.get_cruiseSpeed());
-  jsonPrintNode(fp_out, "R", init.get_R());
-  jsonPrintNode(fp_out, "Q", init.get_Q());
-  jsonPrintNode(fp_out, "Q0", init.get_Q0());
-  jsonPrintNode(fp_out, "sdStepFactor", init.get_sdStepFactor());
-  jsonPrintNode(fp_out, "sdConvergenceTolerance",
-                init.get_sdConvergenceTolerance());
-  jsonPrintNode(fp_out, "maxSdSteps", static_cast<int>(init.get_maxSdSteps()));
-  jsonPrintNode(fp_out, "jsonLogPath", init.get_jsonLogPath());
-  jsonPrintCloseObject(fp_out);
+  fprintf(fp_out, "{\n");
+  fprintf(fp_out, "  \"nmpcHorizon\": %d,\n",
+          static_cast<int>(init.get_nmpcHorizon()));
+  fprintf(fp_out, "  \"timeInterval\" : %f,\n", init.get_timeInterval());
+  fprintf(fp_out, "  \"cruiseSpeed\" : %f,\n", init.get_cruiseSpeed());
+  fprintf(fp_out, "  \"R\" : %f,\n", init.get_R());
+  fprintf(fp_out, "  \"Q\" : %f,\n", init.get_Q());
+  fprintf(fp_out, "  \"Q0\" : %f,\n", init.get_Q0());
+  fprintf(fp_out, "  \"sdStepFactor\" : %f,\n", init.get_sdStepFactor());
+  fprintf(fp_out, "  \"sdConvergenceTolerance\" : %f,\n",
+          init.get_sdConvergenceTolerance());
+  fprintf(fp_out, "  \"maxSdSteps\" : %d,\n",
+          static_cast<int>(init.get_maxSdSteps()));
+  fprintf(fp_out, "  \"jsonLogPath\" : \"%s\"\n",
+          init.get_jsonLogPath().c_str());
+  fprintf(fp_out, "},\n");
+  fflush(fp_out);
 }
 
 void JsonLogger::log_model_state() const noexcept {
-  if (printedFirstObject) {
-    fprintf(fp_out, ",\n");
-  } else {
-    printedFirstObject = true;
-  }
-  jsonPrintOpenObject(fp_out);
+  fprintf(fp_out, "{\n");
   jsonPrintArrayNode(fp_out, "x", model->get_x());
   jsonPrintArrayNode(fp_out, "y", model->get_y());
   jsonPrintArrayNode(fp_out, "ex", model->get_ex());
   jsonPrintArrayNode(fp_out, "ey", model->get_ey());
   jsonPrintArrayNode(fp_out, "Dth", model->Dth);
-  jsonPrintCloseObject(fp_out);
+  fprintf(fp_out, "},\n");
+  fflush(fp_out);
 }
 
 void JsonLogger::log_minimizer_state() const noexcept {
-  if (printedFirstObject) {
-    fprintf(fp_out, ",\n");
-  } else {
-    printedFirstObject = true;
-  }
-  jsonPrintOpenObject(fp_out);
-  jsonPrintNode(fp_out, "iterations", minimizer->lastSdLoopCount);
-  jsonPrintCloseObject(fp_out);
+  fprintf(fp_out, "{");
+  fprintf(fp_out, "  \"iterations\" : %d ", minimizer->lastSdLoopCount);
+  fprintf(fp_out, "},\n");
+  fflush(fp_out);
 }
 
-bool is_unknown_obstacle_type(const std::unique_ptr<Obstacle>&);
+bool is_unknown_obstacle_type(const std::unique_ptr<Obstacle> &);
 void JsonLogger::log_obstacles(const ObstacleContainer &obstacles) const
     noexcept {
   for (auto const &obstacle : obstacles) {
@@ -139,35 +131,17 @@ void JsonLogger::log_obstacles(const ObstacleContainer &obstacles) const
   }
 }
 
-void JsonLogger::log_targets(const TargetContainer &targets) const
-    noexcept {
-  fprintf(fp_out, "{\n  \"targets\" : ");
+void JsonLogger::log_targets(const TargetContainer &targets) const noexcept {
+  fprintf(fp_out, "{\n");
+  fprintf(fp_out, "  \"targets\" : [");
   auto iter = std::begin(targets);
   for (;;) {
     fprintf(fp_out, "[%f, %f, %f]", (*iter)->x, (*iter)->y, (*iter)->tolerance);
     if (++iter == std::end(targets)) break;
     fprintf(fp_out, ",");
   }
-  fprintf(fp_out, "\n}");
-}
-
-void jsonPrintOpenObject(FILE *fd) { fprintf(fd, "{\n"); }
-
-void jsonPrintCloseObject(FILE *fd) {
-  fprintf(fd, "}");
-  fflush(fd);
-}
-
-void jsonPrintNode(FILE *fd, std::string name, std::string data) {
-  fprintf(fd, "  \"%s\" : %s\n", name.c_str(), data.c_str());
-}
-
-void jsonPrintNode(FILE *fd, std::string name, int data) {
-  fprintf(fd, "  \"%s\" : %d\n", name.c_str(), data);
-}
-
-void jsonPrintNode(FILE *fd, std::string name, float data) {
-  fprintf(fd, "  \"%s\" : %f\n", name.c_str(), data);
+  fprintf(fp_out, "]\n},\n");
+  fflush(fp_out);
 }
 
 template <typename T>
@@ -188,6 +162,6 @@ void jsonPrintArray(FILE *fd, const T &array) {
   }
 }
 
-bool is_unknown_obstacle_type(const std::unique_ptr<Obstacle>& obstacle) {
+bool is_unknown_obstacle_type(const std::unique_ptr<Obstacle> &obstacle) {
   return true;
 }

@@ -1,5 +1,5 @@
 /* This file is part of vme-nmpc.
- *
+ *P
  * Copyright (C) 2015 Timothy A.V. Teatro - All rights Reserved
  *
  * vme-nmpc is free software; you can redistribute it and/or modify
@@ -80,14 +80,15 @@ int main(int argc, char** argv) {
   });
 
   for (;;) {
-    while (targets.empty()) {
+    while (!(planner->is_continuing())) {
       std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     do {
       kernel->nmpc_step(planner->get_seed());
       executor->run(vme);
       logger->log_targets(targets);
-      std::this_thread::sleep_for(std::chrono::duration<fptype>(inputFileData.timeInterval));
+      std::this_thread::sleep_for(
+          std::chrono::duration<fptype>(inputFileData.timeInterval));
     } while (planner->is_continuing());
     vme.stop();
   }

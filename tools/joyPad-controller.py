@@ -42,10 +42,6 @@ def stick_data_from_device(device):
     return speed, heading, turnRate
 
 
-def gear_data_from_device(device):
-    print()
-
-
 def boost_status(device):
     if device.buttonStates['trigger'] == 1:
         return 1.5

@@ -41,16 +41,6 @@ def getDataFromDevice(device):
     return speed, heading, turnRate
 
 
-def haltAndDie():
-    vme.stop()
-    joyPad.cancel()
-
-
-def signalHandler(signal, frame):
-    haltAndDie()
-    sys.exit(0)
-
-
 parser = ArgumentParser(
     description="""Use the keyboard or a joypad/joystick to control virtualME.
     Keyboard controls:
@@ -87,9 +77,6 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-# Handle Ctrl+C gracefully.
-signal.signal(signal.SIGINT, signalHandler)
-
 print("Initializing connection to VirualME...")
 virtualME = Nav2Robot(args.hostname, args.hostport)
 virtualME.connect()
@@ -102,6 +89,16 @@ else:
     joyPad = JoyPad(args.joyStickDevicePath)
     joyPad.start()
     print("  done.")
+
+
+def signalHandler(signal, frame):
+    virtualME.stop()
+    joyPad.cancel()
+    sys.exit(0)
+
+
+# Handle Ctrl+C gracefully.
+signal.signal(signal.SIGINT, signalHandler)
 
 print("\nThere's no more curses-dependency, so there's no more output.")
 print("If something goes wrong, you\'re debugging. Good luck.\n")

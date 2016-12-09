@@ -26,7 +26,7 @@ a TCP server accepting Nav2 server interface.
 
 import socket
 import numpy as np
-from math import sin, cos, degrees, radians, atan2, atan
+from math import sin, cos, degrees, radians, atan2
 import time
 
 
@@ -34,34 +34,34 @@ class Nav2Robot:
 
     def __init__(self, addy, portno):
         '''
-		Initialize with the address and port of the robot.
-		'''
+        Initialize with the address and port of the robot.
+        '''
         self.hostname = addy
         self.hostport = portno
 
     def connect(self):
         '''
-		The object was initialized with the address and port of the robot.
-		Now, use them to connect and return the reuslt of socket.connect().
-		'''
+        The object was initialized with the address and port of the robot.
+        Now, use them to connect and return the reuslt of socket.connect().
+        '''
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return self.socket.connect((self.hostname, self.hostport))
 
     def command(self, *arg):
         '''
-		Taks an arbitrarily long list of arguments, of the form:
-		   cmd a1, a2, a3,...
-		such that cmd is a string contaiing a turtle command and the remaining
-		arguments are converted to strings (if nessisary) and concatinated with
-		a single space between before a newline character is appended and the
-		concatination is passed to send for transmission to the robot.
+        Taks an arbitrarily long list of arguments, of the form:
+           cmd a1, a2, a3,...
+        such that cmd is a string contaiing a turtle command and the remaining
+        arguments are converted to strings (if nessisary) and concatinated with
+        a single space between before a newline character is appended and the
+        concatination is passed to send for transmission to the robot.
 
-		The idea is to give this sort of interface:
-		  vme.command('v', 0, 0.5, .25)
-		which would send the command
-		  v 0 0.5 0.25\n
-		to the robot.
-		'''
+        The idea is to give this sort of interface:
+          vme.command('v', 0, 0.5, .25)
+        which would send the command
+          v 0 0.5 0.25\n
+        to the robot.
+        '''
         cmd = arg[0]
         if len(arg) > 1:
             for item in arg[1:]:
@@ -71,20 +71,20 @@ class Nav2Robot:
 
     def sendline(self, cmd):
         '''
-		Packs a newline character onto the end of cmd (if needed) and sends it
-		over the socket, encoding() along the way.
-		'''
+        Packs a newline character onto the end of cmd (if needed) and sends it
+        over the socket, encoding() along the way.
+        '''
         if cmd[-1] != '\n':
             cmd += '\n'
         return self.socket.send(cmd.encode())
 
     def stop(self):
         '''
-		Stop the robot by sending it 's'.
+        Stop the robot by sending it 's'.
 
-		Not using self.command() to reduce opportunity for error,
-		since stop is a rather critical function.
-		'''
+        Not using self.command() to reduce opportunity for error,
+        since stop is a rather critical function.
+        '''
         return self.socket.send("s\n".encode())
 
     # s is the same as stop
@@ -92,15 +92,19 @@ class Nav2Robot:
 
     def locationa(self):
         self.sendline('q')
-        return np.array([float(str) for str in self.socket.makefile().readline().split()])
+        return np.array(
+            [float(str) for str in self.socket.makefile().readline().split()])
 
     def locationl(self):
         self.sendline('q')
-        return [float(str) for str in self.socket.makefile().readline().split()]
+        return [
+            float(str) for str in self.socket.makefile().readline().split()
+        ]
 
     def locationt(self):
         self.sendline('q')
-        return tuple([float(str) for str in self.socket.makefile().readline().split()])
+        return tuple(
+            [float(str) for str in self.socket.makefile().readline().split()])
 
     location = locationa
 

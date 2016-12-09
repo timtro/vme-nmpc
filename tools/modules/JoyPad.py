@@ -2,7 +2,9 @@
 # Based on information from:
 # https://www.kernel.org/doc/Documentation/input/joystick-api.txt
 
-import os, struct, array, time
+import struct
+import array
+import time
 from fcntl import ioctl
 from threading import Thread
 
@@ -94,7 +96,8 @@ class JoyPad(Thread):
 
         # Get the device name.
         buf = array.array('u', ['\0'] * 64)
-        ioctl(self.joyStickFd, 0x80006a13 + (0x10000 * len(buf)), buf)  # JSIOCGNAME(len)
+        ioctl(self.joyStickFd, 0x80006a13 + (0x10000 * len(buf)),
+              buf)  # JSIOCGNAME(len)
         self.joyStickName = buf.tostring()
 
         # Get number of axes and buttons.
@@ -147,7 +150,7 @@ class JoyPad(Thread):
             time.sleep(0.001)
 
     def __exit__(self):
-        close(self.joyStickFd)
+        self.joyStickFd.close()
 
     def lx(self):
         return self.axisStates['x']

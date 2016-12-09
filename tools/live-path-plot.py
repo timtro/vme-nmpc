@@ -38,7 +38,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from modules.Nav2Robot import Nav2Robot
-import matplotlib.gridspec as gridspec
 import re
 
 
@@ -48,8 +47,7 @@ def init():
 
 
 def update_plot(data):
-
-    #Poll and unpack.
+    # Poll and unpack.
     X = vme.locationa()
 
     if np.sqrt(np.sum((X[:2] - update_plot.Xprv[:2])**2)) > .001:
@@ -61,39 +59,53 @@ def update_plot(data):
                 del i[0]
         update_plot.Xprv = X
 
-    #TODO: Modify to store a trail of, say, 1000 data points in history.
-    history.set_data(update_plot.executed_path[0], update_plot.executed_path[1])
+    # TODO: Modify to store a trail of, say, 1000 data points in history.
+    history.set_data(update_plot.executed_path[0],
+                     update_plot.executed_path[1])
     curpos.set_data(X[0], X[1])
     curpos.set_marker((3, 0, X[2] - 90))
 
     return history, curpos
 
 
-parser = ArgumentParser(description='Plots the position and path history of a Nav2 machine.')
-parser.add_argument('-o',
-                    '--host',
-                    dest='hostname',
-                    default='localhost',
-                    help='Address of turtle server.',
-                    metavar='HOST')
-parser.add_argument('-p',
-                    '--port',
-                    dest='hostport',
-                    type=int,
-                    default=5010,
-                    help='Turtle is listening on this port.',
-                    metavar='PORT')
-parser.add_argument('-xr',
-                    dest='xr',
-                    default="[-5,5]",
-                    help='x-axis range (two comma separated floats in brackets. Default: "[-5,5]").',
-                    metavar='RANGE')
-parser.add_argument('-yr',
-                    dest='yr',
-                    default="[-5,5]",
-                    help='y-axis range (two comma separated floats in brackets. Default: "[-5,5]").',
-                    metavar='RANGE')
-parser.add_argument('-i', dest='ival', type=float, default=5, help='Animation refresh interval', metavar='IVAL')
+parser = ArgumentParser(
+    description='Plots the position and path history of a Nav2 machine.')
+parser.add_argument(
+    '-o',
+    '--host',
+    dest='hostname',
+    default='localhost',
+    help='Address of turtle server.',
+    metavar='HOST')
+parser.add_argument(
+    '-p',
+    '--port',
+    dest='hostport',
+    type=int,
+    default=5010,
+    help='Turtle is listening on this port.',
+    metavar='PORT')
+parser.add_argument(
+    '-xr',
+    dest='xr',
+    default="[-5,5]",
+    help='x-axis range (two comma separated floats in brackets.'
+    ' Default: "[-5,5]").',
+    metavar='RANGE')
+parser.add_argument(
+    '-yr',
+    dest='yr',
+    default="[-5,5]",
+    help='y-axis range (two comma separated floats in brackets.'
+    ' Default: "[-5,5]").',
+    metavar='RANGE')
+parser.add_argument(
+    '-i',
+    dest='ival',
+    type=float,
+    default=5,
+    help='Animation refresh interval',
+    metavar='IVAL')
 
 args = parser.parse_args()
 
@@ -126,5 +138,6 @@ history, = ax.plot([], [], 'r-', lw=2)
 curpos, = ax.plot([], [], 'r^', ms=15)
 
 # plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
-anim = animation.FuncAnimation(fig, update_plot, init_func=init, interval=args.ival, blit=False)
+anim = animation.FuncAnimation(
+    fig, update_plot, init_func=init, interval=args.ival, blit=False)
 plt.show()

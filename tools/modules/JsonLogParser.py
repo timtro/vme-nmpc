@@ -10,7 +10,7 @@ class JsonLogParser:
         line = ''
         stringObject = ''
         nestCount = 0
-        while not '{' in line:
+        while '{' not in line:
             line = self.fstream.readline()
             if not line:
                 return ''

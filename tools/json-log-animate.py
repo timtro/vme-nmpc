@@ -52,7 +52,8 @@ class AnimatedPlot:
         self.ax1ErrPath, = ax1.plot([], [], 'yo-', lw=4, ms=3)
         self.ax1ExecPath, = ax1.plot([], [], 'r-', lw=2)
 
-        ax2 = self.fig.add_subplot(gs[1], adjustable='box', aspect=1.0, axisbg='w')
+        ax2 = self.fig.add_subplot(
+            gs[1], adjustable='box', aspect=1.0, axisbg='w')
         plt.setp(ax2.get_xticklabels(), visible=False)
         plt.setp(ax2.get_yticklabels(), visible=False)
         ax2.set_xlim(-pathRadius, pathRadius)
@@ -70,14 +71,16 @@ class AnimatedPlot:
         self.ax2Path.set_data([], [])
         self.ax2ErrPath.set_data([], [])
         self.ax1ExecPath.set_data(self.execPath[0], self.execPath[1])
-        return self.ax1Path, self.ax1ErrPath, self.ax1ExecPath, self.ax2Path, self.ax2ErrPath
+        return self.ax1Path, self.ax1ErrPath, self.ax1ExecPath, self.ax2Path, \
+            self.ax2ErrPath
 
     def startAnimation(self, interval, updateFunction):
-        self.animater = animation.FuncAnimation(self.fig,
-                                                updateFunction,
-                                                init_func=self.animationInit,
-                                                interval=interval,
-                                                blit=True)
+        self.animater = animation.FuncAnimation(
+            self.fig,
+            updateFunction,
+            init_func=self.animationInit,
+            interval=interval,
+            blit=True)
         plt.show()
 
 
@@ -85,7 +88,8 @@ def updatePlotData(data):
     while True:
         jsonData = logParser.getNextObjectAsDict()
         if not jsonData:
-            return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
+            return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath,\
+                aniPlot.ax2Path, aniPlot.ax2ErrPath
         if 'ex' in jsonData.keys():
             break
 
@@ -113,27 +117,32 @@ def updatePlotData(data):
 
     aniPlot.ax1ExecPath.set_data(aniPlot.execPath[0], aniPlot.execPath[1])
 
-    return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath, aniPlot.ax2Path, aniPlot.ax2ErrPath
+    return aniPlot.ax1Path, aniPlot.ax1ErrPath, aniPlot.ax1ExecPath,\
+        aniPlot.ax2Path, aniPlot.ax2ErrPath
 
 
-parser = argparse.ArgumentParser(description='Animate a plot of the NMPC calculation')
-parser.add_argument('-f',
-                    '--file',
-                    dest='inputFileName',
-                    default='',
-                    help='JSON formatted input file',
-                    metavar='FILENAME')
-parser.add_argument('-i',
-                    '--interval',
-                    dest='interval',
-                    type=float,
-                    default=10,
-                    help='Graph refresh interval',
-                    metavar='INTERVAL')
+parser = argparse.ArgumentParser(
+    description='Animate a plot of the NMPC calculation')
+parser.add_argument(
+    '-f',
+    '--file',
+    dest='inputFileName',
+    default='',
+    help='JSON formatted input file',
+    metavar='FILENAME')
+parser.add_argument(
+    '-i',
+    '--interval',
+    dest='interval',
+    type=float,
+    default=10,
+    help='Graph refresh interval',
+    metavar='INTERVAL')
 
 args = parser.parse_args()
 
 with open(args.inputFileName, 'r') as instream:
     logParser = JsonLogParser(instream)
     aniPlot = AnimatedPlot(xr=[0, 10], yr=[-5, 5], pathRadius=2)
-    aniPlot.startAnimation(interval=args.interval, updateFunction=updatePlotData)
+    aniPlot.startAnimation(
+        interval=args.interval, updateFunction=updatePlotData)

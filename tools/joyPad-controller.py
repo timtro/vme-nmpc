@@ -10,10 +10,11 @@ from modules.Nav2Robot import Nav2Robot
 from modules.JoyPad import JoyPad, NullJoyPad
 
 
-def mainLoop(vme, pad):
+def main_loop(vme, pad):
     vme.originate()
     while 1:
-        speed, heading, turnRate = getDataFromDevice(pad)
+        speed, heading, turnRate = stick_data_from_device(pad)
+        speed *= boost_status(pad)
 
         if speed == 0 and turnRate == 0:
             vme.stop()
@@ -24,7 +25,7 @@ def mainLoop(vme, pad):
         time.sleep(0.15)
 
 
-def getDataFromDevice(device):
+def stick_data_from_device(device):
     lx = device.lx() * .5
     ly = -device.ly() * .5
     rx = device.rx() * .5
@@ -39,6 +40,17 @@ def getDataFromDevice(device):
     if abs(rx) < 0.01:
         turnRate = 0.
     return speed, heading, turnRate
+
+
+def gear_data_from_device(device):
+    print()
+
+
+def boost_status(device):
+    if device.buttonStates['trigger'] == 1:
+        return 1.5
+    else:
+        return 1
 
 
 parser = ArgumentParser(
@@ -104,7 +116,7 @@ print("\nThere's no more curses-dependency, so there's no more output.")
 print("If something goes wrong, you\'re debugging. Good luck.\n")
 print("\"Hold on to your butts.\"")
 print("        --John Raymond Arnold")
-print("          Jurassic Park")
+print("          Jurassic Park\n")
 
 virtualME.stop()
-mainLoop(virtualME, joyPad)
+main_loop(virtualME, joyPad)

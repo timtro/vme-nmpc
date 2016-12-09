@@ -10,10 +10,10 @@ from modules.Nav2Robot import Nav2Robot
 from modules.JoyPad import JoyPad, NullJoyPad
 
 
-def mainLoop(vme):
+def mainLoop(vme, pad):
     vme.originate()
     while 1:
-        speed, heading, turnRate = getDataFromDevice(joyPad)
+        speed, heading, turnRate = getDataFromDevice(pad)
 
         if speed == 0 and turnRate == 0:
             vme.stop()
@@ -110,4 +110,4 @@ print("        --John Raymond Arnold")
 print("          Jurassic Park")
 
 virtualME.stop()
-mainLoop(virtualME)
+mainLoop(virtualME, joyPad)

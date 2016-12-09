@@ -101,8 +101,8 @@ else:
     print("  done.")
 
 print("\nThere's no more curses-dependency, so there's no more output."
-print("If something goes wrong, you're debugging. Good luck.\n")
-print("Hold on to your butts.")
+print("If something goes wrong, you\'re debugging. Good luck.\n")
+print("\"Hold on to your butts.\"")
 print("        --John Raymond Arnold")
 print("          Jurassic Park")
 

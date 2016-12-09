@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-from argparse import ArgumentParser, RawTextHelpFormatter
-import sys, signal
-import socket
+import sys
+import signal
 import time
+from argparse import ArgumentParser, RawTextHelpFormatter
 from math import atan2, hypot, degrees
 
 from modules.Nav2Robot import Nav2Robot
@@ -51,36 +51,39 @@ def signalHandler(signal, frame):
     sys.exit(0)
 
 
-parser = ArgumentParser(description="""Use the keyboard or a joypad/joystick to control virtualME.
+parser = ArgumentParser(
+    description="""Use the keyboard or a joypad/joystick to control virtualME.
     Keyboard controls:
     <BACKSPACE>         Exit
     <SPACEBAR>          STOP
     a, d                Move left/right
     w, s                Move forward/backward
     q, e                Rotate left, right""",
-                        formatter_class=RawTextHelpFormatter)
-parser.add_argument('-o',
-                    '--host',
-                    dest='hostname',
-                    default='localhost',
-                    help='Address of turtle server. (Default: localhost)',
-                    metavar='HOST')
-parser.add_argument('-p',
-                    '--port',
-                    dest='hostport',
-                    type=int,
-                    default=5010,
-                    help='Turtle is listening on this port. (Default: 5010)',
-                    metavar='PORT')
-parser.add_argument('-j',
-                    '--joydev',
-                    dest='joyStickDevicePath',
-                    default='/dev/input/js0',
-                    help='Path to joystick device. (Default: /dev/input/js0)',
-                    metavar='DEV')
-parser.add_argument('--nojoy',
-                    action='store_true',
-                    help='Do not look for joypad/stick. Just use the keyboard.\n(Default is to use joypad/stick.)')
+    formatter_class=RawTextHelpFormatter)
+parser.add_argument(
+    '-o',
+    '--host',
+    dest='hostname',
+    default='localhost',
+    help='Address of turtle server. (Default: localhost)',
+    metavar='HOST')
+parser.add_argument(
+    '-p',
+    '--port',
+    dest='hostport',
+    type=int,
+    default=5010,
+    help='Turtle is listening on this port. (Default: 5010)',
+    metavar='PORT')
+parser.add_argument(
+    '-j',
+    '--joydev',
+    dest='joyStickDevicePath',
+    default='/dev/input/js0',
+    help='Path to joystick device. (Default: /dev/input/js0)',
+    metavar='DEV')
+parser.add_argument(
+    '--nojoy', action='store_true', help='Do not look for joypad/stick.')
 
 args = parser.parse_args()
 
@@ -100,7 +103,7 @@ else:
     joyPad.start()
     print("  done.")
 
-print("\nThere's no more curses-dependency, so there's no more output."
+print("\nThere's no more curses-dependency, so there's no more output.")
 print("If something goes wrong, you\'re debugging. Good luck.\n")
 print("\"Hold on to your butts.\"")
 print("        --John Raymond Arnold")
